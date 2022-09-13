@@ -1,0 +1,22 @@
+dateModified: 1663031474
+email:
+  fromEmail: accalton@gmail.com
+  fromName: 'Craft Discord'
+  transportType: craft\mail\transportadapters\Sendmail
+meta:
+  __names__:
+    5d73b046-cd9b-47a9-829d-51b0f5d339c6: 'Craft Discord'
+    458e92dd-2abc-41f4-a4b2-7335b5857bb4: 'Craft Discord'
+    eed0a146-3d97-49c7-8d92-1b7f8f5aa612: Common
+system:
+  edition: solo
+  live: true
+  name: 'Craft Discord'
+  schemaVersion: 4.0.0.9
+  timeZone: America/Los_Angeles
+users:
+  allowPublicRegistration: false
+  defaultGroup: null
+  photoSubpath: null
+  photoVolumeUid: null
+  requireEmailVerification: true

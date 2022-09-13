@@ -1,0 +1,8 @@
+baseUrl: $PRIMARY_SITE_URL
+handle: default
+hasUrls: true
+language: en-US
+name: 'Craft Discord'
+primary: true
+siteGroup: 5d73b046-cd9b-47a9-829d-51b0f5d339c6
+sortOrder: 1
