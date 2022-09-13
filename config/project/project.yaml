@@ -1,13 +1,39 @@
-dateModified: 1663031474
+dateModified: 1663033189
 email:
   fromEmail: accalton@gmail.com
   fromName: 'Craft Discord'
   transportType: craft\mail\transportadapters\Sendmail
+fs:
+  awsS3:
+    hasUrls: true
+    name: 'AWS S3'
+    settings:
+      addSubfolderToRootUrl: true
+      autoFocalPoint: false
+      bucket: flipcrazy-test-storage
+      bucketSelectionMode: choose
+      cfDistributionId: ''
+      cfPrefix: ''
+      expires: ''
+      keyId: $AWS_ACCESS_KEY
+      makeUploadsPublic: true
+      region: us-east-1
+      secret: $AWS_SECRET_KEY
+      storageClass: ''
+      subfolder: public/
+    type: craft\awss3\Fs
+    url: 'https://s3.us-east-1.amazonaws.com/flipcrazy-test-storage/'
 meta:
   __names__:
-    5d73b046-cd9b-47a9-829d-51b0f5d339c6: 'Craft Discord'
-    458e92dd-2abc-41f4-a4b2-7335b5857bb4: 'Craft Discord'
-    eed0a146-3d97-49c7-8d92-1b7f8f5aa612: Common
+    5d73b046-cd9b-47a9-829d-51b0f5d339c6: 'Craft Discord' # Craft Discord
+    23c74757-0d8a-46cb-b13e-539ecf587b11: Images
+    458e92dd-2abc-41f4-a4b2-7335b5857bb4: 'Craft Discord' # Craft Discord
+    eed0a146-3d97-49c7-8d92-1b7f8f5aa612: Common # Common
+plugins:
+  aws-s3:
+    edition: standard
+    enabled: true
+    schemaVersion: '2.0'
 system:
   edition: solo
   live: true
