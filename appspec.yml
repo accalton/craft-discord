@@ -7,3 +7,4 @@ files:
 hooks:
   AfterInstall:
     - location: CodeDeploy/Deploy.sh
+      runas: apache
