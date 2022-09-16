@@ -4,3 +4,6 @@ os: linux
 files:
   - source: source
     destination: /var/www/html
+hooks:
+  AfterInstall:
+    - location: CodeDeploy/Deploy.sh
