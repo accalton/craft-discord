@@ -1,0 +1,5 @@
+{% set images = craft.assets().volume('images').all() %}
+
+{% for image in images %}
+    <img src="{{ image.filename|optimize }}">
+{% endfor %}

@@ -23,6 +23,7 @@ return [
     'id' => App::env('CRAFT_APP_ID') ?: 'CraftCMS',
     'modules' => [
         'my-module' => \modules\Module::class,
+        'imageoptimization' => \imageoptimization\ImageOptimization::class
     ],
-    //'bootstrap' => ['my-module'],
+    'bootstrap' => ['imageoptimization'],
 ];
