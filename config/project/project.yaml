@@ -1,4 +1,4 @@
-dateModified: 1663033189
+dateModified: 1664071762
 email:
   fromEmail: accalton@gmail.com
   fromName: 'Craft Discord'
@@ -23,17 +23,30 @@ fs:
       subfolder: public/
     type: craft\awss3\Fs
     url: 'https://s3.us-east-1.amazonaws.com/flipcrazy-test-storage/'
+graphql:
+  publicToken:
+    enabled: false
+    expiryDate: null
 meta:
   __names__:
     5d73b046-cd9b-47a9-829d-51b0f5d339c6: 'Craft Discord' # Craft Discord
-    23c74757-0d8a-46cb-b13e-539ecf587b11: Images
+    23c74757-0d8a-46cb-b13e-539ecf587b11: Images # Images
+    24cd6242-b981-46a7-a383-94e20a10f825: 'Role Reactions' # Role Reactions
+    90e069e7-6337-44aa-a9f4-12d993f7c29c: 'Public Schema' # Public Schema
+    360a65e4-aa70-44a6-a829-4233645609cd: 'Roles / Emojis' # Role / Emoji
     458e92dd-2abc-41f4-a4b2-7335b5857bb4: 'Craft Discord' # Craft Discord
+    875b4e90-6d28-4e3f-a01b-74d30e2bfa2b: Default # Default
     eed0a146-3d97-49c7-8d92-1b7f8f5aa612: Common # Common
+    f85139d1-963d-4e84-b2e6-c0cb03058e56: Description # Description
 plugins:
   aws-s3:
     edition: standard
     enabled: true
     schemaVersion: '2.0'
+  redactor:
+    edition: standard
+    enabled: true
+    schemaVersion: 2.3.0
 system:
   edition: solo
   live: true

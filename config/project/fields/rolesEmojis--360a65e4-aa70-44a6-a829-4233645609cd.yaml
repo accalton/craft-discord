@@ -1,0 +1,58 @@
+columnSuffix: hbmdpkbk
+contentColumnType: text
+fieldGroup: eed0a146-3d97-49c7-8d92-1b7f8f5aa612 # Common
+handle: rolesEmojis
+instructions: null
+name: 'Roles / Emojis'
+searchable: false
+settings:
+  addRowLabel: 'Add a row'
+  columnType: text
+  columns:
+    __assoc__:
+      -
+        - col1
+        -
+          __assoc__:
+            -
+              - heading
+              - 'Role ID'
+            -
+              - handle
+              - roleId
+            -
+              - width
+              - ''
+            -
+              - type
+              - singleline
+      -
+        - col2
+        -
+          __assoc__:
+            -
+              - heading
+              - 'Emoji ID'
+            -
+              - handle
+              - emojiId
+            -
+              - width
+              - ''
+            -
+              - type
+              - singleline
+  defaults:
+    -
+      __assoc__:
+        -
+          - col1
+          - ''
+        -
+          - col2
+          - ''
+  maxRows: null
+  minRows: 1
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Table

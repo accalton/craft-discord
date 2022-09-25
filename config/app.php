@@ -23,7 +23,8 @@ return [
     'id' => App::env('CRAFT_APP_ID') ?: 'CraftCMS',
     'modules' => [
         'my-module' => \modules\Module::class,
-        'imageoptimization' => \imageoptimization\ImageOptimization::class
+        'imageoptimization' => \imageoptimization\ImageOptimization::class,
+        'discordbot' => \discordbot\DiscordBot::class,
     ],
-    'bootstrap' => ['imageoptimization'],
+    'bootstrap' => ['imageoptimization', 'discordbot'],
 ];
