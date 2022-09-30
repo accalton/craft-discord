@@ -37,7 +37,8 @@ class DiscordBot extends Module
                     return;
                 }
 
-                $this->roleReact->foobar($entry);
+                $this->roleReact->foobar();
+                // $this->roleReact->createWebhook();
             }
         );
     }
