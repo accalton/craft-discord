@@ -16,10 +16,10 @@ settings:
           __assoc__:
             -
               - heading
-              - 'Role ID'
+              - Role
             -
               - handle
-              - roleId
+              - role
             -
               - width
               - ''
@@ -32,10 +32,10 @@ settings:
           __assoc__:
             -
               - heading
-              - 'Emoji ID'
+              - Emoji
             -
               - handle
-              - emojiId
+              - emoji
             -
               - width
               - ''

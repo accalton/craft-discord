@@ -1,4 +1,4 @@
-dateModified: 1664071762
+dateModified: 1664548002
 email:
   fromEmail: accalton@gmail.com
   fromName: 'Craft Discord'
@@ -29,11 +29,12 @@ graphql:
     expiryDate: null
 meta:
   __names__:
+    5b758ccd-1188-439f-94d3-4657cdbb946f: 'Discord Message ID' # Discord Message ID
     5d73b046-cd9b-47a9-829d-51b0f5d339c6: 'Craft Discord' # Craft Discord
     23c74757-0d8a-46cb-b13e-539ecf587b11: Images # Images
     24cd6242-b981-46a7-a383-94e20a10f825: 'Role Reactions' # Role Reactions
     90e069e7-6337-44aa-a9f4-12d993f7c29c: 'Public Schema' # Public Schema
-    360a65e4-aa70-44a6-a829-4233645609cd: 'Roles / Emojis' # Role / Emoji
+    360a65e4-aa70-44a6-a829-4233645609cd: 'Roles / Emojis' # Roles / Emojis
     458e92dd-2abc-41f4-a4b2-7335b5857bb4: 'Craft Discord' # Craft Discord
     875b4e90-6d28-4e3f-a01b-74d30e2bfa2b: Default # Default
     eed0a146-3d97-49c7-8d92-1b7f8f5aa612: Common # Common

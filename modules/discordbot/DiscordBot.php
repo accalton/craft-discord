@@ -24,7 +24,10 @@ class DiscordBot extends Module
         parent::init();
 
         $this->setComponents([
+            'guild'     => \discordbot\services\GuildService::class,
+            'request'   => \discordbot\services\RequestService::class,
             'roleReact' => \discordbot\services\RoleReactService::class,
+            'webhooks'  => \discordbot\services\WebhookService::class,
         ]);
 
         Event::on(
@@ -37,8 +40,21 @@ class DiscordBot extends Module
                     return;
                 }
 
-                $this->roleReact->foobar();
-                // $this->roleReact->createWebhook();
+                $this->roleReact->onEntrySave($entry);
+            }
+        );
+
+        Event::on(
+            Entry::class,
+            Entry::EVENT_BEFORE_DELETE,
+            function (ModelEvent $event) {
+                $entry = $event->sender;
+
+                if (ElementHelper::isDraftOrRevision($entry)) {
+                    return;
+                }
+
+                $this->roleReact->onEntryDelete($entry);
             }
         );
     }
