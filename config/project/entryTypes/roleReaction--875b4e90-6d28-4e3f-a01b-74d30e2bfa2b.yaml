@@ -32,6 +32,18 @@ fieldLayouts:
             width: 100
           -
             elementCondition: null
+            fieldUid: 834c084a-22a4-4349-bb98-09b79287b031 # Color
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: c66e10f1-a566-4754-ae4d-a87aafe147f1
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
             fieldUid: f85139d1-963d-4e84-b2e6-c0cb03058e56 # Description
             instructions: null
             label: null
@@ -41,7 +53,7 @@ fieldLayouts:
             uid: 3a4f66f0-eb3a-4d90-927c-c1a3c1784167
             userCondition: null
             warning: null
-            width: 100
+            width: 75
           -
             elementCondition: null
             fieldUid: 360a65e4-aa70-44a6-a829-4233645609cd # Roles / Emojis
@@ -50,7 +62,7 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: c7ff85ad-6b13-40a4-b727-4dabdb7567f6
+            uid: 4842a0c7-6d14-409e-83c6-b8b4241735ba
             userCondition: null
             warning: null
             width: 100
@@ -62,7 +74,7 @@ fieldLayouts:
         elements:
           -
             elementCondition: null
-            fieldUid: 5b758ccd-1188-439f-94d3-4657cdbb946f # Discord Message ID
+            fieldUid: 5b758ccd-1188-439f-94d3-4657cdbb946f # Message ID
             instructions: null
             label: null
             required: false
@@ -75,10 +87,10 @@ fieldLayouts:
         name: 'Discord Info'
         uid: 0431404d-45d1-416d-9aee-d46b46dfa538
         userCondition: null
-handle: default
+handle: roleReaction
 hasTitleField: true
-name: Default
-section: 24cd6242-b981-46a7-a383-94e20a10f825 # Role Reactions
+name: 'Role Reaction'
+section: 24cd6242-b981-46a7-a383-94e20a10f825 # Messages
 sortOrder: 1
 titleFormat: null
 titleTranslationKeyFormat: null

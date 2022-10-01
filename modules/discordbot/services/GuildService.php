@@ -19,12 +19,14 @@ class GuildService
     {
         $url = $this->url . '/emojis';
 
-        $emojis = DiscordBot::getInstance()->request->processRequest($url);
+        $emojis = DiscordBot::getInstance()->request->send($url);
 
         $return = [];
         foreach ($emojis as $emoji) {
-            $return[$emoji->name] = $emoji->id;
+            $return[$emoji->id] = $emoji->name;
         }
+
+        asort($return);
 
         return $return;
     }
@@ -33,12 +35,14 @@ class GuildService
     {
         $url = $this->url . '/roles';
 
-        $roles = DiscordBot::getInstance()->request->processRequest($url);
+        $roles = DiscordBot::getInstance()->request->send($url);
 
         $return = [];
         foreach ($roles as $role) {
-            $return[$role->name] = $role->id;
+            $return[$role->id] = $role->name;
         }
+
+        asort($return);
 
         return $return;
     }

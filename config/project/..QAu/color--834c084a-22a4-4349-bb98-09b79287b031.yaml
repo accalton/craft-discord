@@ -1,0 +1,12 @@
+columnSuffix: sbxrcrfp
+contentColumnType: string(7)
+fieldGroup: eed0a146-3d97-49c7-8d92-1b7f8f5aa612 # Common
+handle: color
+instructions: null
+name: Color
+searchable: false
+settings:
+  defaultColor: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Color

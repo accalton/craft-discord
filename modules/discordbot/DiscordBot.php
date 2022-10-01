@@ -5,7 +5,9 @@ namespace discordbot;
 use Craft;
 use craft\elements\Entry;
 use craft\events\ModelEvent;
+use craft\events\RegisterComponentTypesEvent;
 use craft\helpers\ElementHelper;
+use craft\services\Fields;
 use yii\base\Event;
 use yii\base\Module;
 
@@ -25,10 +27,20 @@ class DiscordBot extends Module
 
         $this->setComponents([
             'guild'     => \discordbot\services\GuildService::class,
+            'messages'  => \discordbot\services\MessageService::class,
             'request'   => \discordbot\services\RequestService::class,
-            'roleReact' => \discordbot\services\RoleReactService::class,
             'webhooks'  => \discordbot\services\WebhookService::class,
         ]);
+
+        Event::on(
+            Fields::class,
+            Fields::EVENT_REGISTER_FIELD_TYPES,
+            function (RegisterComponentTypesEvent $event) {
+                $event->types[] = \discordbot\fields\EmojiField::class;
+                $event->types[] = \discordbot\fields\RoleField::class;
+                $event->types[] = \discordbot\fields\DiscordDropdownField::class;
+            }
+        );
 
         Event::on(
             Entry::class,
@@ -40,7 +52,11 @@ class DiscordBot extends Module
                     return;
                 }
 
-                $this->roleReact->onEntrySave($entry);
+                switch ($entry->section->handle) {
+                    case 'messages':
+                        $this->messages->onEntrySave($entry);
+                        break;
+                }
             }
         );
 
@@ -54,7 +70,11 @@ class DiscordBot extends Module
                     return;
                 }
 
-                $this->roleReact->onEntryDelete($entry);
+                switch ($entry->section->handle) {
+                    case 'messages':
+                        $this->messages->onEntryDelete($entry);
+                        break;
+                }
             }
         );
     }

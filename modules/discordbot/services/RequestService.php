@@ -8,7 +8,7 @@ class RequestService
 {
     private $baseUri = 'https://discordapp.com/api/';
 
-    public function processRequest($url, $params = [], $method = 'GET')
+    public function send($url, $params = [], $method = 'GET')
     {
         $client = Craft::createGuzzleClient([
             'base_uri' => $this->baseUri,

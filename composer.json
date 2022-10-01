@@ -3,6 +3,7 @@
     "craftcms/aws-s3": "^2.0",
     "craftcms/cms": "^4.2.0.2",
     "craftcms/redactor": "^3.0",
+    "studioespresso/craft-scout": "^3.0",
     "team-reflex/discord-php": "^7.3",
     "vlucas/phpdotenv": "^5.4.0"
   },

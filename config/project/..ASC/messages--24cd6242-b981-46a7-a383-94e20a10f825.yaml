@@ -1,0 +1,12 @@
+defaultPlacement: end
+enableVersioning: false
+handle: messages
+name: Messages
+propagationMethod: all
+siteSettings:
+  458e92dd-2abc-41f4-a4b2-7335b5857bb4: # Craft Discord
+    enabledByDefault: true
+    hasUrls: false
+    template: null
+    uriFormat: null
+type: channel

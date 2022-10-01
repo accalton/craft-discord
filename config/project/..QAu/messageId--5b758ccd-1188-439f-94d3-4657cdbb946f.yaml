@@ -1,9 +1,9 @@
 columnSuffix: lvihujvc
 contentColumnType: text
 fieldGroup: eed0a146-3d97-49c7-8d92-1b7f8f5aa612 # Common
-handle: discordMessageId
+handle: messageId
 instructions: null
-name: 'Discord Message ID'
+name: 'Message ID'
 searchable: false
 settings:
   byteLimit: null
