@@ -32,18 +32,6 @@ fieldLayouts:
             width: 100
           -
             elementCondition: null
-            fieldUid: d0304d62-acc7-4a67-a47a-2cc2ef18f3a5 # Channel
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 69766495-3235-478d-b62a-dfbe77bc4f22
-            userCondition: null
-            warning: null
-            width: 100
-          -
-            elementCondition: null
             fieldUid: 834c084a-22a4-4349-bb98-09b79287b031 # Color
             instructions: null
             label: null

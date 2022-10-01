@@ -7,11 +7,12 @@ use \discordbot\DiscordBot;
 
 class MessageService
 {
-    private $webhookId    = '1025225336683765812';
-    private $webhookToken = '-q2grf0ztbqhEbcuVrjRz1RucINa4HAiJbwpHz1zolFOR3Pj3qHtHqI31D7Dknmajhhh';
+    private $webhookId;
+    private $webhookToken;
 
     public function onEntrySave(Entry $entry)
     {
+        $this->getWebhook($entry);
         $url = 'webhooks/' . $this->webhookId . '/' . $this->webhookToken;
         if ($entry->messageId) {
             $url .= '/messages/' . $entry->messageId;
@@ -29,10 +30,19 @@ class MessageService
 
     public function onEntryDelete(Entry $entry)
     {
+        $this->getWebhook($entry);
         if ($messageId = $entry->messageId) {
             $url = 'webhooks/' . $this->webhookId . '/' . $this->webhookToken . '/messages/' . $messageId;
             DiscordBot::getInstance()->request->send($url, [], 'DELETE');
         }
+    }
+
+    private function getWebhook(Entry $entry)
+    {
+        $webhook = DiscordBot::getInstance()->webhooks->fetch($entry->channel);
+
+        $this->webhookId = $webhook->id;
+        $this->webhookToken = $webhook->token;
     }
 
     private function roleReactionParams(Entry $entry)
@@ -54,6 +64,40 @@ class MessageService
                         'description' => $description,
                         'color' => $color
                     ]
+                ]
+            ])
+        ];
+
+        return $params;
+    }
+
+    private function voteParams(Entry $entry)
+    {
+        $description = strip_tags($entry->description) . PHP_EOL;
+
+        foreach ($entry->voteOptions as $voteOption) {
+            $description .= PHP_EOL;
+            $description .= $voteOption->emoji . ' : ' . $voteOption->option;
+        }
+
+        $color = $entry->color ? hexdec($entry->color->hex) : hexdec('#ffffff');
+
+        $embed = [
+            'title' => $entry->title,
+            'description' => $description,
+            'color' => $color
+        ];
+
+        if ($entry->image->one()) {
+            $embed['image'] = [
+                'url' => $entry->image->one()->url
+            ];
+        }
+
+        $params = [
+            'body' => json_encode([
+                'embeds' => [
+                    $embed
                 ]
             ])
         ];

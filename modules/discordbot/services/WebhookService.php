@@ -2,31 +2,32 @@
 
 namespace discordbot\services;
 
+use discordbot\DiscordBot;
+
 class WebhookService
 {
-    public function createWebhook()
+    public function createWebhook($channelId)
     {
-        $url = 'https://discordapp.com/api/channels/991883337977307226/webhooks';
+        $url = 'channels/' . $channelId . '/webhooks';
+        $webhook = DiscordBot::getInstance()->request->send($url, [
+            'body' => json_encode([
+                'name' => 'Riot Nights'
+            ])
+        ], 'POST');
 
-        $client = Craft::createGuzzleClient();
+        return $webhook;
+    }
 
-        try {
-            $response = $client->request('POST', $url, [
-                'body' => json_encode([
-                    'name' => 'Role Assignments'
-                ]),
-                'headers' => [
-                    'Authorization' => 'Bot ' . getenv('DISCORD_TOKEN'),
-                    'Content-Type'  => 'application/json'
-                ]
-            ]);
+    public function fetch($channelId)
+    {
+        $url = 'channels/' . $channelId . '/webhooks';
+        
+        $webhooks = DiscordBot::getInstance()->request->send($url);
 
-            $contents = $response->getBody()->getContents();
-            var_dump(json_decode($contents));
-        } catch (Exception $e) {
-            var_dump($e->getMessage());
+        if (count($webhooks) == 0) {
+            return $this->createWebhook($channelId);
+        } else {
+            return $webhooks[0];
         }
-
-        exit;
     }
 }

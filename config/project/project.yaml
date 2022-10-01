@@ -1,4 +1,4 @@
-dateModified: 1664593979
+dateModified: 1664598663
 email:
   fromEmail: accalton@gmail.com
   fromName: 'Craft Discord'
@@ -26,12 +26,15 @@ fs:
 meta:
   __names__:
     1b6ee14a-6a63-4adf-84b1-e2d5bb3cf971: Emoji # Emoji
+    3e7e4f47-a727-495f-acfa-419271f133b7: 'Vote Options' # Vote Options
     3edba8b6-9fbd-4228-9547-8d2058bfd218: 'Public Schema' # Public Schema
     5b758ccd-1188-439f-94d3-4657cdbb946f: 'Message ID' # Message ID
     5d73b046-cd9b-47a9-829d-51b0f5d339c6: 'Craft Discord' # Craft Discord
+    9c695049-9bc1-4830-bbcf-85fc63810f1a: Image # Image
     16a1e38e-f449-444d-b42c-9f6f457398a7: 'Role / Emoji' # Role / Emoji
     23c74757-0d8a-46cb-b13e-539ecf587b11: Images # Images
     24cd6242-b981-46a7-a383-94e20a10f825: Messages # Messages
+    56ff0b20-7013-4554-b5cf-f03f15461258: Option # Option
     90e069e7-6337-44aa-a9f4-12d993f7c29c: 'Public Schema' # Public Schema
     360a65e4-aa70-44a6-a829-4233645609cd: 'Roles / Emojis' # Roles / Emojis
     458e92dd-2abc-41f4-a4b2-7335b5857bb4: 'Craft Discord' # Craft Discord
@@ -40,10 +43,14 @@ meta:
     834c084a-22a4-4349-bb98-09b79287b031: Color # Color
     875b4e90-6d28-4e3f-a01b-74d30e2bfa2b: 'Role Reaction' # Role Reaction
     2559ddae-dbae-4276-87df-8c0d8f2cb4f1: 'Public Schema' # Public Schema
+    88937120-6d97-4cc5-b043-d0f95c16f913: Vote # Vote
     a1ee1a25-4491-47e7-ae47-0873ce02b262: Guilds # Guilds
+    d0304d62-acc7-4a67-a47a-2cc2ef18f3a5: Channel # Channel
     dcfa73be-67a8-492b-9a0b-733ecaaa5ab0: Role # Role
+    e0c77792-92aa-41e7-9db0-541c40fd0e14: Vote # Vote
     eed0a146-3d97-49c7-8d92-1b7f8f5aa612: Common # Common
     f85139d1-963d-4e84-b2e6-c0cb03058e56: Description # Description
+    fb1fe643-92b2-4ade-890a-cd30edbc5fad: Emoji # Emoji
 plugins:
   aws-s3:
     edition: standard

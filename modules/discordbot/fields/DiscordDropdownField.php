@@ -20,8 +20,9 @@ class DiscordDropdownField extends \craft\base\Field
     {
         $options = [
             '' => '---',
-            'emojis' => 'Emojis',
-            'roles'  => 'Roles'
+            'channels' => 'Channels',
+            'emojis'   => 'Emojis',
+            'roles'    => 'Roles'
         ];
 
         return Cp::selectFieldHtml([
@@ -37,6 +38,9 @@ class DiscordDropdownField extends \craft\base\Field
     protected function inputHtml(mixed $value, ?ElementInterface $element = null): string
     {
         switch ($this->dropdownType) {
+            case 'channels':
+                $options = $this->getChannels();
+                break;
             case 'emojis':
                 $options = $this->getEmojis();
                 break;
@@ -54,6 +58,15 @@ class DiscordDropdownField extends \craft\base\Field
             'value' => $value,
             'options' => $options
         ]);
+    }
+
+    private function getChannels()
+    {
+        $channels = DiscordBot::getInstance()->guild->channels();
+
+        $options = ['' => '---'] + $channels;
+
+        return $options;
     }
 
     private function getEmojis()

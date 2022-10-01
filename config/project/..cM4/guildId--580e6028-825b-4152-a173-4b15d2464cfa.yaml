@@ -1,0 +1,19 @@
+columnSuffix: vpeiljne
+contentColumnType: text
+fieldGroup: eed0a146-3d97-49c7-8d92-1b7f8f5aa612 # Common
+handle: guildId
+instructions: null
+name: 'Guild ID'
+searchable: false
+settings:
+  byteLimit: null
+  charLimit: null
+  code: false
+  columnType: null
+  initialRows: 4
+  multiline: false
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\PlainText

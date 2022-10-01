@@ -15,6 +15,24 @@ class GuildService
         $this->url = 'guilds/' . $this->guildId;
     }
 
+    public function channels()
+    {
+        $url = $this->url . '/channels';
+
+        $channels = DiscordBot::getInstance()->request->send($url);
+
+        $return = [];
+        foreach ($channels as $channel) {
+            if ($channel->type === 0) {
+                $return[$channel->id] = $channel->name;
+            }
+        }
+
+        asort($return);
+
+        return $return;
+    }
+
     public function emojis()
     {
         $url = $this->url . '/emojis';

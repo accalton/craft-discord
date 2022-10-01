@@ -1,5 +1,5 @@
 fieldLayouts:
-  6667a322-10b3-43af-85fc-b7564d666804:
+  004e423d-0037-4a4d-b6c6-b94fb12577ed:
     tabs:
       -
         elementCondition: null
@@ -26,7 +26,7 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: 756c1083-4699-41d6-8b96-789b19b176b5
+            uid: 8bf10546-21af-4c96-ae24-36a340e4b5b8
             userCondition: null
             warning: null
             width: 100
@@ -35,10 +35,10 @@ fieldLayouts:
             fieldUid: d0304d62-acc7-4a67-a47a-2cc2ef18f3a5 # Channel
             instructions: null
             label: null
-            required: true
+            required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 69766495-3235-478d-b62a-dfbe77bc4f22
+            uid: 27e785e9-904d-4700-aa22-87c161e0c789
             userCondition: null
             warning: null
             width: 100
@@ -50,7 +50,7 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: c66e10f1-a566-4754-ae4d-a87aafe147f1
+            uid: 724876be-989a-42ed-8dae-7a3f50238a6b
             userCondition: null
             warning: null
             width: 25
@@ -62,24 +62,36 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 3a4f66f0-eb3a-4d90-927c-c1a3c1784167
+            uid: f2754139-21fd-49cd-a660-25525016e3d3
             userCondition: null
             warning: null
             width: 75
           -
             elementCondition: null
-            fieldUid: 360a65e4-aa70-44a6-a829-4233645609cd # Roles / Emojis
+            fieldUid: 9c695049-9bc1-4830-bbcf-85fc63810f1a # Image
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 4842a0c7-6d14-409e-83c6-b8b4241735ba
+            uid: 6566c362-4c5c-4b04-9479-bd4fe97b8702
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 3e7e4f47-a727-495f-acfa-419271f133b7 # Vote Options
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 765bcfb7-3d4c-4b5a-8eda-6d290bc56aee
             userCondition: null
             warning: null
             width: 100
         name: Content
-        uid: 787d9d30-094b-4147-be28-671e2afcaed7
+        uid: 58fe90e7-a2da-42b0-824e-748cedbbbdd3
         userCondition: null
       -
         elementCondition: null
@@ -92,18 +104,18 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 755bdcfd-2cae-41a7-a254-8492702b1dc8
+            uid: ed381838-5185-42db-9315-297ddf81b8f0
             userCondition: null
             warning: null
             width: 100
-        name: 'Discord Info'
-        uid: 0431404d-45d1-416d-9aee-d46b46dfa538
+        name: Discord
+        uid: de334b60-d407-4540-b718-271b2bae291f
         userCondition: null
-handle: roleReaction
+handle: vote
 hasTitleField: true
-name: 'Role Reaction'
+name: Vote
 section: 24cd6242-b981-46a7-a383-94e20a10f825 # Messages
-sortOrder: 1
+sortOrder: 2
 titleFormat: null
 titleTranslationKeyFormat: null
 titleTranslationMethod: site
