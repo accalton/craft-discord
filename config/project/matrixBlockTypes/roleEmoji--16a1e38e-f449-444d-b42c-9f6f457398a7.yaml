@@ -41,9 +41,11 @@ fields:
     instructions: null
     name: Emoji
     searchable: false
+    settings:
+      dropdownType: emojis
     translationKeyFormat: null
     translationMethod: none
-    type: discordbot\fields\EmojiField
+    type: discordbot\fields\DiscordDropdownField
   dcfa73be-67a8-492b-9a0b-733ecaaa5ab0: # Role
     columnSuffix: lqqconwb
     contentColumnType: string
@@ -52,9 +54,11 @@ fields:
     instructions: null
     name: Role
     searchable: false
+    settings:
+      dropdownType: roles
     translationKeyFormat: null
     translationMethod: none
-    type: discordbot\fields\RoleField
+    type: discordbot\fields\DiscordDropdownField
 handle: roleEmoji
 name: 'Role / Emoji'
 sortOrder: 1

@@ -36,8 +36,6 @@ class DiscordBot extends Module
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
             function (RegisterComponentTypesEvent $event) {
-                $event->types[] = \discordbot\fields\EmojiField::class;
-                $event->types[] = \discordbot\fields\RoleField::class;
                 $event->types[] = \discordbot\fields\DiscordDropdownField::class;
             }
         );
