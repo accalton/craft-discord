@@ -8,3 +8,6 @@ hooks:
   AfterInstall:
     - location: CodeDeploy/Deploy.sh
       runas: root
+  ApplicationStart:
+    - location: CodeDeploy/Run.sh
+      runas: root

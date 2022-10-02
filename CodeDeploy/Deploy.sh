@@ -5,4 +5,3 @@ npm install
 php craft project-config/apply
 npm run build
 chown -R apache:apache ./
-php craft discordbot/bot
