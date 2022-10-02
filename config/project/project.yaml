@@ -1,4 +1,22 @@
-dateModified: 1664598663
+dateModified: 1664753015
+elementSources:
+  craft\elements\Entry:
+    -
+      key: '*'
+      type: native
+    -
+      heading: Channels
+      type: heading
+    -
+      key: 'section:a1ee1a25-4491-47e7-ae47-0873ce02b262' # Guilds
+      type: native
+    -
+      disabled: false
+      key: 'section:24cd6242-b981-46a7-a383-94e20a10f825' # Messages
+      tableAttributes:
+        - postDate
+        - type
+      type: native
 email:
   fromEmail: accalton@gmail.com
   fromName: 'Craft Discord'

@@ -38,6 +38,7 @@ class BotController extends Controller
             $this->discord->on(Event::MESSAGE_REACTION_ADD, function(MessageReaction $reaction, Discord $discord) {
                 if ($reaction->user_id !== $discord->user->id) {
                     DiscordBot::getInstance()->roles->set($reaction, 'add');
+                    DiscordBot::getInstance()->reactions->validate($reaction);
                 }
             });
 

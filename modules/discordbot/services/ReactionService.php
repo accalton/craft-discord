@@ -2,8 +2,10 @@
 
 namespace discordbot\services;
 
+use craft\elements\Entry;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
+use Discord\Parts\WebSockets\MessageReaction;
 use discordbot\DiscordBot;
 
 class ReactionService
@@ -19,6 +21,35 @@ class ReactionService
                 } else {
                     $message->deleteReaction(Message::REACT_DELETE_ME, $emoji);
                 }
+            }
+        }
+    }
+
+    public function validate(MessageReaction $reaction)
+    {
+        $entry = Entry::find()
+            ->messageId($reaction->message_id)
+            ->one();
+
+        if ($entry) {
+            switch ($entry->type) {
+                case 'roleReaction':
+                    $blocks = $entry->rolesEmojis;
+                    break;
+                case 'vote':
+                    $blocks = $entry->voteOptions;
+                    break;
+            }
+
+            $valid = false;
+            foreach ($blocks as $block) {
+                if ($reaction->emoji->id && strpos($block->emoji, $reaction->emoji->id) !== false) {
+                    $valid = true;
+                }
+            }
+
+            if (!$valid) {
+                $reaction->delete();
             }
         }
     }

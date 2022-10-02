@@ -3,6 +3,7 @@
 namespace discordbot\services;
 
 use Craft;
+use GuzzleHttp\Exception\ClientException;
 
 class RequestService
 {
@@ -27,7 +28,7 @@ class RequestService
             $contents = json_decode($response->getBody()->getContents());
 
             return $contents;
-        } catch (Exception $e) {
+        } catch (ClientException $e) {
             // Log the error
             // var_dump($e->getMessage());
         }

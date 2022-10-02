@@ -3,21 +3,21 @@
 namespace discordbot\services;
 
 use craft\elements\Entry;
+use Discord\Parts\WebSockets\MessageReaction;
 use discordbot\DiscordBot;
 
 class RoleService
 {
-    public function set($reaction, $action)
+    public function set(MessageReaction $reaction, $action)
     {
         $entry = Entry::find()
             ->messageId($reaction->message_id)
+            ->type('roleReaction')
             ->one();
 
-        $valid = false;
         if ($entry) {
             foreach ($entry->rolesEmojis as $roleEmoji) {
                 if ($reaction->emoji->id && strpos($roleEmoji->emoji, $reaction->emoji->id) !== false) {
-                    $valid = true;
                     $role = $this->getRole($roleEmoji->role);
                     switch ($action) {
                         case 'add':
@@ -29,10 +29,6 @@ class RoleService
                     }
                 }
             }
-        }
-
-        if (!$valid) {
-            $reaction->delete();
         }
     }
 
