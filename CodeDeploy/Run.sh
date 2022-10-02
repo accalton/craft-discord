@@ -1,1 +1,2 @@
-sudo -u apache php craft discordbot/bot > /dev/null 2>&1
+#!/bin/bash
+php craft discordbot/bot > /dev/null 2>&1

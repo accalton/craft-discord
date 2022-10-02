@@ -10,4 +10,4 @@ hooks:
       runas: root
   ApplicationStart:
     - location: CodeDeploy/Run.sh
-      runas: root
+      runas: apache
