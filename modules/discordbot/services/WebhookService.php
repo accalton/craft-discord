@@ -18,7 +18,7 @@ class WebhookService
         return $webhook;
     }
 
-    public function fetch($channelId)
+    public function channel($channelId)
     {
         $url = 'channels/' . $channelId . '/webhooks';
         
@@ -29,5 +29,12 @@ class WebhookService
         } else {
             return $webhooks[0];
         }
+    }
+
+    public function id($webhookId)
+    {
+        $url = 'webhooks/' . $webhookId;
+
+        return DiscordBot::getInstance()->request->send($url);
     }
 }

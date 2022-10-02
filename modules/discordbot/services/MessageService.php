@@ -39,7 +39,7 @@ class MessageService
 
     private function getWebhook(Entry $entry)
     {
-        $webhook = DiscordBot::getInstance()->webhooks->fetch($entry->channel);
+        $webhook = DiscordBot::getInstance()->webhooks->channel($entry->channel);
 
         $this->webhookId = $webhook->id;
         $this->webhookToken = $webhook->token;
@@ -51,7 +51,7 @@ class MessageService
 
         foreach ($entry->rolesEmojis as $roleEmoji) {
             $description .= PHP_EOL;
-            $description .= $roleEmoji->emoji . ' : ' . $roleEmoji->role;
+            $description .= $roleEmoji->emoji . ' ' . $roleEmoji->role;
         }
 
         $color = $entry->color ? hexdec($entry->color->hex) : hexdec('#ffffff');

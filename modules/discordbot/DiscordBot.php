@@ -28,7 +28,9 @@ class DiscordBot extends Module
         $this->setComponents([
             'guild'     => \discordbot\services\GuildService::class,
             'messages'  => \discordbot\services\MessageService::class,
+            'reactions' => \discordbot\services\ReactionService::class,
             'request'   => \discordbot\services\RequestService::class,
+            'roles'     => \discordbot\services\RoleService::class,
             'webhooks'  => \discordbot\services\WebhookService::class,
         ]);
 
