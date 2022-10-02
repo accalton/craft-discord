@@ -1,6 +1,8 @@
 #!/bin/bash
 cd /var/www/html
 composer install
-php craft project-config/apply
 npm install
+php craft project-config/apply
 npm run build
+chown -R apache:apache ./
+php craft discordbot/bot

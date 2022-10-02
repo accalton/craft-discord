@@ -5,9 +5,9 @@ namespace discordbot\console\controllers;
 use craft\console\Controller;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
-use Discord\Parts\Websockets\MessageReaction;
-use Discord\Websockets\Event;
-use Discord\Websockets\Intents;
+use Discord\Parts\WebSockets\MessageReaction;
+use Discord\WebSockets\Event;
+use Discord\WebSockets\Intents;
 use discordbot\DiscordBot;
 
 class BotController extends Controller
