@@ -1,0 +1,12 @@
+columnSuffix: vpeiljne
+contentColumnType: string
+fieldGroup: eed0a146-3d97-49c7-8d92-1b7f8f5aa612 # Common
+handle: guild
+instructions: null
+name: Guild
+searchable: false
+settings:
+  dropdownType: guilds
+translationKeyFormat: null
+translationMethod: none
+type: discordbot\fields\DiscordDropdownField

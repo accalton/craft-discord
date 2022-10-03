@@ -32,16 +32,28 @@ fieldLayouts:
             width: 100
           -
             elementCondition: null
+            fieldUid: 580e6028-825b-4152-a173-4b15d2464cfa # Guild
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 53e402cf-33b0-4ef1-9a15-0d5f1ef3daec
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
             fieldUid: d0304d62-acc7-4a67-a47a-2cc2ef18f3a5 # Channel
             instructions: null
             label: null
-            required: false
+            required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 27e785e9-904d-4700-aa22-87c161e0c789
             userCondition: null
             warning: null
-            width: 100
+            width: 50
           -
             elementCondition: null
             fieldUid: 834c084a-22a4-4349-bb98-09b79287b031 # Color

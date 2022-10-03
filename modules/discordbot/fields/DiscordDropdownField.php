@@ -22,6 +22,7 @@ class DiscordDropdownField extends \craft\base\Field
             '' => '---',
             'channels' => 'Channels',
             'emojis'   => 'Emojis',
+            'guilds'   => 'Guilds',
             'roles'    => 'Roles'
         ];
 
@@ -44,6 +45,9 @@ class DiscordDropdownField extends \craft\base\Field
             case 'emojis':
                 $options = $this->getEmojis();
                 break;
+            case 'guilds':
+                $options = $this->getGuilds();
+                break;
             case 'roles':
                 $options = $this->getRoles();
                 break;
@@ -62,9 +66,9 @@ class DiscordDropdownField extends \craft\base\Field
 
     private function getChannels()
     {
-        $channels = DiscordBot::getInstance()->guild->channels();
+        // $channels = DiscordBot::getInstance()->guild->channels();
 
-        $options = ['' => '---'] + $channels;
+        $options = ['' => '---']; // + $channels;
 
         return $options;
     }
@@ -73,9 +77,21 @@ class DiscordDropdownField extends \craft\base\Field
     {
         $emojis = DiscordBot::getInstance()->guild->emojis();
 
-        $options = [];
+        $options = ['' => '---'];
         foreach ($emojis as $id => $name) {
             $options['<:' . $name . ':' . $id . '>'] = $name;
+        }
+
+        return $options;
+    }
+
+    private function getGuilds()
+    {
+        $guilds = DiscordBot::getInstance()->member->guilds();
+
+        $options = ['' => '---'];
+        foreach ($guilds as $guild) {
+            $options[$guild->id] = $guild->name;
         }
 
         return $options;
@@ -85,7 +101,7 @@ class DiscordDropdownField extends \craft\base\Field
     {
         $roles = DiscordBot::getInstance()->guild->roles();
 
-        $options = [];
+        $options = ['' => '---'];
         foreach ($roles as $id => $role) {
             $options[$role] = $role;
         }

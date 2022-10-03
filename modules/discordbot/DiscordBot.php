@@ -6,8 +6,10 @@ use Craft;
 use craft\elements\Entry;
 use craft\events\ModelEvent;
 use craft\events\RegisterComponentTypesEvent;
+use craft\events\TemplateEvent;
 use craft\helpers\ElementHelper;
 use craft\services\Fields;
+use craft\web\View;
 use yii\base\Event;
 use yii\base\Module;
 
@@ -27,12 +29,23 @@ class DiscordBot extends Module
 
         $this->setComponents([
             'guild'     => \discordbot\services\GuildService::class,
+            'member'    => \discordbot\services\MemberService::class,
             'messages'  => \discordbot\services\MessageService::class,
             'reactions' => \discordbot\services\ReactionService::class,
             'request'   => \discordbot\services\RequestService::class,
             'roles'     => \discordbot\services\RoleService::class,
             'webhooks'  => \discordbot\services\WebhookService::class,
         ]);
+
+        Event::on(
+            View::class,
+            View::EVENT_BEFORE_RENDER_TEMPLATE,
+            function (TemplateEvent $event) {
+                if (Craft::$app->getRequest()->isCpRequest) {
+                    Craft::$app->getView()->registerAssetBundle(DiscordBotBundle::class);
+                }
+            }
+        );
 
         Event::on(
             Fields::class,
