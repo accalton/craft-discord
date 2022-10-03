@@ -40,7 +40,7 @@ class DiscordDropdownField extends \craft\base\Field
     {
         switch ($this->dropdownType) {
             case 'channels':
-                $options = $this->getChannels();
+                $options = $value ? $this->getChannels() : ['' => '---'];
                 break;
             case 'emojis':
                 $options = $this->getEmojis();
@@ -66,9 +66,9 @@ class DiscordDropdownField extends \craft\base\Field
 
     private function getChannels()
     {
-        // $channels = DiscordBot::getInstance()->guild->channels();
+        $channels = DiscordBot::getInstance()->guild->channels();
 
-        $options = ['' => '---']; // + $channels;
+        $options = ['' => '---'] + $channels;
 
         return $options;
     }

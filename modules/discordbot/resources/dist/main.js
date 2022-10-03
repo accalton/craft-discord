@@ -4820,28 +4820,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 
-var guildDropdown = document.getElementById('fields-guild');
-var channelDropdown = document.getElementById('fields-channel');
-guildDropdown.addEventListener('change', function (e) {
-  var guildId = e.target.value;
+document.addEventListener('change', function (e) {
+  if (e.target && e.target.id == 'fields-guild') {
+    var guildId = e.target.value;
+    var guildDropdown = document.getElementById('fields-guild');
+    var channelDropdown = document.getElementById('fields-channel');
 
-  if (guildId) {
-    axios__WEBPACK_IMPORTED_MODULE_0___default().get('/admin/actions/discordbot/guild/channels', {
-      params: {
-        'guildId': guildId
-      }
-    }).then(function (response) {
-      var channels = response.data;
-      var options = '<option value="">---</option>';
+    if (guildId) {
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get('/admin/actions/discordbot/guild/channels', {
+        params: {
+          'guildId': guildId
+        }
+      }).then(function (response) {
+        var channels = response.data;
+        var options = '<option value="">---</option>';
 
-      for (var channel in channels) {
-        options += '<option value="' + channel + '">' + channels[channel] + '</option>';
-      }
+        for (var channel in channels) {
+          options += '<option value="' + channel + '">' + channels[channel] + '</option>';
+        }
 
-      channelDropdown.innerHTML = options;
-    });
-  } else {
-    channelDropdown.innerHTML = '<option value="">---</option>';
+        channelDropdown.innerHTML = options;
+      });
+    } else {
+      channelDropdown.innerHTML = '<option value="">---</option>';
+    }
   }
 });
 })();
