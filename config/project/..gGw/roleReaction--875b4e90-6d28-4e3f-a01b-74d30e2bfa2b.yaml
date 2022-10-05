@@ -1,5 +1,5 @@
 fieldLayouts:
-  004e423d-0037-4a4d-b6c6-b94fb12577ed:
+  6667a322-10b3-43af-85fc-b7564d666804:
     tabs:
       -
         elementCondition: null
@@ -26,7 +26,7 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: 8bf10546-21af-4c96-ae24-36a340e4b5b8
+            uid: 756c1083-4699-41d6-8b96-789b19b176b5
             userCondition: null
             warning: null
             width: 100
@@ -38,7 +38,7 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 724876be-989a-42ed-8dae-7a3f50238a6b
+            uid: c66e10f1-a566-4754-ae4d-a87aafe147f1
             userCondition: null
             warning: null
             width: 25
@@ -50,36 +50,12 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: f2754139-21fd-49cd-a660-25525016e3d3
+            uid: 3a4f66f0-eb3a-4d90-927c-c1a3c1784167
             userCondition: null
             warning: null
             width: 75
-          -
-            elementCondition: null
-            fieldUid: 9c695049-9bc1-4830-bbcf-85fc63810f1a # Image
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 6566c362-4c5c-4b04-9479-bd4fe97b8702
-            userCondition: null
-            warning: null
-            width: 100
-          -
-            elementCondition: null
-            fieldUid: 3e7e4f47-a727-495f-acfa-419271f133b7 # Vote Options
-            instructions: null
-            label: null
-            required: false
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 765bcfb7-3d4c-4b5a-8eda-6d290bc56aee
-            userCondition: null
-            warning: null
-            width: 100
         name: Content
-        uid: 58fe90e7-a2da-42b0-824e-748cedbbbdd3
+        uid: 787d9d30-094b-4147-be28-671e2afcaed7
         userCondition: null
       -
         elementCondition: null
@@ -92,18 +68,18 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: ed381838-5185-42db-9315-297ddf81b8f0
+            uid: 755bdcfd-2cae-41a7-a254-8492702b1dc8
             userCondition: null
             warning: null
             width: 100
-        name: Discord
-        uid: de334b60-d407-4540-b718-271b2bae291f
+        name: 'Discord Info'
+        uid: 0431404d-45d1-416d-9aee-d46b46dfa538
         userCondition: null
-handle: vote
+handle: roleReaction
 hasTitleField: true
-name: Vote
+name: 'Role Reaction'
 section: 24cd6242-b981-46a7-a383-94e20a10f825 # Messages
-sortOrder: 2
+sortOrder: 1
 titleFormat: null
 titleTranslationKeyFormat: null
 titleTranslationMethod: site

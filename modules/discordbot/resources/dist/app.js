@@ -1,5828 +1,2512 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/@algolia/events/events.js":
+/***/ "./modules/discordbot/resources/components sync recursive \\.(\\/index)?jsx$":
+/*!************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/ sync \.(\/index)?jsx$ ***!
+  \************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var map = {
+	"./Discord/Fields/ColorPicker.jsx": "./modules/discordbot/resources/components/Discord/Fields/ColorPicker.jsx",
+	"./Discord/Fields/Matrix.jsx": "./modules/discordbot/resources/components/Discord/Fields/Matrix.jsx",
+	"./Discord/Fields/Select.jsx": "./modules/discordbot/resources/components/Discord/Fields/Select.jsx",
+	"./Discord/Fields/TextArea.jsx": "./modules/discordbot/resources/components/Discord/Fields/TextArea.jsx",
+	"./Discord/Fields/TextInput.jsx": "./modules/discordbot/resources/components/Discord/Fields/TextInput.jsx",
+	"./Discord/config/discord-context.jsx": "./modules/discordbot/resources/components/Discord/config/discord-context.jsx",
+	"./Discord/index.jsx": "./modules/discordbot/resources/components/Discord/index.jsx",
+	"./Discord/molecules/RoleEmoji.jsx": "./modules/discordbot/resources/components/Discord/molecules/RoleEmoji.jsx"
+};
+
+
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
+function webpackContextResolve(req) {
+	if(!__webpack_require__.o(map, req)) {
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return map[req];
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = "./modules/discordbot/resources/components sync recursive \\.(\\/index)?jsx$";
+
+/***/ }),
+
+/***/ "./node_modules/axios/index.js":
+/*!*************************************!*\
+  !*** ./node_modules/axios/index.js ***!
+  \*************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(/*! ./lib/axios */ "./node_modules/axios/lib/axios.js");
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/adapters/xhr.js":
 /*!************************************************!*\
-  !*** ./node_modules/@algolia/events/events.js ***!
+  !*** ./node_modules/axios/lib/adapters/xhr.js ***!
   \************************************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
+"use strict";
 
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
 
-// Backwards-compat with node 0.10.x
-// EventEmitter.EventEmitter = EventEmitter;
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var settle = __webpack_require__(/*! ./../core/settle */ "./node_modules/axios/lib/core/settle.js");
+var cookies = __webpack_require__(/*! ./../helpers/cookies */ "./node_modules/axios/lib/helpers/cookies.js");
+var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
+var buildFullPath = __webpack_require__(/*! ../core/buildFullPath */ "./node_modules/axios/lib/core/buildFullPath.js");
+var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ "./node_modules/axios/lib/helpers/parseHeaders.js");
+var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ "./node_modules/axios/lib/helpers/isURLSameOrigin.js");
+var transitionalDefaults = __webpack_require__(/*! ../defaults/transitional */ "./node_modules/axios/lib/defaults/transitional.js");
+var AxiosError = __webpack_require__(/*! ../core/AxiosError */ "./node_modules/axios/lib/core/AxiosError.js");
+var CanceledError = __webpack_require__(/*! ../cancel/CanceledError */ "./node_modules/axios/lib/cancel/CanceledError.js");
+var parseProtocol = __webpack_require__(/*! ../helpers/parseProtocol */ "./node_modules/axios/lib/helpers/parseProtocol.js");
 
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+    var responseType = config.responseType;
+    var onCanceled;
+    function done() {
+      if (config.cancelToken) {
+        config.cancelToken.unsubscribe(onCanceled);
+      }
 
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
+      if (config.signal) {
+        config.signal.removeEventListener('abort', onCanceled);
       }
     }
-  }
 
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
+    if (utils.isFormData(requestData) && utils.isStandardBrowserEnv()) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
     }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
 
-  return true;
-};
+    var request = new XMLHttpRequest();
 
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
 
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
+    var fullPath = buildFullPath(config.baseURL, config.url);
 
-  if (!this._events)
-    this._events = {};
+    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
 
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
+    function onloadend() {
+      if (!request) {
+        return;
+      }
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !responseType || responseType === 'text' ||  responseType === 'json' ?
+        request.responseText : request.response;
+      var response = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
 
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
+      settle(function _resolve(value) {
+        resolve(value);
+        done();
+      }, function _reject(err) {
+        reject(err);
+        done();
+      }, response);
+
+      // Clean up request
+      request = null;
+    }
+
+    if ('onloadend' in request) {
+      // Use onloadend if available
+      request.onloadend = onloadend;
     } else {
-      m = EventEmitter.defaultMaxListeners;
+      // Listen for ready state to emulate onloadend
+      request.onreadystatechange = function handleLoad() {
+        if (!request || request.readyState !== 4) {
+          return;
+        }
+
+        // The request errored out and we didn't get a response, this will be
+        // handled by onerror instead
+        // With one exception: request that using file: protocol, most browsers
+        // will return status as 0 even though it's a successful request
+        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+          return;
+        }
+        // readystate handler is calling before onerror or ontimeout handlers,
+        // so we should call onloadend on the next 'tick'
+        setTimeout(onloadend);
+      };
     }
 
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
+    // Handle browser request cancellation (as opposed to a manual cancellation)
+    request.onabort = function handleAbort() {
+      if (!request) {
+        return;
+      }
+
+      reject(new AxiosError('Request aborted', AxiosError.ECONNABORTED, config, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      var timeoutErrorMessage = config.timeout ? 'timeout of ' + config.timeout + 'ms exceeded' : 'timeout exceeded';
+      var transitional = config.transitional || transitionalDefaults;
+      if (config.timeoutErrorMessage) {
+        timeoutErrorMessage = config.timeoutErrorMessage;
+      }
+      reject(new AxiosError(
+        timeoutErrorMessage,
+        transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
+        config,
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
+        cookies.read(config.xsrfCookieName) :
+        undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
       }
     }
-  }
 
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
     }
-  }
 
-  g.listener = listener;
-  this.on(type, g);
+    // Add withCredentials to request if needed
+    if (!utils.isUndefined(config.withCredentials)) {
+      request.withCredentials = !!config.withCredentials;
+    }
 
-  return this;
-};
+    // Add responseType to request if needed
+    if (responseType && responseType !== 'json') {
+      request.responseType = config.responseType;
+    }
 
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
 
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
 
-  if (!this._events || !this._events[type])
-    return this;
+    if (config.cancelToken || config.signal) {
+      // Handle cancellation
+      // eslint-disable-next-line func-names
+      onCanceled = function(cancel) {
+        if (!request) {
+          return;
+        }
+        reject(!cancel || (cancel && cancel.type) ? new CanceledError() : cancel);
+        request.abort();
+        request = null;
+      };
 
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
+      config.cancelToken && config.cancelToken.subscribe(onCanceled);
+      if (config.signal) {
+        config.signal.aborted ? onCanceled() : config.signal.addEventListener('abort', onCanceled);
       }
     }
 
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
+    if (!requestData) {
+      requestData = null;
     }
 
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
+    var protocol = parseProtocol(fullPath);
 
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
+    if (protocol && [ 'http', 'https', 'file' ].indexOf(protocol) === -1) {
+      reject(new AxiosError('Unsupported protocol ' + protocol + ':', AxiosError.ERR_BAD_REQUEST, config));
+      return;
     }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
 
-  listeners = this._events[type];
 
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
+    // Send the request
+    request.send(requestData);
+  });
 };
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
 
 
 /***/ }),
 
-/***/ "./node_modules/algoliasearch-helper/index.js":
+/***/ "./node_modules/axios/lib/axios.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/axios.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./utils */ "./node_modules/axios/lib/utils.js");
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+var Axios = __webpack_require__(/*! ./core/Axios */ "./node_modules/axios/lib/core/Axios.js");
+var mergeConfig = __webpack_require__(/*! ./core/mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
+var defaults = __webpack_require__(/*! ./defaults */ "./node_modules/axios/lib/defaults/index.js");
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  // Factory for creating new instances
+  instance.create = function create(instanceConfig) {
+    return createInstance(mergeConfig(defaultConfig, instanceConfig));
+  };
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = createInstance(defaults);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Expose Cancel & CancelToken
+axios.CanceledError = __webpack_require__(/*! ./cancel/CanceledError */ "./node_modules/axios/lib/cancel/CanceledError.js");
+axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ "./node_modules/axios/lib/cancel/CancelToken.js");
+axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
+axios.VERSION = (__webpack_require__(/*! ./env/data */ "./node_modules/axios/lib/env/data.js").version);
+axios.toFormData = __webpack_require__(/*! ./helpers/toFormData */ "./node_modules/axios/lib/helpers/toFormData.js");
+
+// Expose AxiosError class
+axios.AxiosError = __webpack_require__(/*! ../lib/core/AxiosError */ "./node_modules/axios/lib/core/AxiosError.js");
+
+// alias for CanceledError for backward compatibility
+axios.Cancel = axios.CanceledError;
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = __webpack_require__(/*! ./helpers/spread */ "./node_modules/axios/lib/helpers/spread.js");
+
+// Expose isAxiosError
+axios.isAxiosError = __webpack_require__(/*! ./helpers/isAxiosError */ "./node_modules/axios/lib/helpers/isAxiosError.js");
+
+module.exports = axios;
+
+// Allow use of default import syntax in TypeScript
+module.exports["default"] = axios;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/CancelToken.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CancelToken.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var CanceledError = __webpack_require__(/*! ./CanceledError */ "./node_modules/axios/lib/cancel/CanceledError.js");
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
+  }
+
+  var resolvePromise;
+
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+
+  var token = this;
+
+  // eslint-disable-next-line func-names
+  this.promise.then(function(cancel) {
+    if (!token._listeners) return;
+
+    var i;
+    var l = token._listeners.length;
+
+    for (i = 0; i < l; i++) {
+      token._listeners[i](cancel);
+    }
+    token._listeners = null;
+  });
+
+  // eslint-disable-next-line func-names
+  this.promise.then = function(onfulfilled) {
+    var _resolve;
+    // eslint-disable-next-line func-names
+    var promise = new Promise(function(resolve) {
+      token.subscribe(resolve);
+      _resolve = resolve;
+    }).then(onfulfilled);
+
+    promise.cancel = function reject() {
+      token.unsubscribe(_resolve);
+    };
+
+    return promise;
+  };
+
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new CanceledError(message);
+    resolvePromise(token.reason);
+  });
+}
+
+/**
+ * Throws a `CanceledError` if cancellation has been requested.
+ */
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+
+/**
+ * Subscribe to the cancel signal
+ */
+
+CancelToken.prototype.subscribe = function subscribe(listener) {
+  if (this.reason) {
+    listener(this.reason);
+    return;
+  }
+
+  if (this._listeners) {
+    this._listeners.push(listener);
+  } else {
+    this._listeners = [listener];
+  }
+};
+
+/**
+ * Unsubscribe from the cancel signal
+ */
+
+CancelToken.prototype.unsubscribe = function unsubscribe(listener) {
+  if (!this._listeners) {
+    return;
+  }
+  var index = this._listeners.indexOf(listener);
+  if (index !== -1) {
+    this._listeners.splice(index, 1);
+  }
+};
+
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/CanceledError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CanceledError.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var AxiosError = __webpack_require__(/*! ../core/AxiosError */ "./node_modules/axios/lib/core/AxiosError.js");
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+/**
+ * A `CanceledError` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function CanceledError(message) {
+  // eslint-disable-next-line no-eq-null,eqeqeq
+  AxiosError.call(this, message == null ? 'canceled' : message, AxiosError.ERR_CANCELED);
+  this.name = 'CanceledError';
+}
+
+utils.inherits(CanceledError, AxiosError, {
+  __CANCEL__: true
+});
+
+module.exports = CanceledError;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/cancel/isCancel.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
+  \***************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/Axios.js":
+/*!**********************************************!*\
+  !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var buildURL = __webpack_require__(/*! ../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
+var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ "./node_modules/axios/lib/core/InterceptorManager.js");
+var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ "./node_modules/axios/lib/core/dispatchRequest.js");
+var mergeConfig = __webpack_require__(/*! ./mergeConfig */ "./node_modules/axios/lib/core/mergeConfig.js");
+var buildFullPath = __webpack_require__(/*! ./buildFullPath */ "./node_modules/axios/lib/core/buildFullPath.js");
+var validator = __webpack_require__(/*! ../helpers/validator */ "./node_modules/axios/lib/helpers/validator.js");
+
+var validators = validator.validators;
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(configOrUrl, config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof configOrUrl === 'string') {
+    config = config || {};
+    config.url = configOrUrl;
+  } else {
+    config = configOrUrl || {};
+  }
+
+  config = mergeConfig(this.defaults, config);
+
+  // Set config.method
+  if (config.method) {
+    config.method = config.method.toLowerCase();
+  } else if (this.defaults.method) {
+    config.method = this.defaults.method.toLowerCase();
+  } else {
+    config.method = 'get';
+  }
+
+  var transitional = config.transitional;
+
+  if (transitional !== undefined) {
+    validator.assertOptions(transitional, {
+      silentJSONParsing: validators.transitional(validators.boolean),
+      forcedJSONParsing: validators.transitional(validators.boolean),
+      clarifyTimeoutError: validators.transitional(validators.boolean)
+    }, false);
+  }
+
+  // filter out skipped interceptors
+  var requestInterceptorChain = [];
+  var synchronousRequestInterceptors = true;
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
+      return;
+    }
+
+    synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
+
+    requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  var responseInterceptorChain = [];
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  var promise;
+
+  if (!synchronousRequestInterceptors) {
+    var chain = [dispatchRequest, undefined];
+
+    Array.prototype.unshift.apply(chain, requestInterceptorChain);
+    chain = chain.concat(responseInterceptorChain);
+
+    promise = Promise.resolve(config);
+    while (chain.length) {
+      promise = promise.then(chain.shift(), chain.shift());
+    }
+
+    return promise;
+  }
+
+
+  var newConfig = config;
+  while (requestInterceptorChain.length) {
+    var onFulfilled = requestInterceptorChain.shift();
+    var onRejected = requestInterceptorChain.shift();
+    try {
+      newConfig = onFulfilled(newConfig);
+    } catch (error) {
+      onRejected(error);
+      break;
+    }
+  }
+
+  try {
+    promise = dispatchRequest(newConfig);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  while (responseInterceptorChain.length) {
+    promise = promise.then(responseInterceptorChain.shift(), responseInterceptorChain.shift());
+  }
+
+  return promise;
+};
+
+Axios.prototype.getUri = function getUri(config) {
+  config = mergeConfig(this.defaults, config);
+  var fullPath = buildFullPath(config.baseURL, config.url);
+  return buildURL(fullPath, config.params, config.paramsSerializer);
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(mergeConfig(config || {}, {
+      method: method,
+      url: url,
+      data: (config || {}).data
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+
+  function generateHTTPMethod(isForm) {
+    return function httpMethod(url, data, config) {
+      return this.request(mergeConfig(config || {}, {
+        method: method,
+        headers: isForm ? {
+          'Content-Type': 'multipart/form-data'
+        } : {},
+        url: url,
+        data: data
+      }));
+    };
+  }
+
+  Axios.prototype[method] = generateHTTPMethod();
+
+  Axios.prototype[method + 'Form'] = generateHTTPMethod(true);
+});
+
+module.exports = Axios;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/AxiosError.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/core/AxiosError.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [config] The config.
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+function AxiosError(message, code, config, request, response) {
+  Error.call(this);
+  this.message = message;
+  this.name = 'AxiosError';
+  code && (this.code = code);
+  config && (this.config = config);
+  request && (this.request = request);
+  response && (this.response = response);
+}
+
+utils.inherits(AxiosError, Error, {
+  toJSON: function toJSON() {
+    return {
+      // Standard
+      message: this.message,
+      name: this.name,
+      // Microsoft
+      description: this.description,
+      number: this.number,
+      // Mozilla
+      fileName: this.fileName,
+      lineNumber: this.lineNumber,
+      columnNumber: this.columnNumber,
+      stack: this.stack,
+      // Axios
+      config: this.config,
+      code: this.code,
+      status: this.response && this.response.status ? this.response.status : null
+    };
+  }
+});
+
+var prototype = AxiosError.prototype;
+var descriptors = {};
+
+[
+  'ERR_BAD_OPTION_VALUE',
+  'ERR_BAD_OPTION',
+  'ECONNABORTED',
+  'ETIMEDOUT',
+  'ERR_NETWORK',
+  'ERR_FR_TOO_MANY_REDIRECTS',
+  'ERR_DEPRECATED',
+  'ERR_BAD_RESPONSE',
+  'ERR_BAD_REQUEST',
+  'ERR_CANCELED'
+// eslint-disable-next-line func-names
+].forEach(function(code) {
+  descriptors[code] = {value: code};
+});
+
+Object.defineProperties(AxiosError, descriptors);
+Object.defineProperty(prototype, 'isAxiosError', {value: true});
+
+// eslint-disable-next-line func-names
+AxiosError.from = function(error, code, config, request, response, customProps) {
+  var axiosError = Object.create(prototype);
+
+  utils.toFlatObject(error, axiosError, function filter(obj) {
+    return obj !== Error.prototype;
+  });
+
+  AxiosError.call(axiosError, error.message, code, config, request, response);
+
+  axiosError.name = error.name;
+
+  customProps && Object.assign(axiosError, customProps);
+
+  return axiosError;
+};
+
+module.exports = AxiosError;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/InterceptorManager.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/core/InterceptorManager.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected, options) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected,
+    synchronous: options ? options.synchronous : false,
+    runWhen: options ? options.runWhen : null
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/buildFullPath.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/buildFullPath.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var isAbsoluteURL = __webpack_require__(/*! ../helpers/isAbsoluteURL */ "./node_modules/axios/lib/helpers/isAbsoluteURL.js");
+var combineURLs = __webpack_require__(/*! ../helpers/combineURLs */ "./node_modules/axios/lib/helpers/combineURLs.js");
+
+/**
+ * Creates a new URL by combining the baseURL with the requestedURL,
+ * only when the requestedURL is not already an absolute URL.
+ * If the requestURL is absolute, this function returns the requestedURL untouched.
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} requestedURL Absolute or relative URL to combine
+ * @returns {string} The combined full path
+ */
+module.exports = function buildFullPath(baseURL, requestedURL) {
+  if (baseURL && !isAbsoluteURL(requestedURL)) {
+    return combineURLs(baseURL, requestedURL);
+  }
+  return requestedURL;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/dispatchRequest.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var transformData = __webpack_require__(/*! ./transformData */ "./node_modules/axios/lib/core/transformData.js");
+var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./node_modules/axios/lib/cancel/isCancel.js");
+var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults/index.js");
+var CanceledError = __webpack_require__(/*! ../cancel/CanceledError */ "./node_modules/axios/lib/cancel/CanceledError.js");
+
+/**
+ * Throws a `CanceledError` if cancellation has been requested.
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+
+  if (config.signal && config.signal.aborted) {
+    throw new CanceledError();
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData.call(
+    config,
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter = config.adapter || defaults.adapter;
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData.call(
+      config,
+      response.data,
+      response.headers,
+      config.transformResponse
+    );
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData.call(
+          config,
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse
+        );
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/mergeConfig.js":
 /*!****************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/index.js ***!
+  !*** ./node_modules/axios/lib/core/mergeConfig.js ***!
   \****************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var AlgoliaSearchHelper = __webpack_require__(/*! ./src/algoliasearch.helper */ "./node_modules/algoliasearch-helper/src/algoliasearch.helper.js");
-
-var SearchParameters = __webpack_require__(/*! ./src/SearchParameters */ "./node_modules/algoliasearch-helper/src/SearchParameters/index.js");
-var SearchResults = __webpack_require__(/*! ./src/SearchResults */ "./node_modules/algoliasearch-helper/src/SearchResults/index.js");
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
 
 /**
- * The algoliasearchHelper module is the function that will let its
- * contains everything needed to use the Algoliasearch
- * Helper. It is a also a function that instanciate the helper.
- * To use the helper, you also need the Algolia JS client v3.
- * @example
- * //using the UMD build
- * var client = algoliasearch('latency', '6be0576ff61c053d5f9a3225e2a90f76');
- * var helper = algoliasearchHelper(client, 'bestbuy', {
- *   facets: ['shipping'],
- *   disjunctiveFacets: ['category']
- * });
- * helper.on('result', function(event) {
- *   console.log(event.results);
- * });
- * helper
- *   .toggleFacetRefinement('category', 'Movies & TV Shows')
- *   .toggleFacetRefinement('shipping', 'Free shipping')
- *   .search();
- * @example
- * // The helper is an event emitter using the node API
- * helper.on('result', updateTheResults);
- * helper.once('result', updateTheResults);
- * helper.removeListener('result', updateTheResults);
- * helper.removeAllListeners('result');
- * @module algoliasearchHelper
- * @param  {AlgoliaSearch} client an AlgoliaSearch client
- * @param  {string} index the name of the index to query
- * @param  {SearchParameters|object} opts an object defining the initial config of the search. It doesn't have to be a {SearchParameters}, just an object containing the properties you need from it.
- * @return {AlgoliaSearchHelper}
- */
-function algoliasearchHelper(client, index, opts) {
-  return new AlgoliaSearchHelper(client, index, opts);
-}
-
-/**
- * The version currently used
- * @member module:algoliasearchHelper.version
- * @type {number}
- */
-algoliasearchHelper.version = __webpack_require__(/*! ./src/version.js */ "./node_modules/algoliasearch-helper/src/version.js");
-
-/**
- * Constructor for the Helper.
- * @member module:algoliasearchHelper.AlgoliaSearchHelper
- * @type {AlgoliaSearchHelper}
- */
-algoliasearchHelper.AlgoliaSearchHelper = AlgoliaSearchHelper;
-
-/**
- * Constructor for the object containing all the parameters of the search.
- * @member module:algoliasearchHelper.SearchParameters
- * @type {SearchParameters}
- */
-algoliasearchHelper.SearchParameters = SearchParameters;
-
-/**
- * Constructor for the object containing the results of the search.
- * @member module:algoliasearchHelper.SearchResults
- * @type {SearchResults}
- */
-algoliasearchHelper.SearchResults = SearchResults;
-
-module.exports = algoliasearchHelper;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/DerivedHelper/index.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/DerivedHelper/index.js ***!
-  \**********************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var EventEmitter = __webpack_require__(/*! @algolia/events */ "./node_modules/@algolia/events/events.js");
-var inherits = __webpack_require__(/*! ../functions/inherits */ "./node_modules/algoliasearch-helper/src/functions/inherits.js");
-
-/**
- * A DerivedHelper is a way to create sub requests to
- * Algolia from a main helper.
- * @class
- * @classdesc The DerivedHelper provides an event based interface for search callbacks:
- *  - search: when a search is triggered using the `search()` method.
- *  - result: when the response is retrieved from Algolia and is processed.
- *    This event contains a {@link SearchResults} object and the
- *    {@link SearchParameters} corresponding to this answer.
- */
-function DerivedHelper(mainHelper, fn) {
-  this.main = mainHelper;
-  this.fn = fn;
-  this.lastResults = null;
-}
-
-inherits(DerivedHelper, EventEmitter);
-
-/**
- * Detach this helper from the main helper
- * @return {undefined}
- * @throws Error if the derived helper is already detached
- */
-DerivedHelper.prototype.detach = function() {
-  this.removeAllListeners();
-  this.main.detachDerivedHelper(this);
-};
-
-DerivedHelper.prototype.getModifiedState = function(parameters) {
-  return this.fn(parameters);
-};
-
-module.exports = DerivedHelper;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/SearchParameters/RefinementList.js":
-/*!**********************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/SearchParameters/RefinementList.js ***!
-  \**********************************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-/**
- * Functions to manipulate refinement lists
+ * Config-specific merge-function which creates a new config-object
+ * by merging two configuration objects together.
  *
- * The RefinementList is not formally defined through a prototype but is based
- * on a specific structure.
+ * @param {Object} config1
+ * @param {Object} config2
+ * @returns {Object} New object resulting from merging config2 to config1
+ */
+module.exports = function mergeConfig(config1, config2) {
+  // eslint-disable-next-line no-param-reassign
+  config2 = config2 || {};
+  var config = {};
+
+  function getMergedValue(target, source) {
+    if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
+      return utils.merge(target, source);
+    } else if (utils.isPlainObject(source)) {
+      return utils.merge({}, source);
+    } else if (utils.isArray(source)) {
+      return source.slice();
+    }
+    return source;
+  }
+
+  // eslint-disable-next-line consistent-return
+  function mergeDeepProperties(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      return getMergedValue(config1[prop], config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      return getMergedValue(undefined, config1[prop]);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function valueFromConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      return getMergedValue(undefined, config2[prop]);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function defaultToConfig2(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      return getMergedValue(undefined, config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      return getMergedValue(undefined, config1[prop]);
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  function mergeDirectKeys(prop) {
+    if (prop in config2) {
+      return getMergedValue(config1[prop], config2[prop]);
+    } else if (prop in config1) {
+      return getMergedValue(undefined, config1[prop]);
+    }
+  }
+
+  var mergeMap = {
+    'url': valueFromConfig2,
+    'method': valueFromConfig2,
+    'data': valueFromConfig2,
+    'baseURL': defaultToConfig2,
+    'transformRequest': defaultToConfig2,
+    'transformResponse': defaultToConfig2,
+    'paramsSerializer': defaultToConfig2,
+    'timeout': defaultToConfig2,
+    'timeoutMessage': defaultToConfig2,
+    'withCredentials': defaultToConfig2,
+    'adapter': defaultToConfig2,
+    'responseType': defaultToConfig2,
+    'xsrfCookieName': defaultToConfig2,
+    'xsrfHeaderName': defaultToConfig2,
+    'onUploadProgress': defaultToConfig2,
+    'onDownloadProgress': defaultToConfig2,
+    'decompress': defaultToConfig2,
+    'maxContentLength': defaultToConfig2,
+    'maxBodyLength': defaultToConfig2,
+    'beforeRedirect': defaultToConfig2,
+    'transport': defaultToConfig2,
+    'httpAgent': defaultToConfig2,
+    'httpsAgent': defaultToConfig2,
+    'cancelToken': defaultToConfig2,
+    'socketPath': defaultToConfig2,
+    'responseEncoding': defaultToConfig2,
+    'validateStatus': mergeDirectKeys
+  };
+
+  utils.forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
+    var merge = mergeMap[prop] || mergeDeepProperties;
+    var configValue = merge(prop);
+    (utils.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
+  });
+
+  return config;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/core/settle.js":
+/*!***********************************************!*\
+  !*** ./node_modules/axios/lib/core/settle.js ***!
+  \***********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var AxiosError = __webpack_require__(/*! ./AxiosError */ "./node_modules/axios/lib/core/AxiosError.js");
+
+/**
+ * Resolve or reject a Promise based on response status.
  *
- * @module SearchParameters.refinementList
- *
- * @typedef {string[]} SearchParameters.refinementList.Refinements
- * @typedef {Object.<string, SearchParameters.refinementList.Refinements>} SearchParameters.refinementList.RefinementList
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
  */
-
-var defaultsPure = __webpack_require__(/*! ../functions/defaultsPure */ "./node_modules/algoliasearch-helper/src/functions/defaultsPure.js");
-var omit = __webpack_require__(/*! ../functions/omit */ "./node_modules/algoliasearch-helper/src/functions/omit.js");
-var objectHasKeys = __webpack_require__(/*! ../functions/objectHasKeys */ "./node_modules/algoliasearch-helper/src/functions/objectHasKeys.js");
-
-var lib = {
-  /**
-   * Adds a refinement to a RefinementList
-   * @param {RefinementList} refinementList the initial list
-   * @param {string} attribute the attribute to refine
-   * @param {string} value the value of the refinement, if the value is not a string it will be converted
-   * @return {RefinementList} a new and updated refinement list
-   */
-  addRefinement: function addRefinement(refinementList, attribute, value) {
-    if (lib.isRefined(refinementList, attribute, value)) {
-      return refinementList;
-    }
-
-    var valueAsString = '' + value;
-
-    var facetRefinement = !refinementList[attribute] ?
-      [valueAsString] :
-      refinementList[attribute].concat(valueAsString);
-
-    var mod = {};
-
-    mod[attribute] = facetRefinement;
-
-    return defaultsPure({}, mod, refinementList);
-  },
-  /**
-   * Removes refinement(s) for an attribute:
-   *  - if the value is specified removes the refinement for the value on the attribute
-   *  - if no value is specified removes all the refinements for this attribute
-   * @param {RefinementList} refinementList the initial list
-   * @param {string} attribute the attribute to refine
-   * @param {string} [value] the value of the refinement
-   * @return {RefinementList} a new and updated refinement lst
-   */
-  removeRefinement: function removeRefinement(refinementList, attribute, value) {
-    if (value === undefined) {
-      // we use the "filter" form of clearRefinement, since it leaves empty values as-is
-      // the form with a string will remove the attribute completely
-      return lib.clearRefinement(refinementList, function(v, f) {
-        return attribute === f;
-      });
-    }
-
-    var valueAsString = '' + value;
-
-    return lib.clearRefinement(refinementList, function(v, f) {
-      return attribute === f && valueAsString === v;
-    });
-  },
-  /**
-   * Toggles the refinement value for an attribute.
-   * @param {RefinementList} refinementList the initial list
-   * @param {string} attribute the attribute to refine
-   * @param {string} value the value of the refinement
-   * @return {RefinementList} a new and updated list
-   */
-  toggleRefinement: function toggleRefinement(refinementList, attribute, value) {
-    if (value === undefined) throw new Error('toggleRefinement should be used with a value');
-
-    if (lib.isRefined(refinementList, attribute, value)) {
-      return lib.removeRefinement(refinementList, attribute, value);
-    }
-
-    return lib.addRefinement(refinementList, attribute, value);
-  },
-  /**
-   * Clear all or parts of a RefinementList. Depending on the arguments, three
-   * kinds of behavior can happen:
-   *  - if no attribute is provided: clears the whole list
-   *  - if an attribute is provided as a string: clears the list for the specific attribute
-   *  - if an attribute is provided as a function: discards the elements for which the function returns true
-   * @param {RefinementList} refinementList the initial list
-   * @param {string} [attribute] the attribute or function to discard
-   * @param {string} [refinementType] optional parameter to give more context to the attribute function
-   * @return {RefinementList} a new and updated refinement list
-   */
-  clearRefinement: function clearRefinement(refinementList, attribute, refinementType) {
-    if (attribute === undefined) {
-      if (!objectHasKeys(refinementList)) {
-        return refinementList;
-      }
-      return {};
-    } else if (typeof attribute === 'string') {
-      return omit(refinementList, [attribute]);
-    } else if (typeof attribute === 'function') {
-      var hasChanged = false;
-
-      var newRefinementList = Object.keys(refinementList).reduce(function(memo, key) {
-        var values = refinementList[key] || [];
-        var facetList = values.filter(function(value) {
-          return !attribute(value, key, refinementType);
-        });
-
-        if (facetList.length !== values.length) {
-          hasChanged = true;
-        }
-        memo[key] = facetList;
-
-        return memo;
-      }, {});
-
-      if (hasChanged) return newRefinementList;
-      return refinementList;
-    }
-  },
-  /**
-   * Test if the refinement value is used for the attribute. If no refinement value
-   * is provided, test if the refinementList contains any refinement for the
-   * given attribute.
-   * @param {RefinementList} refinementList the list of refinement
-   * @param {string} attribute name of the attribute
-   * @param {string} [refinementValue] value of the filter/refinement
-   * @return {boolean}
-   */
-  isRefined: function isRefined(refinementList, attribute, refinementValue) {
-    var containsRefinements = !!refinementList[attribute] &&
-      refinementList[attribute].length > 0;
-
-    if (refinementValue === undefined || !containsRefinements) {
-      return containsRefinements;
-    }
-
-    var refinementValueAsString = '' + refinementValue;
-
-    return refinementList[attribute].indexOf(refinementValueAsString) !== -1;
-  }
-};
-
-module.exports = lib;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/SearchParameters/index.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/SearchParameters/index.js ***!
-  \*************************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var merge = __webpack_require__(/*! ../functions/merge */ "./node_modules/algoliasearch-helper/src/functions/merge.js");
-var defaultsPure = __webpack_require__(/*! ../functions/defaultsPure */ "./node_modules/algoliasearch-helper/src/functions/defaultsPure.js");
-var intersection = __webpack_require__(/*! ../functions/intersection */ "./node_modules/algoliasearch-helper/src/functions/intersection.js");
-var find = __webpack_require__(/*! ../functions/find */ "./node_modules/algoliasearch-helper/src/functions/find.js");
-var valToNumber = __webpack_require__(/*! ../functions/valToNumber */ "./node_modules/algoliasearch-helper/src/functions/valToNumber.js");
-var omit = __webpack_require__(/*! ../functions/omit */ "./node_modules/algoliasearch-helper/src/functions/omit.js");
-var objectHasKeys = __webpack_require__(/*! ../functions/objectHasKeys */ "./node_modules/algoliasearch-helper/src/functions/objectHasKeys.js");
-var isValidUserToken = __webpack_require__(/*! ../utils/isValidUserToken */ "./node_modules/algoliasearch-helper/src/utils/isValidUserToken.js");
-
-var RefinementList = __webpack_require__(/*! ./RefinementList */ "./node_modules/algoliasearch-helper/src/SearchParameters/RefinementList.js");
-
-/**
- * isEqual, but only for numeric refinement values, possible values:
- * - 5
- * - [5]
- * - [[5]]
- * - [[5,5],[4]]
- */
-function isEqualNumericRefinement(a, b) {
-  if (Array.isArray(a) && Array.isArray(b)) {
-    return (
-      a.length === b.length &&
-      a.every(function(el, i) {
-        return isEqualNumericRefinement(b[i], el);
-      })
-    );
-  }
-  return a === b;
-}
-
-/**
- * like _.find but using deep equality to be able to use it
- * to find arrays.
- * @private
- * @param {any[]} array array to search into (elements are base or array of base)
- * @param {any} searchedValue the value we're looking for (base or array of base)
- * @return {any} the searched value or undefined
- */
-function findArray(array, searchedValue) {
-  return find(array, function(currentValue) {
-    return isEqualNumericRefinement(currentValue, searchedValue);
-  });
-}
-
-/**
- * The facet list is the structure used to store the list of values used to
- * filter a single attribute.
- * @typedef {string[]} SearchParameters.FacetList
- */
-
-/**
- * Structure to store numeric filters with the operator as the key. The supported operators
- * are `=`, `>`, `<`, `>=`, `<=` and `!=`.
- * @typedef {Object.<string, Array.<number|number[]>>} SearchParameters.OperatorList
- */
-
-/**
- * SearchParameters is the data structure that contains all the information
- * usable for making a search to Algolia API. It doesn't do the search itself,
- * nor does it contains logic about the parameters.
- * It is an immutable object, therefore it has been created in a way that each
- * changes does not change the object itself but returns a copy with the
- * modification.
- * This object should probably not be instantiated outside of the helper. It will
- * be provided when needed. This object is documented for reference as you'll
- * get it from events generated by the {@link AlgoliaSearchHelper}.
- * If need be, instantiate the Helper from the factory function {@link SearchParameters.make}
- * @constructor
- * @classdesc contains all the parameters of a search
- * @param {object|SearchParameters} newParameters existing parameters or partial object
- * for the properties of a new SearchParameters
- * @see SearchParameters.make
- * @example <caption>SearchParameters of the first query in
- *   <a href="http://demos.algolia.com/instant-search-demo/">the instant search demo</a></caption>
-{
-   "query": "",
-   "disjunctiveFacets": [
-      "customerReviewCount",
-      "category",
-      "salePrice_range",
-      "manufacturer"
-  ],
-   "maxValuesPerFacet": 30,
-   "page": 0,
-   "hitsPerPage": 10,
-   "facets": [
-      "type",
-      "shipping"
-  ]
-}
- */
-function SearchParameters(newParameters) {
-  var params = newParameters ? SearchParameters._parseNumbers(newParameters) : {};
-
-  if (params.userToken !== undefined && !isValidUserToken(params.userToken)) {
-    console.warn('[algoliasearch-helper] The `userToken` parameter is invalid. This can lead to wrong analytics.\n  - Format: [a-zA-Z0-9_-]{1,64}');
-  }
-  /**
-   * This attribute contains the list of all the conjunctive facets
-   * used. This list will be added to requested facets in the
-   * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
-   * @member {string[]}
-   */
-  this.facets = params.facets || [];
-  /**
-   * This attribute contains the list of all the disjunctive facets
-   * used. This list will be added to requested facets in the
-   * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
-   * @member {string[]}
-   */
-  this.disjunctiveFacets = params.disjunctiveFacets || [];
-  /**
-   * This attribute contains the list of all the hierarchical facets
-   * used. This list will be added to requested facets in the
-   * [facets attribute](https://www.algolia.com/doc/rest-api/search#param-facets) sent to algolia.
-   * Hierarchical facets are a sub type of disjunctive facets that
-   * let you filter faceted attributes hierarchically.
-   * @member {string[]|object[]}
-   */
-  this.hierarchicalFacets = params.hierarchicalFacets || [];
-
-  // Refinements
-  /**
-   * This attribute contains all the filters that need to be
-   * applied on the conjunctive facets. Each facet must be properly
-   * defined in the `facets` attribute.
-   *
-   * The key is the name of the facet, and the `FacetList` contains all
-   * filters selected for the associated facet name.
-   *
-   * When querying algolia, the values stored in this attribute will
-   * be translated into the `facetFilters` attribute.
-   * @member {Object.<string, SearchParameters.FacetList>}
-   */
-  this.facetsRefinements = params.facetsRefinements || {};
-  /**
-   * This attribute contains all the filters that need to be
-   * excluded from the conjunctive facets. Each facet must be properly
-   * defined in the `facets` attribute.
-   *
-   * The key is the name of the facet, and the `FacetList` contains all
-   * filters excluded for the associated facet name.
-   *
-   * When querying algolia, the values stored in this attribute will
-   * be translated into the `facetFilters` attribute.
-   * @member {Object.<string, SearchParameters.FacetList>}
-   */
-  this.facetsExcludes = params.facetsExcludes || {};
-  /**
-   * This attribute contains all the filters that need to be
-   * applied on the disjunctive facets. Each facet must be properly
-   * defined in the `disjunctiveFacets` attribute.
-   *
-   * The key is the name of the facet, and the `FacetList` contains all
-   * filters selected for the associated facet name.
-   *
-   * When querying algolia, the values stored in this attribute will
-   * be translated into the `facetFilters` attribute.
-   * @member {Object.<string, SearchParameters.FacetList>}
-   */
-  this.disjunctiveFacetsRefinements = params.disjunctiveFacetsRefinements || {};
-  /**
-   * This attribute contains all the filters that need to be
-   * applied on the numeric attributes.
-   *
-   * The key is the name of the attribute, and the value is the
-   * filters to apply to this attribute.
-   *
-   * When querying algolia, the values stored in this attribute will
-   * be translated into the `numericFilters` attribute.
-   * @member {Object.<string, SearchParameters.OperatorList>}
-   */
-  this.numericRefinements = params.numericRefinements || {};
-  /**
-   * This attribute contains all the tags used to refine the query.
-   *
-   * When querying algolia, the values stored in this attribute will
-   * be translated into the `tagFilters` attribute.
-   * @member {string[]}
-   */
-  this.tagRefinements = params.tagRefinements || [];
-  /**
-   * This attribute contains all the filters that need to be
-   * applied on the hierarchical facets. Each facet must be properly
-   * defined in the `hierarchicalFacets` attribute.
-   *
-   * The key is the name of the facet, and the `FacetList` contains all
-   * filters selected for the associated facet name. The FacetList values
-   * are structured as a string that contain the values for each level
-   * separated by the configured separator.
-   *
-   * When querying algolia, the values stored in this attribute will
-   * be translated into the `facetFilters` attribute.
-   * @member {Object.<string, SearchParameters.FacetList>}
-   */
-  this.hierarchicalFacetsRefinements = params.hierarchicalFacetsRefinements || {};
-
-  var self = this;
-  Object.keys(params).forEach(function(paramName) {
-    var isKeyKnown = SearchParameters.PARAMETERS.indexOf(paramName) !== -1;
-    var isValueDefined = params[paramName] !== undefined;
-
-    if (!isKeyKnown && isValueDefined) {
-      self[paramName] = params[paramName];
-    }
-  });
-}
-
-/**
- * List all the properties in SearchParameters and therefore all the known Algolia properties
- * This doesn't contain any beta/hidden features.
- * @private
- */
-SearchParameters.PARAMETERS = Object.keys(new SearchParameters());
-
-/**
- * @private
- * @param {object} partialState full or part of a state
- * @return {object} a new object with the number keys as number
- */
-SearchParameters._parseNumbers = function(partialState) {
-  // Do not reparse numbers in SearchParameters, they ought to be parsed already
-  if (partialState instanceof SearchParameters) return partialState;
-
-  var numbers = {};
-
-  var numberKeys = [
-    'aroundPrecision',
-    'aroundRadius',
-    'getRankingInfo',
-    'minWordSizefor2Typos',
-    'minWordSizefor1Typo',
-    'page',
-    'maxValuesPerFacet',
-    'distinct',
-    'minimumAroundRadius',
-    'hitsPerPage',
-    'minProximity'
-  ];
-
-  numberKeys.forEach(function(k) {
-    var value = partialState[k];
-    if (typeof value === 'string') {
-      var parsedValue = parseFloat(value);
-      // global isNaN is ok to use here, value is only number or NaN
-      numbers[k] = isNaN(parsedValue) ? value : parsedValue;
-    }
-  });
-
-  // there's two formats of insideBoundingBox, we need to parse
-  // the one which is an array of float geo rectangles
-  if (Array.isArray(partialState.insideBoundingBox)) {
-    numbers.insideBoundingBox = partialState.insideBoundingBox.map(function(geoRect) {
-      if (Array.isArray(geoRect)) {
-        return geoRect.map(function(value) {
-          return parseFloat(value);
-        });
-      }
-      return geoRect;
-    });
-  }
-
-  if (partialState.numericRefinements) {
-    var numericRefinements = {};
-    Object.keys(partialState.numericRefinements).forEach(function(attribute) {
-      var operators = partialState.numericRefinements[attribute] || {};
-      numericRefinements[attribute] = {};
-      Object.keys(operators).forEach(function(operator) {
-        var values = operators[operator];
-        var parsedValues = values.map(function(v) {
-          if (Array.isArray(v)) {
-            return v.map(function(vPrime) {
-              if (typeof vPrime === 'string') {
-                return parseFloat(vPrime);
-              }
-              return vPrime;
-            });
-          } else if (typeof v === 'string') {
-            return parseFloat(v);
-          }
-          return v;
-        });
-        numericRefinements[attribute][operator] = parsedValues;
-      });
-    });
-    numbers.numericRefinements = numericRefinements;
-  }
-
-  return merge({}, partialState, numbers);
-};
-
-/**
- * Factory for SearchParameters
- * @param {object|SearchParameters} newParameters existing parameters or partial
- * object for the properties of a new SearchParameters
- * @return {SearchParameters} frozen instance of SearchParameters
- */
-SearchParameters.make = function makeSearchParameters(newParameters) {
-  var instance = new SearchParameters(newParameters);
-
-  var hierarchicalFacets = newParameters.hierarchicalFacets || [];
-  hierarchicalFacets.forEach(function(facet) {
-    if (facet.rootPath) {
-      var currentRefinement = instance.getHierarchicalRefinement(facet.name);
-
-      if (currentRefinement.length > 0 && currentRefinement[0].indexOf(facet.rootPath) !== 0) {
-        instance = instance.clearRefinements(facet.name);
-      }
-
-      // get it again in case it has been cleared
-      currentRefinement = instance.getHierarchicalRefinement(facet.name);
-      if (currentRefinement.length === 0) {
-        instance = instance.toggleHierarchicalFacetRefinement(facet.name, facet.rootPath);
-      }
-    }
-  });
-
-  return instance;
-};
-
-/**
- * Validates the new parameters based on the previous state
- * @param {SearchParameters} currentState the current state
- * @param {object|SearchParameters} parameters the new parameters to set
- * @return {Error|null} Error if the modification is invalid, null otherwise
- */
-SearchParameters.validate = function(currentState, parameters) {
-  var params = parameters || {};
-
-  if (currentState.tagFilters && params.tagRefinements && params.tagRefinements.length > 0) {
-    return new Error(
-      '[Tags] Cannot switch from the managed tag API to the advanced API. It is probably ' +
-      'an error, if it is really what you want, you should first clear the tags with clearTags method.');
-  }
-
-  if (currentState.tagRefinements.length > 0 && params.tagFilters) {
-    return new Error(
-      '[Tags] Cannot switch from the advanced tag API to the managed API. It is probably ' +
-      'an error, if it is not, you should first clear the tags with clearTags method.');
-  }
-
-  if (
-    currentState.numericFilters &&
-    params.numericRefinements &&
-    objectHasKeys(params.numericRefinements)
-  ) {
-    return new Error(
-      "[Numeric filters] Can't switch from the advanced to the managed API. It" +
-        ' is probably an error, if this is really what you want, you have to first' +
-        ' clear the numeric filters.'
-    );
-  }
-
-  if (objectHasKeys(currentState.numericRefinements) && params.numericFilters) {
-    return new Error(
-      "[Numeric filters] Can't switch from the managed API to the advanced. It" +
-      ' is probably an error, if this is really what you want, you have to first' +
-      ' clear the numeric filters.');
-  }
-
-  return null;
-};
-
-SearchParameters.prototype = {
-  constructor: SearchParameters,
-
-  /**
-   * Remove all refinements (disjunctive + conjunctive + excludes + numeric filters)
-   * @method
-   * @param {undefined|string|SearchParameters.clearCallback} [attribute] optional string or function
-   * - If not given, means to clear all the filters.
-   * - If `string`, means to clear all refinements for the `attribute` named filter.
-   * - If `function`, means to clear all the refinements that return truthy values.
-   * @return {SearchParameters}
-   */
-  clearRefinements: function clearRefinements(attribute) {
-    var patch = {
-      numericRefinements: this._clearNumericRefinements(attribute),
-      facetsRefinements: RefinementList.clearRefinement(
-        this.facetsRefinements,
-        attribute,
-        'conjunctiveFacet'
-      ),
-      facetsExcludes: RefinementList.clearRefinement(
-        this.facetsExcludes,
-        attribute,
-        'exclude'
-      ),
-      disjunctiveFacetsRefinements: RefinementList.clearRefinement(
-        this.disjunctiveFacetsRefinements,
-        attribute,
-        'disjunctiveFacet'
-      ),
-      hierarchicalFacetsRefinements: RefinementList.clearRefinement(
-        this.hierarchicalFacetsRefinements,
-        attribute,
-        'hierarchicalFacet'
-      )
-    };
-    if (
-      patch.numericRefinements === this.numericRefinements &&
-      patch.facetsRefinements === this.facetsRefinements &&
-      patch.facetsExcludes === this.facetsExcludes &&
-      patch.disjunctiveFacetsRefinements === this.disjunctiveFacetsRefinements &&
-      patch.hierarchicalFacetsRefinements === this.hierarchicalFacetsRefinements
-    ) {
-      return this;
-    }
-    return this.setQueryParameters(patch);
-  },
-  /**
-   * Remove all the refined tags from the SearchParameters
-   * @method
-   * @return {SearchParameters}
-   */
-  clearTags: function clearTags() {
-    if (this.tagFilters === undefined && this.tagRefinements.length === 0) return this;
-
-    return this.setQueryParameters({
-      tagFilters: undefined,
-      tagRefinements: []
-    });
-  },
-  /**
-   * Set the index.
-   * @method
-   * @param {string} index the index name
-   * @return {SearchParameters}
-   */
-  setIndex: function setIndex(index) {
-    if (index === this.index) return this;
-
-    return this.setQueryParameters({
-      index: index
-    });
-  },
-  /**
-   * Query setter
-   * @method
-   * @param {string} newQuery value for the new query
-   * @return {SearchParameters}
-   */
-  setQuery: function setQuery(newQuery) {
-    if (newQuery === this.query) return this;
-
-    return this.setQueryParameters({
-      query: newQuery
-    });
-  },
-  /**
-   * Page setter
-   * @method
-   * @param {number} newPage new page number
-   * @return {SearchParameters}
-   */
-  setPage: function setPage(newPage) {
-    if (newPage === this.page) return this;
-
-    return this.setQueryParameters({
-      page: newPage
-    });
-  },
-  /**
-   * Facets setter
-   * The facets are the simple facets, used for conjunctive (and) faceting.
-   * @method
-   * @param {string[]} facets all the attributes of the algolia records used for conjunctive faceting
-   * @return {SearchParameters}
-   */
-  setFacets: function setFacets(facets) {
-    return this.setQueryParameters({
-      facets: facets
-    });
-  },
-  /**
-   * Disjunctive facets setter
-   * Change the list of disjunctive (or) facets the helper chan handle.
-   * @method
-   * @param {string[]} facets all the attributes of the algolia records used for disjunctive faceting
-   * @return {SearchParameters}
-   */
-  setDisjunctiveFacets: function setDisjunctiveFacets(facets) {
-    return this.setQueryParameters({
-      disjunctiveFacets: facets
-    });
-  },
-  /**
-   * HitsPerPage setter
-   * Hits per page represents the number of hits retrieved for this query
-   * @method
-   * @param {number} n number of hits retrieved per page of results
-   * @return {SearchParameters}
-   */
-  setHitsPerPage: function setHitsPerPage(n) {
-    if (this.hitsPerPage === n) return this;
-
-    return this.setQueryParameters({
-      hitsPerPage: n
-    });
-  },
-  /**
-   * typoTolerance setter
-   * Set the value of typoTolerance
-   * @method
-   * @param {string} typoTolerance new value of typoTolerance ("true", "false", "min" or "strict")
-   * @return {SearchParameters}
-   */
-  setTypoTolerance: function setTypoTolerance(typoTolerance) {
-    if (this.typoTolerance === typoTolerance) return this;
-
-    return this.setQueryParameters({
-      typoTolerance: typoTolerance
-    });
-  },
-  /**
-   * Add a numeric filter for a given attribute
-   * When value is an array, they are combined with OR
-   * When value is a single value, it will combined with AND
-   * @method
-   * @param {string} attribute attribute to set the filter on
-   * @param {string} operator operator of the filter (possible values: =, >, >=, <, <=, !=)
-   * @param {number | number[]} value value of the filter
-   * @return {SearchParameters}
-   * @example
-   * // for price = 50 or 40
-   * searchparameter.addNumericRefinement('price', '=', [50, 40]);
-   * @example
-   * // for size = 38 and 40
-   * searchparameter.addNumericRefinement('size', '=', 38);
-   * searchparameter.addNumericRefinement('size', '=', 40);
-   */
-  addNumericRefinement: function(attribute, operator, v) {
-    var value = valToNumber(v);
-
-    if (this.isNumericRefined(attribute, operator, value)) return this;
-
-    var mod = merge({}, this.numericRefinements);
-
-    mod[attribute] = merge({}, mod[attribute]);
-
-    if (mod[attribute][operator]) {
-      // Array copy
-      mod[attribute][operator] = mod[attribute][operator].slice();
-      // Add the element. Concat can't be used here because value can be an array.
-      mod[attribute][operator].push(value);
-    } else {
-      mod[attribute][operator] = [value];
-    }
-
-    return this.setQueryParameters({
-      numericRefinements: mod
-    });
-  },
-  /**
-   * Get the list of conjunctive refinements for a single facet
-   * @param {string} facetName name of the attribute used for faceting
-   * @return {string[]} list of refinements
-   */
-  getConjunctiveRefinements: function(facetName) {
-    if (!this.isConjunctiveFacet(facetName)) {
-      return [];
-    }
-    return this.facetsRefinements[facetName] || [];
-  },
-  /**
-   * Get the list of disjunctive refinements for a single facet
-   * @param {string} facetName name of the attribute used for faceting
-   * @return {string[]} list of refinements
-   */
-  getDisjunctiveRefinements: function(facetName) {
-    if (!this.isDisjunctiveFacet(facetName)) {
-      return [];
-    }
-    return this.disjunctiveFacetsRefinements[facetName] || [];
-  },
-  /**
-   * Get the list of hierarchical refinements for a single facet
-   * @param {string} facetName name of the attribute used for faceting
-   * @return {string[]} list of refinements
-   */
-  getHierarchicalRefinement: function(facetName) {
-    // we send an array but we currently do not support multiple
-    // hierarchicalRefinements for a hierarchicalFacet
-    return this.hierarchicalFacetsRefinements[facetName] || [];
-  },
-  /**
-   * Get the list of exclude refinements for a single facet
-   * @param {string} facetName name of the attribute used for faceting
-   * @return {string[]} list of refinements
-   */
-  getExcludeRefinements: function(facetName) {
-    if (!this.isConjunctiveFacet(facetName)) {
-      return [];
-    }
-    return this.facetsExcludes[facetName] || [];
-  },
-
-  /**
-   * Remove all the numeric filter for a given (attribute, operator)
-   * @method
-   * @param {string} attribute attribute to set the filter on
-   * @param {string} [operator] operator of the filter (possible values: =, >, >=, <, <=, !=)
-   * @param {number} [number] the value to be removed
-   * @return {SearchParameters}
-   */
-  removeNumericRefinement: function(attribute, operator, paramValue) {
-    if (paramValue !== undefined) {
-      if (!this.isNumericRefined(attribute, operator, paramValue)) {
-        return this;
-      }
-      return this.setQueryParameters({
-        numericRefinements: this._clearNumericRefinements(function(value, key) {
-          return (
-            key === attribute &&
-            value.op === operator &&
-            isEqualNumericRefinement(value.val, valToNumber(paramValue))
-          );
-        })
-      });
-    } else if (operator !== undefined) {
-      if (!this.isNumericRefined(attribute, operator)) return this;
-      return this.setQueryParameters({
-        numericRefinements: this._clearNumericRefinements(function(value, key) {
-          return key === attribute && value.op === operator;
-        })
-      });
-    }
-
-    if (!this.isNumericRefined(attribute)) return this;
-    return this.setQueryParameters({
-      numericRefinements: this._clearNumericRefinements(function(value, key) {
-        return key === attribute;
-      })
-    });
-  },
-  /**
-   * Get the list of numeric refinements for a single facet
-   * @param {string} facetName name of the attribute used for faceting
-   * @return {SearchParameters.OperatorList} list of refinements
-   */
-  getNumericRefinements: function(facetName) {
-    return this.numericRefinements[facetName] || {};
-  },
-  /**
-   * Return the current refinement for the (attribute, operator)
-   * @param {string} attribute attribute in the record
-   * @param {string} operator operator applied on the refined values
-   * @return {Array.<number|number[]>} refined values
-   */
-  getNumericRefinement: function(attribute, operator) {
-    return this.numericRefinements[attribute] && this.numericRefinements[attribute][operator];
-  },
-  /**
-   * Clear numeric filters.
-   * @method
-   * @private
-   * @param {string|SearchParameters.clearCallback} [attribute] optional string or function
-   * - If not given, means to clear all the filters.
-   * - If `string`, means to clear all refinements for the `attribute` named filter.
-   * - If `function`, means to clear all the refinements that return truthy values.
-   * @return {Object.<string, OperatorList>}
-   */
-  _clearNumericRefinements: function _clearNumericRefinements(attribute) {
-    if (attribute === undefined) {
-      if (!objectHasKeys(this.numericRefinements)) {
-        return this.numericRefinements;
-      }
-      return {};
-    } else if (typeof attribute === 'string') {
-      return omit(this.numericRefinements, [attribute]);
-    } else if (typeof attribute === 'function') {
-      var hasChanged = false;
-      var numericRefinements = this.numericRefinements;
-      var newNumericRefinements = Object.keys(numericRefinements).reduce(function(memo, key) {
-        var operators = numericRefinements[key];
-        var operatorList = {};
-
-        operators = operators || {};
-        Object.keys(operators).forEach(function(operator) {
-          var values = operators[operator] || [];
-          var outValues = [];
-          values.forEach(function(value) {
-            var predicateResult = attribute({val: value, op: operator}, key, 'numeric');
-            if (!predicateResult) outValues.push(value);
-          });
-          if (outValues.length !== values.length) {
-            hasChanged = true;
-          }
-          operatorList[operator] = outValues;
-        });
-
-        memo[key] = operatorList;
-
-        return memo;
-      }, {});
-
-      if (hasChanged) return newNumericRefinements;
-      return this.numericRefinements;
-    }
-  },
-  /**
-   * Add a facet to the facets attribute of the helper configuration, if it
-   * isn't already present.
-   * @method
-   * @param {string} facet facet name to add
-   * @return {SearchParameters}
-   */
-  addFacet: function addFacet(facet) {
-    if (this.isConjunctiveFacet(facet)) {
-      return this;
-    }
-
-    return this.setQueryParameters({
-      facets: this.facets.concat([facet])
-    });
-  },
-  /**
-   * Add a disjunctive facet to the disjunctiveFacets attribute of the helper
-   * configuration, if it isn't already present.
-   * @method
-   * @param {string} facet disjunctive facet name to add
-   * @return {SearchParameters}
-   */
-  addDisjunctiveFacet: function addDisjunctiveFacet(facet) {
-    if (this.isDisjunctiveFacet(facet)) {
-      return this;
-    }
-
-    return this.setQueryParameters({
-      disjunctiveFacets: this.disjunctiveFacets.concat([facet])
-    });
-  },
-  /**
-   * Add a hierarchical facet to the hierarchicalFacets attribute of the helper
-   * configuration.
-   * @method
-   * @param {object} hierarchicalFacet hierarchical facet to add
-   * @return {SearchParameters}
-   * @throws will throw an error if a hierarchical facet with the same name was already declared
-   */
-  addHierarchicalFacet: function addHierarchicalFacet(hierarchicalFacet) {
-    if (this.isHierarchicalFacet(hierarchicalFacet.name)) {
-      throw new Error(
-        'Cannot declare two hierarchical facets with the same name: `' + hierarchicalFacet.name + '`');
-    }
-
-    return this.setQueryParameters({
-      hierarchicalFacets: this.hierarchicalFacets.concat([hierarchicalFacet])
-    });
-  },
-  /**
-   * Add a refinement on a "normal" facet
-   * @method
-   * @param {string} facet attribute to apply the faceting on
-   * @param {string} value value of the attribute (will be converted to string)
-   * @return {SearchParameters}
-   */
-  addFacetRefinement: function addFacetRefinement(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-    }
-    if (RefinementList.isRefined(this.facetsRefinements, facet, value)) return this;
-
-    return this.setQueryParameters({
-      facetsRefinements: RefinementList.addRefinement(this.facetsRefinements, facet, value)
-    });
-  },
-  /**
-   * Exclude a value from a "normal" facet
-   * @method
-   * @param {string} facet attribute to apply the exclusion on
-   * @param {string} value value of the attribute (will be converted to string)
-   * @return {SearchParameters}
-   */
-  addExcludeRefinement: function addExcludeRefinement(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-    }
-    if (RefinementList.isRefined(this.facetsExcludes, facet, value)) return this;
-
-    return this.setQueryParameters({
-      facetsExcludes: RefinementList.addRefinement(this.facetsExcludes, facet, value)
-    });
-  },
-  /**
-   * Adds a refinement on a disjunctive facet.
-   * @method
-   * @param {string} facet attribute to apply the faceting on
-   * @param {string} value value of the attribute (will be converted to string)
-   * @return {SearchParameters}
-   */
-  addDisjunctiveFacetRefinement: function addDisjunctiveFacetRefinement(facet, value) {
-    if (!this.isDisjunctiveFacet(facet)) {
-      throw new Error(
-        facet + ' is not defined in the disjunctiveFacets attribute of the helper configuration');
-    }
-
-    if (RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value)) return this;
-
-    return this.setQueryParameters({
-      disjunctiveFacetsRefinements: RefinementList.addRefinement(
-        this.disjunctiveFacetsRefinements, facet, value)
-    });
-  },
-  /**
-   * addTagRefinement adds a tag to the list used to filter the results
-   * @param {string} tag tag to be added
-   * @return {SearchParameters}
-   */
-  addTagRefinement: function addTagRefinement(tag) {
-    if (this.isTagRefined(tag)) return this;
-
-    var modification = {
-      tagRefinements: this.tagRefinements.concat(tag)
-    };
-
-    return this.setQueryParameters(modification);
-  },
-  /**
-   * Remove a facet from the facets attribute of the helper configuration, if it
-   * is present.
-   * @method
-   * @param {string} facet facet name to remove
-   * @return {SearchParameters}
-   */
-  removeFacet: function removeFacet(facet) {
-    if (!this.isConjunctiveFacet(facet)) {
-      return this;
-    }
-
-    return this.clearRefinements(facet).setQueryParameters({
-      facets: this.facets.filter(function(f) {
-        return f !== facet;
-      })
-    });
-  },
-  /**
-   * Remove a disjunctive facet from the disjunctiveFacets attribute of the
-   * helper configuration, if it is present.
-   * @method
-   * @param {string} facet disjunctive facet name to remove
-   * @return {SearchParameters}
-   */
-  removeDisjunctiveFacet: function removeDisjunctiveFacet(facet) {
-    if (!this.isDisjunctiveFacet(facet)) {
-      return this;
-    }
-
-    return this.clearRefinements(facet).setQueryParameters({
-      disjunctiveFacets: this.disjunctiveFacets.filter(function(f) {
-        return f !== facet;
-      })
-    });
-  },
-  /**
-   * Remove a hierarchical facet from the hierarchicalFacets attribute of the
-   * helper configuration, if it is present.
-   * @method
-   * @param {string} facet hierarchical facet name to remove
-   * @return {SearchParameters}
-   */
-  removeHierarchicalFacet: function removeHierarchicalFacet(facet) {
-    if (!this.isHierarchicalFacet(facet)) {
-      return this;
-    }
-
-    return this.clearRefinements(facet).setQueryParameters({
-      hierarchicalFacets: this.hierarchicalFacets.filter(function(f) {
-        return f.name !== facet;
-      })
-    });
-  },
-  /**
-   * Remove a refinement set on facet. If a value is provided, it will clear the
-   * refinement for the given value, otherwise it will clear all the refinement
-   * values for the faceted attribute.
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {string} [value] value used to filter
-   * @return {SearchParameters}
-   */
-  removeFacetRefinement: function removeFacetRefinement(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-    }
-    if (!RefinementList.isRefined(this.facetsRefinements, facet, value)) return this;
-
-    return this.setQueryParameters({
-      facetsRefinements: RefinementList.removeRefinement(this.facetsRefinements, facet, value)
-    });
-  },
-  /**
-   * Remove a negative refinement on a facet
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {string} value value used to filter
-   * @return {SearchParameters}
-   */
-  removeExcludeRefinement: function removeExcludeRefinement(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-    }
-    if (!RefinementList.isRefined(this.facetsExcludes, facet, value)) return this;
-
-    return this.setQueryParameters({
-      facetsExcludes: RefinementList.removeRefinement(this.facetsExcludes, facet, value)
-    });
-  },
-  /**
-   * Remove a refinement on a disjunctive facet
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {string} value value used to filter
-   * @return {SearchParameters}
-   */
-  removeDisjunctiveFacetRefinement: function removeDisjunctiveFacetRefinement(facet, value) {
-    if (!this.isDisjunctiveFacet(facet)) {
-      throw new Error(
-        facet + ' is not defined in the disjunctiveFacets attribute of the helper configuration');
-    }
-    if (!RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value)) return this;
-
-    return this.setQueryParameters({
-      disjunctiveFacetsRefinements: RefinementList.removeRefinement(
-        this.disjunctiveFacetsRefinements, facet, value)
-    });
-  },
-  /**
-   * Remove a tag from the list of tag refinements
-   * @method
-   * @param {string} tag the tag to remove
-   * @return {SearchParameters}
-   */
-  removeTagRefinement: function removeTagRefinement(tag) {
-    if (!this.isTagRefined(tag)) return this;
-
-    var modification = {
-      tagRefinements: this.tagRefinements.filter(function(t) {
-        return t !== tag;
-      })
-    };
-
-    return this.setQueryParameters(modification);
-  },
-  /**
-   * Generic toggle refinement method to use with facet, disjunctive facets
-   * and hierarchical facets
-   * @param  {string} facet the facet to refine
-   * @param  {string} value the associated value
-   * @return {SearchParameters}
-   * @throws will throw an error if the facet is not declared in the settings of the helper
-   * @deprecated since version 2.19.0, see {@link SearchParameters#toggleFacetRefinement}
-   */
-  toggleRefinement: function toggleRefinement(facet, value) {
-    return this.toggleFacetRefinement(facet, value);
-  },
-  /**
-   * Generic toggle refinement method to use with facet, disjunctive facets
-   * and hierarchical facets
-   * @param  {string} facet the facet to refine
-   * @param  {string} value the associated value
-   * @return {SearchParameters}
-   * @throws will throw an error if the facet is not declared in the settings of the helper
-   */
-  toggleFacetRefinement: function toggleFacetRefinement(facet, value) {
-    if (this.isHierarchicalFacet(facet)) {
-      return this.toggleHierarchicalFacetRefinement(facet, value);
-    } else if (this.isConjunctiveFacet(facet)) {
-      return this.toggleConjunctiveFacetRefinement(facet, value);
-    } else if (this.isDisjunctiveFacet(facet)) {
-      return this.toggleDisjunctiveFacetRefinement(facet, value);
-    }
-
-    throw new Error('Cannot refine the undeclared facet ' + facet +
-      '; it should be added to the helper options facets, disjunctiveFacets or hierarchicalFacets');
-  },
-  /**
-   * Switch the refinement applied over a facet/value
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {value} value value used for filtering
-   * @return {SearchParameters}
-   */
-  toggleConjunctiveFacetRefinement: function toggleConjunctiveFacetRefinement(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-    }
-
-    return this.setQueryParameters({
-      facetsRefinements: RefinementList.toggleRefinement(this.facetsRefinements, facet, value)
-    });
-  },
-  /**
-   * Switch the refinement applied over a facet/value
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {value} value value used for filtering
-   * @return {SearchParameters}
-   */
-  toggleExcludeFacetRefinement: function toggleExcludeFacetRefinement(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      throw new Error(facet + ' is not defined in the facets attribute of the helper configuration');
-    }
-
-    return this.setQueryParameters({
-      facetsExcludes: RefinementList.toggleRefinement(this.facetsExcludes, facet, value)
-    });
-  },
-  /**
-   * Switch the refinement applied over a facet/value
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {value} value value used for filtering
-   * @return {SearchParameters}
-   */
-  toggleDisjunctiveFacetRefinement: function toggleDisjunctiveFacetRefinement(facet, value) {
-    if (!this.isDisjunctiveFacet(facet)) {
-      throw new Error(
-        facet + ' is not defined in the disjunctiveFacets attribute of the helper configuration');
-    }
-
-    return this.setQueryParameters({
-      disjunctiveFacetsRefinements: RefinementList.toggleRefinement(
-        this.disjunctiveFacetsRefinements, facet, value)
-    });
-  },
-  /**
-   * Switch the refinement applied over a facet/value
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {value} value value used for filtering
-   * @return {SearchParameters}
-   */
-  toggleHierarchicalFacetRefinement: function toggleHierarchicalFacetRefinement(facet, value) {
-    if (!this.isHierarchicalFacet(facet)) {
-      throw new Error(
-        facet + ' is not defined in the hierarchicalFacets attribute of the helper configuration');
-    }
-
-    var separator = this._getHierarchicalFacetSeparator(this.getHierarchicalFacetByName(facet));
-
-    var mod = {};
-
-    var upOneOrMultipleLevel = this.hierarchicalFacetsRefinements[facet] !== undefined &&
-      this.hierarchicalFacetsRefinements[facet].length > 0 && (
-      // remove current refinement:
-      // refinement was 'beer > IPA', call is toggleRefine('beer > IPA'), refinement should be `beer`
-      this.hierarchicalFacetsRefinements[facet][0] === value ||
-      // remove a parent refinement of the current refinement:
-      //  - refinement was 'beer > IPA > Flying dog'
-      //  - call is toggleRefine('beer > IPA')
-      //  - refinement should be `beer`
-      this.hierarchicalFacetsRefinements[facet][0].indexOf(value + separator) === 0
-    );
-
-    if (upOneOrMultipleLevel) {
-      if (value.indexOf(separator) === -1) {
-        // go back to root level
-        mod[facet] = [];
-      } else {
-        mod[facet] = [value.slice(0, value.lastIndexOf(separator))];
-      }
-    } else {
-      mod[facet] = [value];
-    }
-
-    return this.setQueryParameters({
-      hierarchicalFacetsRefinements: defaultsPure({}, mod, this.hierarchicalFacetsRefinements)
-    });
-  },
-
-  /**
-   * Adds a refinement on a hierarchical facet.
-   * @param {string} facet the facet name
-   * @param {string} path the hierarchical facet path
-   * @return {SearchParameter} the new state
-   * @throws Error if the facet is not defined or if the facet is refined
-   */
-  addHierarchicalFacetRefinement: function(facet, path) {
-    if (this.isHierarchicalFacetRefined(facet)) {
-      throw new Error(facet + ' is already refined.');
-    }
-    if (!this.isHierarchicalFacet(facet)) {
-      throw new Error(facet + ' is not defined in the hierarchicalFacets attribute of the helper configuration.');
-    }
-    var mod = {};
-    mod[facet] = [path];
-    return this.setQueryParameters({
-      hierarchicalFacetsRefinements: defaultsPure({}, mod, this.hierarchicalFacetsRefinements)
-    });
-  },
-
-  /**
-   * Removes the refinement set on a hierarchical facet.
-   * @param {string} facet the facet name
-   * @return {SearchParameter} the new state
-   * @throws Error if the facet is not defined or if the facet is not refined
-   */
-  removeHierarchicalFacetRefinement: function(facet) {
-    if (!this.isHierarchicalFacetRefined(facet)) {
-      return this;
-    }
-    var mod = {};
-    mod[facet] = [];
-    return this.setQueryParameters({
-      hierarchicalFacetsRefinements: defaultsPure({}, mod, this.hierarchicalFacetsRefinements)
-    });
-  },
-  /**
-   * Switch the tag refinement
-   * @method
-   * @param {string} tag the tag to remove or add
-   * @return {SearchParameters}
-   */
-  toggleTagRefinement: function toggleTagRefinement(tag) {
-    if (this.isTagRefined(tag)) {
-      return this.removeTagRefinement(tag);
-    }
-
-    return this.addTagRefinement(tag);
-  },
-  /**
-   * Test if the facet name is from one of the disjunctive facets
-   * @method
-   * @param {string} facet facet name to test
-   * @return {boolean}
-   */
-  isDisjunctiveFacet: function(facet) {
-    return this.disjunctiveFacets.indexOf(facet) > -1;
-  },
-  /**
-   * Test if the facet name is from one of the hierarchical facets
-   * @method
-   * @param {string} facetName facet name to test
-   * @return {boolean}
-   */
-  isHierarchicalFacet: function(facetName) {
-    return this.getHierarchicalFacetByName(facetName) !== undefined;
-  },
-  /**
-   * Test if the facet name is from one of the conjunctive/normal facets
-   * @method
-   * @param {string} facet facet name to test
-   * @return {boolean}
-   */
-  isConjunctiveFacet: function(facet) {
-    return this.facets.indexOf(facet) > -1;
-  },
-  /**
-   * Returns true if the facet is refined, either for a specific value or in
-   * general.
-   * @method
-   * @param {string} facet name of the attribute for used for faceting
-   * @param {string} value, optional value. If passed will test that this value
-   * is filtering the given facet.
-   * @return {boolean} returns true if refined
-   */
-  isFacetRefined: function isFacetRefined(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      return false;
-    }
-    return RefinementList.isRefined(this.facetsRefinements, facet, value);
-  },
-  /**
-   * Returns true if the facet contains exclusions or if a specific value is
-   * excluded.
-   *
-   * @method
-   * @param {string} facet name of the attribute for used for faceting
-   * @param {string} [value] optional value. If passed will test that this value
-   * is filtering the given facet.
-   * @return {boolean} returns true if refined
-   */
-  isExcludeRefined: function isExcludeRefined(facet, value) {
-    if (!this.isConjunctiveFacet(facet)) {
-      return false;
-    }
-    return RefinementList.isRefined(this.facetsExcludes, facet, value);
-  },
-  /**
-   * Returns true if the facet contains a refinement, or if a value passed is a
-   * refinement for the facet.
-   * @method
-   * @param {string} facet name of the attribute for used for faceting
-   * @param {string} value optional, will test if the value is used for refinement
-   * if there is one, otherwise will test if the facet contains any refinement
-   * @return {boolean}
-   */
-  isDisjunctiveFacetRefined: function isDisjunctiveFacetRefined(facet, value) {
-    if (!this.isDisjunctiveFacet(facet)) {
-      return false;
-    }
-    return RefinementList.isRefined(this.disjunctiveFacetsRefinements, facet, value);
-  },
-  /**
-   * Returns true if the facet contains a refinement, or if a value passed is a
-   * refinement for the facet.
-   * @method
-   * @param {string} facet name of the attribute for used for faceting
-   * @param {string} value optional, will test if the value is used for refinement
-   * if there is one, otherwise will test if the facet contains any refinement
-   * @return {boolean}
-   */
-  isHierarchicalFacetRefined: function isHierarchicalFacetRefined(facet, value) {
-    if (!this.isHierarchicalFacet(facet)) {
-      return false;
-    }
-
-    var refinements = this.getHierarchicalRefinement(facet);
-
-    if (!value) {
-      return refinements.length > 0;
-    }
-
-    return refinements.indexOf(value) !== -1;
-  },
-  /**
-   * Test if the triple (attribute, operator, value) is already refined.
-   * If only the attribute and the operator are provided, it tests if the
-   * contains any refinement value.
-   * @method
-   * @param {string} attribute attribute for which the refinement is applied
-   * @param {string} [operator] operator of the refinement
-   * @param {string} [value] value of the refinement
-   * @return {boolean} true if it is refined
-   */
-  isNumericRefined: function isNumericRefined(attribute, operator, value) {
-    if (value === undefined && operator === undefined) {
-      return !!this.numericRefinements[attribute];
-    }
-
-    var isOperatorDefined =
-      this.numericRefinements[attribute] &&
-      this.numericRefinements[attribute][operator] !== undefined;
-
-    if (value === undefined || !isOperatorDefined) {
-      return isOperatorDefined;
-    }
-
-    var parsedValue = valToNumber(value);
-    var isAttributeValueDefined =
-      findArray(this.numericRefinements[attribute][operator], parsedValue) !==
-      undefined;
-
-    return isOperatorDefined && isAttributeValueDefined;
-  },
-  /**
-   * Returns true if the tag refined, false otherwise
-   * @method
-   * @param {string} tag the tag to check
-   * @return {boolean}
-   */
-  isTagRefined: function isTagRefined(tag) {
-    return this.tagRefinements.indexOf(tag) !== -1;
-  },
-  /**
-   * Returns the list of all disjunctive facets refined
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {value} value value used for filtering
-   * @return {string[]}
-   */
-  getRefinedDisjunctiveFacets: function getRefinedDisjunctiveFacets() {
-    var self = this;
-
-    // attributes used for numeric filter can also be disjunctive
-    var disjunctiveNumericRefinedFacets = intersection(
-      Object.keys(this.numericRefinements).filter(function(facet) {
-        return Object.keys(self.numericRefinements[facet]).length > 0;
-      }),
-      this.disjunctiveFacets
-    );
-
-    return Object.keys(this.disjunctiveFacetsRefinements).filter(function(facet) {
-      return self.disjunctiveFacetsRefinements[facet].length > 0;
-    })
-      .concat(disjunctiveNumericRefinedFacets)
-      .concat(this.getRefinedHierarchicalFacets());
-  },
-  /**
-   * Returns the list of all disjunctive facets refined
-   * @method
-   * @param {string} facet name of the attribute used for faceting
-   * @param {value} value value used for filtering
-   * @return {string[]}
-   */
-  getRefinedHierarchicalFacets: function getRefinedHierarchicalFacets() {
-    var self = this;
-    return intersection(
-      // enforce the order between the two arrays,
-      // so that refinement name index === hierarchical facet index
-      this.hierarchicalFacets.map(function(facet) { return facet.name; }),
-      Object.keys(this.hierarchicalFacetsRefinements).filter(function(facet) {
-        return self.hierarchicalFacetsRefinements[facet].length > 0;
-      })
-    );
-  },
-  /**
-   * Returned the list of all disjunctive facets not refined
-   * @method
-   * @return {string[]}
-   */
-  getUnrefinedDisjunctiveFacets: function() {
-    var refinedFacets = this.getRefinedDisjunctiveFacets();
-
-    return this.disjunctiveFacets.filter(function(f) {
-      return refinedFacets.indexOf(f) === -1;
-    });
-  },
-
-  managedParameters: [
-    'index',
-
-    'facets',
-    'disjunctiveFacets',
-    'facetsRefinements',
-    'hierarchicalFacets',
-    'facetsExcludes',
-
-    'disjunctiveFacetsRefinements',
-    'numericRefinements',
-    'tagRefinements',
-    'hierarchicalFacetsRefinements'
-  ],
-  getQueryParams: function getQueryParams() {
-    var managedParameters = this.managedParameters;
-
-    var queryParams = {};
-
-    var self = this;
-    Object.keys(this).forEach(function(paramName) {
-      var paramValue = self[paramName];
-      if (managedParameters.indexOf(paramName) === -1 && paramValue !== undefined) {
-        queryParams[paramName] = paramValue;
-      }
-    });
-
-    return queryParams;
-  },
-  /**
-   * Let the user set a specific value for a given parameter. Will return the
-   * same instance if the parameter is invalid or if the value is the same as the
-   * previous one.
-   * @method
-   * @param {string} parameter the parameter name
-   * @param {any} value the value to be set, must be compliant with the definition
-   * of the attribute on the object
-   * @return {SearchParameters} the updated state
-   */
-  setQueryParameter: function setParameter(parameter, value) {
-    if (this[parameter] === value) return this;
-
-    var modification = {};
-
-    modification[parameter] = value;
-
-    return this.setQueryParameters(modification);
-  },
-  /**
-   * Let the user set any of the parameters with a plain object.
-   * @method
-   * @param {object} params all the keys and the values to be updated
-   * @return {SearchParameters} a new updated instance
-   */
-  setQueryParameters: function setQueryParameters(params) {
-    if (!params) return this;
-
-    var error = SearchParameters.validate(this, params);
-
-    if (error) {
-      throw error;
-    }
-
-    var self = this;
-    var nextWithNumbers = SearchParameters._parseNumbers(params);
-    var previousPlainObject = Object.keys(this).reduce(function(acc, key) {
-      acc[key] = self[key];
-      return acc;
-    }, {});
-
-    var nextPlainObject = Object.keys(nextWithNumbers).reduce(
-      function(previous, key) {
-        var isPreviousValueDefined = previous[key] !== undefined;
-        var isNextValueDefined = nextWithNumbers[key] !== undefined;
-
-        if (isPreviousValueDefined && !isNextValueDefined) {
-          return omit(previous, [key]);
-        }
-
-        if (isNextValueDefined) {
-          previous[key] = nextWithNumbers[key];
-        }
-
-        return previous;
-      },
-      previousPlainObject
-    );
-
-    return new this.constructor(nextPlainObject);
-  },
-
-  /**
-   * Returns a new instance with the page reset. Two scenarios possible:
-   * the page is omitted -> return the given instance
-   * the page is set -> return a new instance with a page of 0
-   * @return {SearchParameters} a new updated instance
-   */
-  resetPage: function() {
-    if (this.page === undefined) {
-      return this;
-    }
-
-    return this.setPage(0);
-  },
-
-  /**
-   * Helper function to get the hierarchicalFacet separator or the default one (`>`)
-   * @param  {object} hierarchicalFacet
-   * @return {string} returns the hierarchicalFacet.separator or `>` as default
-   */
-  _getHierarchicalFacetSortBy: function(hierarchicalFacet) {
-    return hierarchicalFacet.sortBy || ['isRefined:desc', 'name:asc'];
-  },
-
-  /**
-   * Helper function to get the hierarchicalFacet separator or the default one (`>`)
-   * @private
-   * @param  {object} hierarchicalFacet
-   * @return {string} returns the hierarchicalFacet.separator or `>` as default
-   */
-  _getHierarchicalFacetSeparator: function(hierarchicalFacet) {
-    return hierarchicalFacet.separator || ' > ';
-  },
-
-  /**
-   * Helper function to get the hierarchicalFacet prefix path or null
-   * @private
-   * @param  {object} hierarchicalFacet
-   * @return {string} returns the hierarchicalFacet.rootPath or null as default
-   */
-  _getHierarchicalRootPath: function(hierarchicalFacet) {
-    return hierarchicalFacet.rootPath || null;
-  },
-
-  /**
-   * Helper function to check if we show the parent level of the hierarchicalFacet
-   * @private
-   * @param  {object} hierarchicalFacet
-   * @return {string} returns the hierarchicalFacet.showParentLevel or true as default
-   */
-  _getHierarchicalShowParentLevel: function(hierarchicalFacet) {
-    if (typeof hierarchicalFacet.showParentLevel === 'boolean') {
-      return hierarchicalFacet.showParentLevel;
-    }
-    return true;
-  },
-
-  /**
-   * Helper function to get the hierarchicalFacet by it's name
-   * @param  {string} hierarchicalFacetName
-   * @return {object} a hierarchicalFacet
-   */
-  getHierarchicalFacetByName: function(hierarchicalFacetName) {
-    return find(
-      this.hierarchicalFacets,
-      function(f) {
-        return f.name === hierarchicalFacetName;
-      }
-    );
-  },
-
-  /**
-   * Get the current breadcrumb for a hierarchical facet, as an array
-   * @param  {string} facetName Hierarchical facet name
-   * @return {array.<string>} the path as an array of string
-   */
-  getHierarchicalFacetBreadcrumb: function(facetName) {
-    if (!this.isHierarchicalFacet(facetName)) {
-      return [];
-    }
-
-    var refinement = this.getHierarchicalRefinement(facetName)[0];
-    if (!refinement) return [];
-
-    var separator = this._getHierarchicalFacetSeparator(
-      this.getHierarchicalFacetByName(facetName)
-    );
-    var path = refinement.split(separator);
-    return path.map(function(part) {
-      return part.trim();
-    });
-  },
-
-  toString: function() {
-    return JSON.stringify(this, null, 2);
-  }
-};
-
-/**
- * Callback used for clearRefinement method
- * @callback SearchParameters.clearCallback
- * @param {OperatorList|FacetList} value the value of the filter
- * @param {string} key the current attribute name
- * @param {string} type `numeric`, `disjunctiveFacet`, `conjunctiveFacet`, `hierarchicalFacet` or `exclude`
- * depending on the type of facet
- * @return {boolean} `true` if the element should be removed. `false` otherwise.
- */
-module.exports = SearchParameters;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/SearchResults/generate-hierarchical-tree.js":
-/*!*******************************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/SearchResults/generate-hierarchical-tree.js ***!
-  \*******************************************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-module.exports = generateTrees;
-
-var orderBy = __webpack_require__(/*! ../functions/orderBy */ "./node_modules/algoliasearch-helper/src/functions/orderBy.js");
-var find = __webpack_require__(/*! ../functions/find */ "./node_modules/algoliasearch-helper/src/functions/find.js");
-var prepareHierarchicalFacetSortBy = __webpack_require__(/*! ../functions/formatSort */ "./node_modules/algoliasearch-helper/src/functions/formatSort.js");
-var fv = __webpack_require__(/*! ../functions/escapeFacetValue */ "./node_modules/algoliasearch-helper/src/functions/escapeFacetValue.js");
-var escapeFacetValue = fv.escapeFacetValue;
-var unescapeFacetValue = fv.unescapeFacetValue;
-
-function generateTrees(state) {
-  return function generate(hierarchicalFacetResult, hierarchicalFacetIndex) {
-    var hierarchicalFacet = state.hierarchicalFacets[hierarchicalFacetIndex];
-    var hierarchicalFacetRefinement =
-      (state.hierarchicalFacetsRefinements[hierarchicalFacet.name] &&
-        state.hierarchicalFacetsRefinements[hierarchicalFacet.name][0]) ||
-      '';
-    var hierarchicalSeparator = state._getHierarchicalFacetSeparator(
-      hierarchicalFacet
-    );
-    var hierarchicalRootPath = state._getHierarchicalRootPath(
-      hierarchicalFacet
-    );
-    var hierarchicalShowParentLevel = state._getHierarchicalShowParentLevel(
-      hierarchicalFacet
-    );
-    var sortBy = prepareHierarchicalFacetSortBy(
-      state._getHierarchicalFacetSortBy(hierarchicalFacet)
-    );
-
-    var rootExhaustive = hierarchicalFacetResult.every(function(facetResult) {
-      return facetResult.exhaustive;
-    });
-
-    var generateTreeFn = generateHierarchicalTree(
-      sortBy,
-      hierarchicalSeparator,
-      hierarchicalRootPath,
-      hierarchicalShowParentLevel,
-      hierarchicalFacetRefinement
-    );
-
-    var results = hierarchicalFacetResult;
-
-    if (hierarchicalRootPath) {
-      results = hierarchicalFacetResult.slice(
-        hierarchicalRootPath.split(hierarchicalSeparator).length
-      );
-    }
-
-    return results.reduce(generateTreeFn, {
-      name: state.hierarchicalFacets[hierarchicalFacetIndex].name,
-      count: null, // root level, no count
-      isRefined: true, // root level, always refined
-      path: null, // root level, no path
-      escapedValue: null,
-      exhaustive: rootExhaustive,
-      data: null
-    });
-  };
-}
-
-function generateHierarchicalTree(
-  sortBy,
-  hierarchicalSeparator,
-  hierarchicalRootPath,
-  hierarchicalShowParentLevel,
-  currentRefinement
-) {
-  return function generateTree(
-    hierarchicalTree,
-    hierarchicalFacetResult,
-    currentHierarchicalLevel
-  ) {
-    var parent = hierarchicalTree;
-
-    if (currentHierarchicalLevel > 0) {
-      var level = 0;
-
-      parent = hierarchicalTree;
-
-      while (level < currentHierarchicalLevel) {
-        /**
-         * @type {object[]]} hierarchical data
-         */
-        var data = parent && Array.isArray(parent.data) ? parent.data : [];
-        parent = find(data, function(subtree) {
-          return subtree.isRefined;
-        });
-        level++;
-      }
-    }
-
-    // we found a refined parent, let's add current level data under it
-    if (parent) {
-      // filter values in case an object has multiple categories:
-      //   {
-      //     categories: {
-      //       level0: ['beers', 'bières'],
-      //       level1: ['beers > IPA', 'bières > Belges']
-      //     }
-      //   }
-      //
-      // If parent refinement is `beers`, then we do not want to have `bières > Belges`
-      // showing up
-
-      var picked = Object.keys(hierarchicalFacetResult.data)
-        .map(function(facetValue) {
-          return [facetValue, hierarchicalFacetResult.data[facetValue]];
-        })
-        .filter(function(tuple) {
-          var facetValue = tuple[0];
-          return onlyMatchingTree(
-            facetValue,
-            parent.path || hierarchicalRootPath,
-            currentRefinement,
-            hierarchicalSeparator,
-            hierarchicalRootPath,
-            hierarchicalShowParentLevel
-          );
-        });
-
-      parent.data = orderBy(
-        picked.map(function(tuple) {
-          var facetValue = tuple[0];
-          var facetCount = tuple[1];
-
-          return format(
-            facetCount,
-            facetValue,
-            hierarchicalSeparator,
-            unescapeFacetValue(currentRefinement),
-            hierarchicalFacetResult.exhaustive
-          );
-        }),
-        sortBy[0],
-        sortBy[1]
-      );
-    }
-
-    return hierarchicalTree;
-  };
-}
-
-function onlyMatchingTree(
-  facetValue,
-  parentPath,
-  currentRefinement,
-  hierarchicalSeparator,
-  hierarchicalRootPath,
-  hierarchicalShowParentLevel
-) {
-  // we want the facetValue is a child of hierarchicalRootPath
-  if (
-    hierarchicalRootPath &&
-    (facetValue.indexOf(hierarchicalRootPath) !== 0 ||
-      hierarchicalRootPath === facetValue)
-  ) {
-    return false;
-  }
-
-  // we always want root levels (only when there is no prefix path)
-  return (
-    (!hierarchicalRootPath &&
-      facetValue.indexOf(hierarchicalSeparator) === -1) ||
-    // if there is a rootPath, being root level mean 1 level under rootPath
-    (hierarchicalRootPath &&
-      facetValue.split(hierarchicalSeparator).length -
-        hierarchicalRootPath.split(hierarchicalSeparator).length ===
-        1) ||
-    // if current refinement is a root level and current facetValue is a root level,
-    // keep the facetValue
-    (facetValue.indexOf(hierarchicalSeparator) === -1 &&
-      currentRefinement.indexOf(hierarchicalSeparator) === -1) ||
-    // currentRefinement is a child of the facet value
-    currentRefinement.indexOf(facetValue) === 0 ||
-    // facetValue is a child of the current parent, add it
-    (facetValue.indexOf(parentPath + hierarchicalSeparator) === 0 &&
-      (hierarchicalShowParentLevel ||
-        facetValue.indexOf(currentRefinement) === 0))
-  );
-}
-
-function format(
-  facetCount,
-  facetValue,
-  hierarchicalSeparator,
-  currentRefinement,
-  exhaustive
-) {
-  var parts = facetValue.split(hierarchicalSeparator);
-  return {
-    name: parts[parts.length - 1].trim(),
-    path: facetValue,
-    escapedValue: escapeFacetValue(facetValue),
-    count: facetCount,
-    isRefined:
-      currentRefinement === facetValue ||
-      currentRefinement.indexOf(facetValue + hierarchicalSeparator) === 0,
-    exhaustive: exhaustive,
-    data: null
-  };
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/SearchResults/index.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/SearchResults/index.js ***!
-  \**********************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var merge = __webpack_require__(/*! ../functions/merge */ "./node_modules/algoliasearch-helper/src/functions/merge.js");
-var defaultsPure = __webpack_require__(/*! ../functions/defaultsPure */ "./node_modules/algoliasearch-helper/src/functions/defaultsPure.js");
-var orderBy = __webpack_require__(/*! ../functions/orderBy */ "./node_modules/algoliasearch-helper/src/functions/orderBy.js");
-var compact = __webpack_require__(/*! ../functions/compact */ "./node_modules/algoliasearch-helper/src/functions/compact.js");
-var find = __webpack_require__(/*! ../functions/find */ "./node_modules/algoliasearch-helper/src/functions/find.js");
-var findIndex = __webpack_require__(/*! ../functions/findIndex */ "./node_modules/algoliasearch-helper/src/functions/findIndex.js");
-var formatSort = __webpack_require__(/*! ../functions/formatSort */ "./node_modules/algoliasearch-helper/src/functions/formatSort.js");
-var fv = __webpack_require__(/*! ../functions/escapeFacetValue */ "./node_modules/algoliasearch-helper/src/functions/escapeFacetValue.js");
-var escapeFacetValue = fv.escapeFacetValue;
-var unescapeFacetValue = fv.unescapeFacetValue;
-
-var generateHierarchicalTree = __webpack_require__(/*! ./generate-hierarchical-tree */ "./node_modules/algoliasearch-helper/src/SearchResults/generate-hierarchical-tree.js");
-
-/**
- * @typedef SearchResults.Facet
- * @type {object}
- * @property {string} name name of the attribute in the record
- * @property {object} data the faceting data: value, number of entries
- * @property {object} stats undefined unless facet_stats is retrieved from algolia
- */
-
-/**
- * @typedef SearchResults.HierarchicalFacet
- * @type {object}
- * @property {string} name name of the current value given the hierarchical level, trimmed.
- * If root node, you get the facet name
- * @property {number} count number of objects matching this hierarchical value
- * @property {string} path the current hierarchical value full path
- * @property {boolean} isRefined `true` if the current value was refined, `false` otherwise
- * @property {HierarchicalFacet[]} data sub values for the current level
- */
-
-/**
- * @typedef SearchResults.FacetValue
- * @type {object}
- * @property {string} name the facet value itself
- * @property {number} count times this facet appears in the results
- * @property {boolean} isRefined is the facet currently selected
- * @property {boolean} isExcluded is the facet currently excluded (only for conjunctive facets)
- */
-
-/**
- * @typedef Refinement
- * @type {object}
- * @property {string} type the type of filter used:
- * `numeric`, `facet`, `exclude`, `disjunctive`, `hierarchical`
- * @property {string} attributeName name of the attribute used for filtering
- * @property {string} name the value of the filter
- * @property {number} numericValue the value as a number. Only for numeric filters.
- * @property {string} operator the operator used. Only for numeric filters.
- * @property {number} count the number of computed hits for this filter. Only on facets.
- * @property {boolean} exhaustive if the count is exhaustive
- */
-
-/**
- * @param {string[]} attributes
- */
-function getIndices(attributes) {
-  var indices = {};
-
-  attributes.forEach(function(val, idx) {
-    indices[val] = idx;
-  });
-
-  return indices;
-}
-
-function assignFacetStats(dest, facetStats, key) {
-  if (facetStats && facetStats[key]) {
-    dest.stats = facetStats[key];
-  }
-}
-
-/**
- * @typedef {Object} HierarchicalFacet
- * @property {string} name
- * @property {string[]} attributes
- */
-
-/**
- * @param {HierarchicalFacet[]} hierarchicalFacets
- * @param {string} hierarchicalAttributeName
- */
-function findMatchingHierarchicalFacetFromAttributeName(
-  hierarchicalFacets,
-  hierarchicalAttributeName
-) {
-  return find(hierarchicalFacets, function facetKeyMatchesAttribute(
-    hierarchicalFacet
-  ) {
-    var facetNames = hierarchicalFacet.attributes || [];
-    return facetNames.indexOf(hierarchicalAttributeName) > -1;
-  });
-}
-
-/*eslint-disable */
-/**
- * Constructor for SearchResults
- * @class
- * @classdesc SearchResults contains the results of a query to Algolia using the
- * {@link AlgoliaSearchHelper}.
- * @param {SearchParameters} state state that led to the response
- * @param {array.<object>} results the results from algolia client
- * @example <caption>SearchResults of the first query in
- * <a href="http://demos.algolia.com/instant-search-demo">the instant search demo</a></caption>
-{
-   "hitsPerPage": 10,
-   "processingTimeMS": 2,
-   "facets": [
-      {
-         "name": "type",
-         "data": {
-            "HardGood": 6627,
-            "BlackTie": 550,
-            "Music": 665,
-            "Software": 131,
-            "Game": 456,
-            "Movie": 1571
-         },
-         "exhaustive": false
-      },
-      {
-         "exhaustive": false,
-         "data": {
-            "Free shipping": 5507
-         },
-         "name": "shipping"
-      }
-  ],
-   "hits": [
-      {
-         "thumbnailImage": "http://img.bbystatic.com/BestBuy_US/images/products/1688/1688832_54x108_s.gif",
-         "_highlightResult": {
-            "shortDescription": {
-               "matchLevel": "none",
-               "value": "Safeguard your PC, Mac, Android and iOS devices with comprehensive Internet protection",
-               "matchedWords": []
-            },
-            "category": {
-               "matchLevel": "none",
-               "value": "Computer Security Software",
-               "matchedWords": []
-            },
-            "manufacturer": {
-               "matchedWords": [],
-               "value": "Webroot",
-               "matchLevel": "none"
-            },
-            "name": {
-               "value": "Webroot SecureAnywhere Internet Security (3-Device) (1-Year Subscription) - Mac/Windows",
-               "matchedWords": [],
-               "matchLevel": "none"
-            }
-         },
-         "image": "http://img.bbystatic.com/BestBuy_US/images/products/1688/1688832_105x210_sc.jpg",
-         "shipping": "Free shipping",
-         "bestSellingRank": 4,
-         "shortDescription": "Safeguard your PC, Mac, Android and iOS devices with comprehensive Internet protection",
-         "url": "http://www.bestbuy.com/site/webroot-secureanywhere-internet-security-3-devi…d=1219060687969&skuId=1688832&cmp=RMX&ky=2d3GfEmNIzjA0vkzveHdZEBgpPCyMnLTJ",
-         "name": "Webroot SecureAnywhere Internet Security (3-Device) (1-Year Subscription) - Mac/Windows",
-         "category": "Computer Security Software",
-         "salePrice_range": "1 - 50",
-         "objectID": "1688832",
-         "type": "Software",
-         "customerReviewCount": 5980,
-         "salePrice": 49.99,
-         "manufacturer": "Webroot"
-      },
-      ....
-  ],
-   "nbHits": 10000,
-   "disjunctiveFacets": [
-      {
-         "exhaustive": false,
-         "data": {
-            "5": 183,
-            "12": 112,
-            "7": 149,
-            ...
-         },
-         "name": "customerReviewCount",
-         "stats": {
-            "max": 7461,
-            "avg": 157.939,
-            "min": 1
-         }
-      },
-      {
-         "data": {
-            "Printer Ink": 142,
-            "Wireless Speakers": 60,
-            "Point & Shoot Cameras": 48,
-            ...
-         },
-         "name": "category",
-         "exhaustive": false
-      },
-      {
-         "exhaustive": false,
-         "data": {
-            "> 5000": 2,
-            "1 - 50": 6524,
-            "501 - 2000": 566,
-            "201 - 500": 1501,
-            "101 - 200": 1360,
-            "2001 - 5000": 47
-         },
-         "name": "salePrice_range"
-      },
-      {
-         "data": {
-            "Dynex™": 202,
-            "Insignia™": 230,
-            "PNY": 72,
-            ...
-         },
-         "name": "manufacturer",
-         "exhaustive": false
-      }
-  ],
-   "query": "",
-   "nbPages": 100,
-   "page": 0,
-   "index": "bestbuy"
-}
- **/
-/*eslint-enable */
-function SearchResults(state, results, options) {
-  var mainSubResponse = results[0];
-
-  this._rawResults = results;
-
-  var self = this;
-
-  // https://www.algolia.com/doc/api-reference/api-methods/search/#response
-  Object.keys(mainSubResponse).forEach(function(key) {
-    self[key] = mainSubResponse[key];
-  });
-
-  // Make every key of the result options reachable from the instance
-  Object.keys(options || {}).forEach(function(key) {
-    self[key] = options[key];
-  });
-
-  /**
-   * query used to generate the results
-   * @name query
-   * @member {string}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * The query as parsed by the engine given all the rules.
-   * @name parsedQuery
-   * @member {string}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * all the records that match the search parameters. Each record is
-   * augmented with a new attribute `_highlightResult`
-   * which is an object keyed by attribute and with the following properties:
-   *  - `value` : the value of the facet highlighted (html)
-   *  - `matchLevel`: full, partial or none depending on how the query terms match
-   * @name hits
-   * @member {object[]}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * index where the results come from
-   * @name index
-   * @member {string}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * number of hits per page requested
-   * @name hitsPerPage
-   * @member {number}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * total number of hits of this query on the index
-   * @name nbHits
-   * @member {number}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * total number of pages with respect to the number of hits per page and the total number of hits
-   * @name nbPages
-   * @member {number}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * current page
-   * @name page
-   * @member {number}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * The position if the position was guessed by IP.
-   * @name aroundLatLng
-   * @member {string}
-   * @memberof SearchResults
-   * @instance
-   * @example "48.8637,2.3615",
-   */
-  /**
-   * The radius computed by Algolia.
-   * @name automaticRadius
-   * @member {string}
-   * @memberof SearchResults
-   * @instance
-   * @example "126792922",
-   */
-  /**
-   * String identifying the server used to serve this request.
-   *
-   * getRankingInfo needs to be set to `true` for this to be returned
-   *
-   * @name serverUsed
-   * @member {string}
-   * @memberof SearchResults
-   * @instance
-   * @example "c7-use-2.algolia.net",
-   */
-  /**
-   * Boolean that indicates if the computation of the counts did time out.
-   * @deprecated
-   * @name timeoutCounts
-   * @member {boolean}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * Boolean that indicates if the computation of the hits did time out.
-   * @deprecated
-   * @name timeoutHits
-   * @member {boolean}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * True if the counts of the facets is exhaustive
-   * @name exhaustiveFacetsCount
-   * @member {boolean}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * True if the number of hits is exhaustive
-   * @name exhaustiveNbHits
-   * @member {boolean}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * Contains the userData if they are set by a [query rule](https://www.algolia.com/doc/guides/query-rules/query-rules-overview/).
-   * @name userData
-   * @member {object[]}
-   * @memberof SearchResults
-   * @instance
-   */
-  /**
-   * queryID is the unique identifier of the query used to generate the current search results.
-   * This value is only available if the `clickAnalytics` search parameter is set to `true`.
-   * @name queryID
-   * @member {string}
-   * @memberof SearchResults
-   * @instance
-   */
-
-  /**
-   * sum of the processing time of all the queries
-   * @member {number}
-   */
-  this.processingTimeMS = results.reduce(function(sum, result) {
-    return result.processingTimeMS === undefined
-      ? sum
-      : sum + result.processingTimeMS;
-  }, 0);
-
-  /**
-   * disjunctive facets results
-   * @member {SearchResults.Facet[]}
-   */
-  this.disjunctiveFacets = [];
-  /**
-   * disjunctive facets results
-   * @member {SearchResults.HierarchicalFacet[]}
-   */
-  this.hierarchicalFacets = state.hierarchicalFacets.map(function initFutureTree() {
-    return [];
-  });
-  /**
-   * other facets results
-   * @member {SearchResults.Facet[]}
-   */
-  this.facets = [];
-
-  var disjunctiveFacets = state.getRefinedDisjunctiveFacets();
-
-  var facetsIndices = getIndices(state.facets);
-  var disjunctiveFacetsIndices = getIndices(state.disjunctiveFacets);
-  var nextDisjunctiveResult = 1;
-
-  // Since we send request only for disjunctive facets that have been refined,
-  // we get the facets information from the first, general, response.
-
-  var mainFacets = mainSubResponse.facets || {};
-
-  Object.keys(mainFacets).forEach(function(facetKey) {
-    var facetValueObject = mainFacets[facetKey];
-
-    var hierarchicalFacet = findMatchingHierarchicalFacetFromAttributeName(
-      state.hierarchicalFacets,
-      facetKey
-    );
-
-    if (hierarchicalFacet) {
-      // Place the hierarchicalFacet data at the correct index depending on
-      // the attributes order that was defined at the helper initialization
-      var facetIndex = hierarchicalFacet.attributes.indexOf(facetKey);
-      var idxAttributeName = findIndex(state.hierarchicalFacets, function(f) {
-        return f.name === hierarchicalFacet.name;
-      });
-      self.hierarchicalFacets[idxAttributeName][facetIndex] = {
-        attribute: facetKey,
-        data: facetValueObject,
-        exhaustive: mainSubResponse.exhaustiveFacetsCount
-      };
-    } else {
-      var isFacetDisjunctive = state.disjunctiveFacets.indexOf(facetKey) !== -1;
-      var isFacetConjunctive = state.facets.indexOf(facetKey) !== -1;
-      var position;
-
-      if (isFacetDisjunctive) {
-        position = disjunctiveFacetsIndices[facetKey];
-        self.disjunctiveFacets[position] = {
-          name: facetKey,
-          data: facetValueObject,
-          exhaustive: mainSubResponse.exhaustiveFacetsCount
-        };
-        assignFacetStats(self.disjunctiveFacets[position], mainSubResponse.facets_stats, facetKey);
-      }
-      if (isFacetConjunctive) {
-        position = facetsIndices[facetKey];
-        self.facets[position] = {
-          name: facetKey,
-          data: facetValueObject,
-          exhaustive: mainSubResponse.exhaustiveFacetsCount
-        };
-        assignFacetStats(self.facets[position], mainSubResponse.facets_stats, facetKey);
-      }
-    }
-  });
-
-  // Make sure we do not keep holes within the hierarchical facets
-  this.hierarchicalFacets = compact(this.hierarchicalFacets);
-
-  // aggregate the refined disjunctive facets
-  disjunctiveFacets.forEach(function(disjunctiveFacet) {
-    var result = results[nextDisjunctiveResult];
-    var facets = result && result.facets ? result.facets : {};
-    var hierarchicalFacet = state.getHierarchicalFacetByName(disjunctiveFacet);
-
-    // There should be only item in facets.
-    Object.keys(facets).forEach(function(dfacet) {
-      var facetResults = facets[dfacet];
-
-      var position;
-
-      if (hierarchicalFacet) {
-        position = findIndex(state.hierarchicalFacets, function(f) {
-          return f.name === hierarchicalFacet.name;
-        });
-        var attributeIndex = findIndex(self.hierarchicalFacets[position], function(f) {
-          return f.attribute === dfacet;
-        });
-
-        // previous refinements and no results so not able to find it
-        if (attributeIndex === -1) {
-          return;
-        }
-
-        self.hierarchicalFacets[position][attributeIndex].data = merge(
-          {},
-          self.hierarchicalFacets[position][attributeIndex].data,
-          facetResults
-        );
-      } else {
-        position = disjunctiveFacetsIndices[dfacet];
-
-        var dataFromMainRequest = mainSubResponse.facets && mainSubResponse.facets[dfacet] || {};
-
-        self.disjunctiveFacets[position] = {
-          name: dfacet,
-          data: defaultsPure({}, facetResults, dataFromMainRequest),
-          exhaustive: result.exhaustiveFacetsCount
-        };
-        assignFacetStats(self.disjunctiveFacets[position], result.facets_stats, dfacet);
-
-        if (state.disjunctiveFacetsRefinements[dfacet]) {
-          state.disjunctiveFacetsRefinements[dfacet].forEach(function(refinementValue) {
-            // add the disjunctive refinements if it is no more retrieved
-            if (!self.disjunctiveFacets[position].data[refinementValue] &&
-              state.disjunctiveFacetsRefinements[dfacet].indexOf(unescapeFacetValue(refinementValue)) > -1) {
-              self.disjunctiveFacets[position].data[refinementValue] = 0;
-            }
-          });
-        }
-      }
-    });
-    nextDisjunctiveResult++;
-  });
-
-  // if we have some parent level values for hierarchical facets, merge them
-  state.getRefinedHierarchicalFacets().forEach(function(refinedFacet) {
-    var hierarchicalFacet = state.getHierarchicalFacetByName(refinedFacet);
-    var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
-
-    var currentRefinement = state.getHierarchicalRefinement(refinedFacet);
-    // if we are already at a root refinement (or no refinement at all), there is no
-    // root level values request
-    if (currentRefinement.length === 0 || currentRefinement[0].split(separator).length < 2) {
-      return;
-    }
-
-    results.slice(nextDisjunctiveResult).forEach(function(result) {
-      var facets = result && result.facets
-        ? result.facets
-        : {};
-
-      Object.keys(facets).forEach(function(dfacet) {
-        var facetResults = facets[dfacet];
-        var position = findIndex(state.hierarchicalFacets, function(f) {
-          return f.name === hierarchicalFacet.name;
-        });
-        var attributeIndex = findIndex(self.hierarchicalFacets[position], function(f) {
-          return f.attribute === dfacet;
-        });
-
-        // previous refinements and no results so not able to find it
-        if (attributeIndex === -1) {
-          return;
-        }
-
-        // when we always get root levels, if the hits refinement is `beers > IPA` (count: 5),
-        // then the disjunctive values will be `beers` (count: 100),
-        // but we do not want to display
-        //   | beers (100)
-        //     > IPA (5)
-        // We want
-        //   | beers (5)
-        //     > IPA (5)
-        var defaultData = {};
-
-        if (currentRefinement.length > 0) {
-          var root = currentRefinement[0].split(separator)[0];
-          defaultData[root] = self.hierarchicalFacets[position][attributeIndex].data[root];
-        }
-
-        self.hierarchicalFacets[position][attributeIndex].data = defaultsPure(
-          defaultData,
-          facetResults,
-          self.hierarchicalFacets[position][attributeIndex].data
-        );
-      });
-
-      nextDisjunctiveResult++;
-    });
-  });
-
-  // add the excludes
-  Object.keys(state.facetsExcludes).forEach(function(facetName) {
-    var excludes = state.facetsExcludes[facetName];
-    var position = facetsIndices[facetName];
-
-    self.facets[position] = {
-      name: facetName,
-      data: mainSubResponse.facets[facetName],
-      exhaustive: mainSubResponse.exhaustiveFacetsCount
-    };
-    excludes.forEach(function(facetValue) {
-      self.facets[position] = self.facets[position] || {name: facetName};
-      self.facets[position].data = self.facets[position].data || {};
-      self.facets[position].data[facetValue] = 0;
-    });
-  });
-
-  /**
-   * @type {Array}
-   */
-  this.hierarchicalFacets = this.hierarchicalFacets.map(generateHierarchicalTree(state));
-
-  /**
-   * @type {Array}
-   */
-  this.facets = compact(this.facets);
-  /**
-   * @type {Array}
-   */
-  this.disjunctiveFacets = compact(this.disjunctiveFacets);
-
-  this._state = state;
-}
-
-/**
- * Get a facet object with its name
- * @deprecated
- * @param {string} name name of the faceted attribute
- * @return {SearchResults.Facet} the facet object
- */
-SearchResults.prototype.getFacetByName = function(name) {
-  function predicate(facet) {
-    return facet.name === name;
-  }
-
-  return find(this.facets, predicate) ||
-    find(this.disjunctiveFacets, predicate) ||
-    find(this.hierarchicalFacets, predicate);
-};
-
-/**
- * Get the facet values of a specified attribute from a SearchResults object.
- * @private
- * @param {SearchResults} results the search results to search in
- * @param {string} attribute name of the faceted attribute to search for
- * @return {array|object} facet values. For the hierarchical facets it is an object.
- */
-function extractNormalizedFacetValues(results, attribute) {
-  function predicate(facet) {
-    return facet.name === attribute;
-  }
-
-  if (results._state.isConjunctiveFacet(attribute)) {
-    var facet = find(results.facets, predicate);
-    if (!facet) return [];
-
-    return Object.keys(facet.data).map(function(name) {
-      var value = escapeFacetValue(name);
-      return {
-        name: name,
-        escapedValue: value,
-        count: facet.data[name],
-        isRefined: results._state.isFacetRefined(attribute, value),
-        isExcluded: results._state.isExcludeRefined(attribute, name)
-      };
-    });
-  } else if (results._state.isDisjunctiveFacet(attribute)) {
-    var disjunctiveFacet = find(results.disjunctiveFacets, predicate);
-    if (!disjunctiveFacet) return [];
-
-    return Object.keys(disjunctiveFacet.data).map(function(name) {
-      var value = escapeFacetValue(name);
-      return {
-        name: name,
-        escapedValue: value,
-        count: disjunctiveFacet.data[name],
-        isRefined: results._state.isDisjunctiveFacetRefined(attribute, value)
-      };
-    });
-  } else if (results._state.isHierarchicalFacet(attribute)) {
-    return find(results.hierarchicalFacets, predicate);
-  }
-}
-
-/**
- * Sort nodes of a hierarchical or disjunctive facet results
- * @private
- * @param {function} sortFn
- * @param {HierarchicalFacet|Array} node node upon which we want to apply the sort
- * @param {string[]} names attribute names
- * @param {number} [level=0] current index in the names array
- */
-function recSort(sortFn, node, names, level) {
-  level = level || 0;
-
-  if (Array.isArray(node)) {
-    return sortFn(node, names[level]);
-  }
-
-  if (!node.data || node.data.length === 0) {
-    return node;
-  }
-
-  var children = node.data.map(function(childNode) {
-    return recSort(sortFn, childNode, names, level + 1);
-  });
-  var sortedChildren = sortFn(children, names[level]);
-  var newNode = defaultsPure({data: sortedChildren}, node);
-  return newNode;
-}
-
-SearchResults.DEFAULT_SORT = ['isRefined:desc', 'count:desc', 'name:asc'];
-
-function vanillaSortFn(order, data) {
-  return data.sort(order);
-}
-
-/**
- * @typedef FacetOrdering
- * @type {Object}
- * @property {string[]} [order]
- * @property {'count' | 'alpha' | 'hidden'} [sortRemainingBy]
- */
-
-/**
- * Sorts facet arrays via their facet ordering
- * @param {Array} facetValues the values
- * @param {FacetOrdering} facetOrdering the ordering
- * @returns {Array}
- */
-function sortViaFacetOrdering(facetValues, facetOrdering) {
-  var orderedFacets = [];
-  var remainingFacets = [];
-
-  var order = facetOrdering.order || [];
-  /**
-   * an object with the keys being the values in order, the values their index:
-   * ['one', 'two'] -> { one: 0, two: 1 }
-   */
-  var reverseOrder = order.reduce(function(acc, name, i) {
-    acc[name] = i;
-    return acc;
-  }, {});
-
-  facetValues.forEach(function(item) {
-    // hierarchical facets get sorted using their raw name
-    var name = item.path || item.name;
-    if (reverseOrder[name] !== undefined) {
-      orderedFacets[reverseOrder[name]] = item;
-    } else {
-      remainingFacets.push(item);
-    }
-  });
-
-  orderedFacets = orderedFacets.filter(function(facet) {
-    return facet;
-  });
-
-  var sortRemainingBy = facetOrdering.sortRemainingBy;
-  var ordering;
-  if (sortRemainingBy === 'hidden') {
-    return orderedFacets;
-  } else if (sortRemainingBy === 'alpha') {
-    ordering = [['path', 'name'], ['asc', 'asc']];
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
   } else {
-    ordering = [['count'], ['desc']];
-  }
-
-  return orderedFacets.concat(
-    orderBy(remainingFacets, ordering[0], ordering[1])
-  );
-}
-
-/**
- * @param {SearchResults} results the search results class
- * @param {string} attribute the attribute to retrieve ordering of
- * @returns {FacetOrdering=}
- */
-function getFacetOrdering(results, attribute) {
-  return (
-    results.renderingContent &&
-    results.renderingContent.facetOrdering &&
-    results.renderingContent.facetOrdering.values &&
-    results.renderingContent.facetOrdering.values[attribute]
-  );
-}
-
-/**
- * Get a the list of values for a given facet attribute. Those values are sorted
- * refinement first, descending count (bigger value on top), and name ascending
- * (alphabetical order). The sort formula can overridden using either string based
- * predicates or a function.
- *
- * This method will return all the values returned by the Algolia engine plus all
- * the values already refined. This means that it can happen that the
- * `maxValuesPerFacet` [configuration](https://www.algolia.com/doc/rest-api/search#param-maxValuesPerFacet)
- * might not be respected if you have facet values that are already refined.
- * @param {string} attribute attribute name
- * @param {object} opts configuration options.
- * @param {boolean} [opts.facetOrdering]
- * Force the use of facetOrdering from the result if a sortBy is present. If
- * sortBy isn't present, facetOrdering will be used automatically.
- * @param {Array.<string> | function} opts.sortBy
- * When using strings, it consists of
- * the name of the [FacetValue](#SearchResults.FacetValue) or the
- * [HierarchicalFacet](#SearchResults.HierarchicalFacet) attributes with the
- * order (`asc` or `desc`). For example to order the value by count, the
- * argument would be `['count:asc']`.
- *
- * If only the attribute name is specified, the ordering defaults to the one
- * specified in the default value for this attribute.
- *
- * When not specified, the order is
- * ascending.  This parameter can also be a function which takes two facet
- * values and should return a number, 0 if equal, 1 if the first argument is
- * bigger or -1 otherwise.
- *
- * The default value for this attribute `['isRefined:desc', 'count:desc', 'name:asc']`
- * @return {FacetValue[]|HierarchicalFacet|undefined} depending on the type of facet of
- * the attribute requested (hierarchical, disjunctive or conjunctive)
- * @example
- * helper.on('result', function(event){
- *   //get values ordered only by name ascending using the string predicate
- *   event.results.getFacetValues('city', {sortBy: ['name:asc']});
- *   //get values  ordered only by count ascending using a function
- *   event.results.getFacetValues('city', {
- *     // this is equivalent to ['count:asc']
- *     sortBy: function(a, b) {
- *       if (a.count === b.count) return 0;
- *       if (a.count > b.count)   return 1;
- *       if (b.count > a.count)   return -1;
- *     }
- *   });
- * });
- */
-SearchResults.prototype.getFacetValues = function(attribute, opts) {
-  var facetValues = extractNormalizedFacetValues(this, attribute);
-  if (!facetValues) {
-    return undefined;
-  }
-
-  var options = defaultsPure({}, opts, {
-    sortBy: SearchResults.DEFAULT_SORT,
-    // if no sortBy is given, attempt to sort based on facetOrdering
-    // if it is given, we still allow to sort via facet ordering first
-    facetOrdering: !(opts && opts.sortBy)
-  });
-
-  var results = this;
-  var attributes;
-  if (Array.isArray(facetValues)) {
-    attributes = [attribute];
-  } else {
-    var config = results._state.getHierarchicalFacetByName(facetValues.name);
-    attributes = config.attributes;
-  }
-
-  return recSort(function(data, facetName) {
-    if (options.facetOrdering) {
-      var facetOrdering = getFacetOrdering(results, facetName);
-      if (Boolean(facetOrdering)) {
-        return sortViaFacetOrdering(data, facetOrdering);
-      }
-    }
-
-    if (Array.isArray(options.sortBy)) {
-      var order = formatSort(options.sortBy, SearchResults.DEFAULT_SORT);
-      return orderBy(data, order[0], order[1]);
-    } else if (typeof options.sortBy === 'function') {
-      return vanillaSortFn(options.sortBy, data);
-    }
-    throw new Error(
-      'options.sortBy is optional but if defined it must be ' +
-        'either an array of string (predicates) or a sorting function'
-    );
-  }, facetValues, attributes);
-};
-
-/**
- * Returns the facet stats if attribute is defined and the facet contains some.
- * Otherwise returns undefined.
- * @param {string} attribute name of the faceted attribute
- * @return {object} The stats of the facet
- */
-SearchResults.prototype.getFacetStats = function(attribute) {
-  if (this._state.isConjunctiveFacet(attribute)) {
-    return getFacetStatsIfAvailable(this.facets, attribute);
-  } else if (this._state.isDisjunctiveFacet(attribute)) {
-    return getFacetStatsIfAvailable(this.disjunctiveFacets, attribute);
-  }
-
-  return undefined;
-};
-
-/**
- * @typedef {Object} FacetListItem
- * @property {string} name
- */
-
-/**
- * @param {FacetListItem[]} facetList (has more items, but enough for here)
- * @param {string} facetName
- */
-function getFacetStatsIfAvailable(facetList, facetName) {
-  var data = find(facetList, function(facet) {
-    return facet.name === facetName;
-  });
-  return data && data.stats;
-}
-
-/**
- * Returns all refinements for all filters + tags. It also provides
- * additional information: count and exhaustiveness for each filter.
- *
- * See the [refinement type](#Refinement) for an exhaustive view of the available
- * data.
- *
- * Note that for a numeric refinement, results are grouped per operator, this
- * means that it will return responses for operators which are empty.
- *
- * @return {Array.<Refinement>} all the refinements
- */
-SearchResults.prototype.getRefinements = function() {
-  var state = this._state;
-  var results = this;
-  var res = [];
-
-  Object.keys(state.facetsRefinements).forEach(function(attributeName) {
-    state.facetsRefinements[attributeName].forEach(function(name) {
-      res.push(getRefinement(state, 'facet', attributeName, name, results.facets));
-    });
-  });
-
-  Object.keys(state.facetsExcludes).forEach(function(attributeName) {
-    state.facetsExcludes[attributeName].forEach(function(name) {
-      res.push(getRefinement(state, 'exclude', attributeName, name, results.facets));
-    });
-  });
-
-  Object.keys(state.disjunctiveFacetsRefinements).forEach(function(attributeName) {
-    state.disjunctiveFacetsRefinements[attributeName].forEach(function(name) {
-      res.push(getRefinement(state, 'disjunctive', attributeName, name, results.disjunctiveFacets));
-    });
-  });
-
-  Object.keys(state.hierarchicalFacetsRefinements).forEach(function(attributeName) {
-    state.hierarchicalFacetsRefinements[attributeName].forEach(function(name) {
-      res.push(getHierarchicalRefinement(state, attributeName, name, results.hierarchicalFacets));
-    });
-  });
-
-
-  Object.keys(state.numericRefinements).forEach(function(attributeName) {
-    var operators = state.numericRefinements[attributeName];
-    Object.keys(operators).forEach(function(operator) {
-      operators[operator].forEach(function(value) {
-        res.push({
-          type: 'numeric',
-          attributeName: attributeName,
-          name: value,
-          numericValue: value,
-          operator: operator
-        });
-      });
-    });
-  });
-
-  state.tagRefinements.forEach(function(name) {
-    res.push({type: 'tag', attributeName: '_tags', name: name});
-  });
-
-  return res;
-};
-
-/**
- * @typedef {Object} Facet
- * @property {string} name
- * @property {Object} data
- * @property {boolean} exhaustive
- */
-
-/**
- * @param {*} state
- * @param {*} type
- * @param {string} attributeName
- * @param {*} name
- * @param {Facet[]} resultsFacets
- */
-function getRefinement(state, type, attributeName, name, resultsFacets) {
-  var facet = find(resultsFacets, function(f) {
-    return f.name === attributeName;
-  });
-  var count = facet && facet.data && facet.data[name] ? facet.data[name] : 0;
-  var exhaustive = (facet && facet.exhaustive) || false;
-
-  return {
-    type: type,
-    attributeName: attributeName,
-    name: name,
-    count: count,
-    exhaustive: exhaustive
-  };
-}
-
-/**
- * @param {*} state
- * @param {string} attributeName
- * @param {*} name
- * @param {Facet[]} resultsFacets
- */
-function getHierarchicalRefinement(state, attributeName, name, resultsFacets) {
-  var facetDeclaration = state.getHierarchicalFacetByName(attributeName);
-  var separator = state._getHierarchicalFacetSeparator(facetDeclaration);
-  var split = name.split(separator);
-  var rootFacet = find(resultsFacets, function(facet) {
-    return facet.name === attributeName;
-  });
-
-  var facet = split.reduce(function(intermediateFacet, part) {
-    var newFacet =
-      intermediateFacet && find(intermediateFacet.data, function(f) {
-        return f.name === part;
-      });
-    return newFacet !== undefined ? newFacet : intermediateFacet;
-  }, rootFacet);
-
-  var count = (facet && facet.count) || 0;
-  var exhaustive = (facet && facet.exhaustive) || false;
-  var path = (facet && facet.path) || '';
-
-  return {
-    type: 'hierarchical',
-    attributeName: attributeName,
-    name: path,
-    count: count,
-    exhaustive: exhaustive
-  };
-}
-
-module.exports = SearchResults;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/algoliasearch.helper.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/algoliasearch.helper.js ***!
-  \***********************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var SearchParameters = __webpack_require__(/*! ./SearchParameters */ "./node_modules/algoliasearch-helper/src/SearchParameters/index.js");
-var SearchResults = __webpack_require__(/*! ./SearchResults */ "./node_modules/algoliasearch-helper/src/SearchResults/index.js");
-var DerivedHelper = __webpack_require__(/*! ./DerivedHelper */ "./node_modules/algoliasearch-helper/src/DerivedHelper/index.js");
-var requestBuilder = __webpack_require__(/*! ./requestBuilder */ "./node_modules/algoliasearch-helper/src/requestBuilder.js");
-
-var EventEmitter = __webpack_require__(/*! @algolia/events */ "./node_modules/@algolia/events/events.js");
-var inherits = __webpack_require__(/*! ./functions/inherits */ "./node_modules/algoliasearch-helper/src/functions/inherits.js");
-var objectHasKeys = __webpack_require__(/*! ./functions/objectHasKeys */ "./node_modules/algoliasearch-helper/src/functions/objectHasKeys.js");
-var omit = __webpack_require__(/*! ./functions/omit */ "./node_modules/algoliasearch-helper/src/functions/omit.js");
-var merge = __webpack_require__(/*! ./functions/merge */ "./node_modules/algoliasearch-helper/src/functions/merge.js");
-
-var version = __webpack_require__(/*! ./version */ "./node_modules/algoliasearch-helper/src/version.js");
-var escapeFacetValue = (__webpack_require__(/*! ./functions/escapeFacetValue */ "./node_modules/algoliasearch-helper/src/functions/escapeFacetValue.js").escapeFacetValue);
-
-/**
- * Event triggered when a parameter is set or updated
- * @event AlgoliaSearchHelper#event:change
- * @property {object} event
- * @property {SearchParameters} event.state the current parameters with the latest changes applied
- * @property {SearchResults} event.results the previous results received from Algolia. `null` before the first request
- * @example
- * helper.on('change', function(event) {
- *   console.log('The parameters have changed');
- * });
- */
-
-/**
- * Event triggered when a main search is sent to Algolia
- * @event AlgoliaSearchHelper#event:search
- * @property {object} event
- * @property {SearchParameters} event.state the parameters used for this search
- * @property {SearchResults} event.results the results from the previous search. `null` if it is the first search.
- * @example
- * helper.on('search', function(event) {
- *   console.log('Search sent');
- * });
- */
-
-/**
- * Event triggered when a search using `searchForFacetValues` is sent to Algolia
- * @event AlgoliaSearchHelper#event:searchForFacetValues
- * @property {object} event
- * @property {SearchParameters} event.state the parameters used for this search it is the first search.
- * @property {string} event.facet the facet searched into
- * @property {string} event.query the query used to search in the facets
- * @example
- * helper.on('searchForFacetValues', function(event) {
- *   console.log('searchForFacetValues sent');
- * });
- */
-
-/**
- * Event triggered when a search using `searchOnce` is sent to Algolia
- * @event AlgoliaSearchHelper#event:searchOnce
- * @property {object} event
- * @property {SearchParameters} event.state the parameters used for this search it is the first search.
- * @example
- * helper.on('searchOnce', function(event) {
- *   console.log('searchOnce sent');
- * });
- */
-
-/**
- * Event triggered when the results are retrieved from Algolia
- * @event AlgoliaSearchHelper#event:result
- * @property {object} event
- * @property {SearchResults} event.results the results received from Algolia
- * @property {SearchParameters} event.state the parameters used to query Algolia. Those might be different from the one in the helper instance (for example if the network is unreliable).
- * @example
- * helper.on('result', function(event) {
- *   console.log('Search results received');
- * });
- */
-
-/**
- * Event triggered when Algolia sends back an error. For example, if an unknown parameter is
- * used, the error can be caught using this event.
- * @event AlgoliaSearchHelper#event:error
- * @property {object} event
- * @property {Error} event.error the error returned by the Algolia.
- * @example
- * helper.on('error', function(event) {
- *   console.log('Houston we got a problem.');
- * });
- */
-
-/**
- * Event triggered when the queue of queries have been depleted (with any result or outdated queries)
- * @event AlgoliaSearchHelper#event:searchQueueEmpty
- * @example
- * helper.on('searchQueueEmpty', function() {
- *   console.log('No more search pending');
- *   // This is received before the result event if we're not expecting new results
- * });
- *
- * helper.search();
- */
-
-/**
- * Initialize a new AlgoliaSearchHelper
- * @class
- * @classdesc The AlgoliaSearchHelper is a class that ease the management of the
- * search. It provides an event based interface for search callbacks:
- *  - change: when the internal search state is changed.
- *    This event contains a {@link SearchParameters} object and the
- *    {@link SearchResults} of the last result if any.
- *  - search: when a search is triggered using the `search()` method.
- *  - result: when the response is retrieved from Algolia and is processed.
- *    This event contains a {@link SearchResults} object and the
- *    {@link SearchParameters} corresponding to this answer.
- *  - error: when the response is an error. This event contains the error returned by the server.
- * @param  {AlgoliaSearch} client an AlgoliaSearch client
- * @param  {string} index the index name to query
- * @param  {SearchParameters | object} options an object defining the initial
- * config of the search. It doesn't have to be a {SearchParameters},
- * just an object containing the properties you need from it.
- */
-function AlgoliaSearchHelper(client, index, options) {
-  if (typeof client.addAlgoliaAgent === 'function') {
-    client.addAlgoliaAgent('JS Helper (' + version + ')');
-  }
-
-  this.setClient(client);
-  var opts = options || {};
-  opts.index = index;
-  this.state = SearchParameters.make(opts);
-  this.lastResults = null;
-  this._queryId = 0;
-  this._lastQueryIdReceived = -1;
-  this.derivedHelpers = [];
-  this._currentNbQueries = 0;
-}
-
-inherits(AlgoliaSearchHelper, EventEmitter);
-
-/**
- * Start the search with the parameters set in the state. When the
- * method is called, it triggers a `search` event. The results will
- * be available through the `result` event. If an error occurs, an
- * `error` will be fired instead.
- * @return {AlgoliaSearchHelper}
- * @fires search
- * @fires result
- * @fires error
- * @chainable
- */
-AlgoliaSearchHelper.prototype.search = function() {
-  this._search({onlyWithDerivedHelpers: false});
-  return this;
-};
-
-AlgoliaSearchHelper.prototype.searchOnlyWithDerivedHelpers = function() {
-  this._search({onlyWithDerivedHelpers: true});
-  return this;
-};
-
-/**
- * Gets the search query parameters that would be sent to the Algolia Client
- * for the hits
- * @return {object} Query Parameters
- */
-AlgoliaSearchHelper.prototype.getQuery = function() {
-  var state = this.state;
-  return requestBuilder._getHitsSearchParams(state);
-};
-
-/**
- * Start a search using a modified version of the current state. This method does
- * not trigger the helper lifecycle and does not modify the state kept internally
- * by the helper. This second aspect means that the next search call will be the
- * same as a search call before calling searchOnce.
- * @param {object} options can contain all the parameters that can be set to SearchParameters
- * plus the index
- * @param {function} [callback] optional callback executed when the response from the
- * server is back.
- * @return {promise|undefined} if a callback is passed the method returns undefined
- * otherwise it returns a promise containing an object with two keys :
- *  - content with a SearchResults
- *  - state with the state used for the query as a SearchParameters
- * @example
- * // Changing the number of records returned per page to 1
- * // This example uses the callback API
- * var state = helper.searchOnce({hitsPerPage: 1},
- *   function(error, content, state) {
- *     // if an error occurred it will be passed in error, otherwise its value is null
- *     // content contains the results formatted as a SearchResults
- *     // state is the instance of SearchParameters used for this search
- *   });
- * @example
- * // Changing the number of records returned per page to 1
- * // This example uses the promise API
- * var state1 = helper.searchOnce({hitsPerPage: 1})
- *                 .then(promiseHandler);
- *
- * function promiseHandler(res) {
- *   // res contains
- *   // {
- *   //   content : SearchResults
- *   //   state   : SearchParameters (the one used for this specific search)
- *   // }
- * }
- */
-AlgoliaSearchHelper.prototype.searchOnce = function(options, cb) {
-  var tempState = !options ? this.state : this.state.setQueryParameters(options);
-  var queries = requestBuilder._getQueries(tempState.index, tempState);
-  var self = this;
-
-  this._currentNbQueries++;
-
-  this.emit('searchOnce', {
-    state: tempState
-  });
-
-  if (cb) {
-    this.client
-      .search(queries)
-      .then(function(content) {
-        self._currentNbQueries--;
-        if (self._currentNbQueries === 0) {
-          self.emit('searchQueueEmpty');
-        }
-
-        cb(null, new SearchResults(tempState, content.results), tempState);
-      })
-      .catch(function(err) {
-        self._currentNbQueries--;
-        if (self._currentNbQueries === 0) {
-          self.emit('searchQueueEmpty');
-        }
-
-        cb(err, null, tempState);
-      });
-
-    return undefined;
-  }
-
-  return this.client.search(queries).then(function(content) {
-    self._currentNbQueries--;
-    if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
-    return {
-      content: new SearchResults(tempState, content.results),
-      state: tempState,
-      _originalResponse: content
-    };
-  }, function(e) {
-    self._currentNbQueries--;
-    if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
-    throw e;
-  });
-};
-
- /**
- * Start the search for answers with the parameters set in the state.
- * This method returns a promise.
- * @param {Object} options - the options for answers API call
- * @param {string[]} options.attributesForPrediction - Attributes to use for predictions. If empty, `searchableAttributes` is used instead.
- * @param {string[]} options.queryLanguages - The languages in the query. Currently only supports ['en'].
- * @param {number} options.nbHits - Maximum number of answers to retrieve from the Answers Engine. Cannot be greater than 1000.
- *
- * @return {promise} the answer results
- */
-AlgoliaSearchHelper.prototype.findAnswers = function(options) {
-  var state = this.state;
-  var derivedHelper = this.derivedHelpers[0];
-  if (!derivedHelper) {
-    return Promise.resolve([]);
-  }
-  var derivedState = derivedHelper.getModifiedState(state);
-  var data = merge(
-    {
-      attributesForPrediction: options.attributesForPrediction,
-      nbHits: options.nbHits
-    },
-    {
-      params: omit(requestBuilder._getHitsSearchParams(derivedState), [
-        'attributesToSnippet',
-        'hitsPerPage',
-        'restrictSearchableAttributes',
-        'snippetEllipsisText' // FIXME remove this line once the engine is fixed.
-      ])
-    }
-  );
-
-  var errorMessage = 'search for answers was called, but this client does not have a function client.initIndex(index).findAnswers';
-  if (typeof this.client.initIndex !== 'function') {
-    throw new Error(errorMessage);
-  }
-  var index = this.client.initIndex(derivedState.index);
-  if (typeof index.findAnswers !== 'function') {
-    throw new Error(errorMessage);
-  }
-  return index.findAnswers(derivedState.query, options.queryLanguages, data);
-};
-
-/**
- * Structure of each result when using
- * [`searchForFacetValues()`](reference.html#AlgoliaSearchHelper#searchForFacetValues)
- * @typedef FacetSearchHit
- * @type {object}
- * @property {string} value the facet value
- * @property {string} highlighted the facet value highlighted with the query string
- * @property {number} count number of occurrence of this facet value
- * @property {boolean} isRefined true if the value is already refined
- */
-
-/**
- * Structure of the data resolved by the
- * [`searchForFacetValues()`](reference.html#AlgoliaSearchHelper#searchForFacetValues)
- * promise.
- * @typedef FacetSearchResult
- * @type {object}
- * @property {FacetSearchHit} facetHits the results for this search for facet values
- * @property {number} processingTimeMS time taken by the query inside the engine
- */
-
-/**
- * Search for facet values based on an query and the name of a faceted attribute. This
- * triggers a search and will return a promise. On top of using the query, it also sends
- * the parameters from the state so that the search is narrowed down to only the possible values.
- *
- * See the description of [FacetSearchResult](reference.html#FacetSearchResult)
- * @param {string} facet the name of the faceted attribute
- * @param {string} query the string query for the search
- * @param {number} [maxFacetHits] the maximum number values returned. Should be > 0 and <= 100
- * @param {object} [userState] the set of custom parameters to use on top of the current state. Setting a property to `undefined` removes
- * it in the generated query.
- * @return {promise.<FacetSearchResult>} the results of the search
- */
-AlgoliaSearchHelper.prototype.searchForFacetValues = function(facet, query, maxFacetHits, userState) {
-  var clientHasSFFV = typeof this.client.searchForFacetValues === 'function';
-  var clientHasInitIndex = typeof this.client.initIndex === 'function';
-  if (
-    !clientHasSFFV &&
-    !clientHasInitIndex &&
-    typeof this.client.search !== 'function'
-  ) {
-    throw new Error(
-      'search for facet values (searchable) was called, but this client does not have a function client.searchForFacetValues or client.initIndex(index).searchForFacetValues'
-    );
-  }
-
-  var state = this.state.setQueryParameters(userState || {});
-  var isDisjunctive = state.isDisjunctiveFacet(facet);
-  var algoliaQuery = requestBuilder.getSearchForFacetQuery(facet, query, maxFacetHits, state);
-
-  this._currentNbQueries++;
-  var self = this;
-  var searchForFacetValuesPromise;
-  // newer algoliasearch ^3.27.1 - ~4.0.0
-  if (clientHasSFFV) {
-    searchForFacetValuesPromise = this.client.searchForFacetValues([
-      {indexName: state.index, params: algoliaQuery}
-    ]);
-    // algoliasearch < 3.27.1
-  } else if (clientHasInitIndex) {
-    searchForFacetValuesPromise = this.client
-      .initIndex(state.index)
-      .searchForFacetValues(algoliaQuery);
-    // algoliasearch ~5.0.0
-  } else {
-    // @MAJOR only use client.search
-    delete algoliaQuery.facetName;
-    searchForFacetValuesPromise = this.client
-      .search([
-        {
-          type: 'facet',
-          facet: facet,
-          indexName: state.index,
-          params: algoliaQuery
-        }
-      ])
-      .then(function processResponse(response) {
-        return response.results[0];
-      });
-  }
-
-  this.emit('searchForFacetValues', {
-    state: state,
-    facet: facet,
-    query: query
-  });
-
-  return searchForFacetValuesPromise.then(function addIsRefined(content) {
-    self._currentNbQueries--;
-    if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
-
-    content = Array.isArray(content) ? content[0] : content;
-
-    content.facetHits.forEach(function(f) {
-      f.escapedValue = escapeFacetValue(f.value);
-      f.isRefined = isDisjunctive
-        ? state.isDisjunctiveFacetRefined(facet, f.escapedValue)
-        : state.isFacetRefined(facet, f.escapedValue);
-    });
-
-    return content;
-  }, function(e) {
-    self._currentNbQueries--;
-    if (self._currentNbQueries === 0) self.emit('searchQueueEmpty');
-    throw e;
-  });
-};
-
-/**
- * Sets the text query used for the search.
- *
- * This method resets the current page to 0.
- * @param  {string} q the user query
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.setQuery = function(q) {
-  this._change({
-    state: this.state.resetPage().setQuery(q),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Remove all the types of refinements except tags. A string can be provided to remove
- * only the refinements of a specific attribute. For more advanced use case, you can
- * provide a function instead. This function should follow the
- * [clearCallback definition](#SearchParameters.clearCallback).
- *
- * This method resets the current page to 0.
- * @param {string} [name] optional name of the facet / attribute on which we want to remove all refinements
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- * @example
- * // Removing all the refinements
- * helper.clearRefinements().search();
- * @example
- * // Removing all the filters on a the category attribute.
- * helper.clearRefinements('category').search();
- * @example
- * // Removing only the exclude filters on the category facet.
- * helper.clearRefinements(function(value, attribute, type) {
- *   return type === 'exclude' && attribute === 'category';
- * }).search();
- */
-AlgoliaSearchHelper.prototype.clearRefinements = function(name) {
-  this._change({
-    state: this.state.resetPage().clearRefinements(name),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Remove all the tag filters.
- *
- * This method resets the current page to 0.
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.clearTags = function() {
-  this._change({
-    state: this.state.resetPage().clearTags(),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Adds a disjunctive filter to a faceted attribute with the `value` provided. If the
- * filter is already set, it doesn't change the filters.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} value the associated value (will be converted to string)
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.addDisjunctiveFacetRefinement = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().addDisjunctiveFacetRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#addDisjunctiveFacetRefinement}
- */
-AlgoliaSearchHelper.prototype.addDisjunctiveRefine = function() {
-  return this.addDisjunctiveFacetRefinement.apply(this, arguments);
-};
-
-/**
- * Adds a refinement on a hierarchical facet. It will throw
- * an exception if the facet is not defined or if the facet
- * is already refined.
- *
- * This method resets the current page to 0.
- * @param {string} facet the facet name
- * @param {string} path the hierarchical facet path
- * @return {AlgoliaSearchHelper}
- * @throws Error if the facet is not defined or if the facet is refined
- * @chainable
- * @fires change
- */
-AlgoliaSearchHelper.prototype.addHierarchicalFacetRefinement = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().addHierarchicalFacetRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Adds a an numeric filter to an attribute with the `operator` and `value` provided. If the
- * filter is already set, it doesn't change the filters.
- *
- * This method resets the current page to 0.
- * @param  {string} attribute the attribute on which the numeric filter applies
- * @param  {string} operator the operator of the filter
- * @param  {number} value the value of the filter
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.addNumericRefinement = function(attribute, operator, value) {
-  this._change({
-    state: this.state.resetPage().addNumericRefinement(attribute, operator, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Adds a filter to a faceted attribute with the `value` provided. If the
- * filter is already set, it doesn't change the filters.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} value the associated value (will be converted to string)
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.addFacetRefinement = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().addFacetRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#addFacetRefinement}
- */
-AlgoliaSearchHelper.prototype.addRefine = function() {
-  return this.addFacetRefinement.apply(this, arguments);
-};
-
-
-/**
- * Adds a an exclusion filter to a faceted attribute with the `value` provided. If the
- * filter is already set, it doesn't change the filters.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} value the associated value (will be converted to string)
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.addFacetExclusion = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().addExcludeRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#addFacetExclusion}
- */
-AlgoliaSearchHelper.prototype.addExclude = function() {
-  return this.addFacetExclusion.apply(this, arguments);
-};
-
-/**
- * Adds a tag filter with the `tag` provided. If the
- * filter is already set, it doesn't change the filters.
- *
- * This method resets the current page to 0.
- * @param {string} tag the tag to add to the filter
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.addTag = function(tag) {
-  this._change({
-    state: this.state.resetPage().addTagRefinement(tag),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Removes an numeric filter to an attribute with the `operator` and `value` provided. If the
- * filter is not set, it doesn't change the filters.
- *
- * Some parameters are optional, triggering different behavior:
- *  - if the value is not provided, then all the numeric value will be removed for the
- *  specified attribute/operator couple.
- *  - if the operator is not provided either, then all the numeric filter on this attribute
- *  will be removed.
- *
- * This method resets the current page to 0.
- * @param  {string} attribute the attribute on which the numeric filter applies
- * @param  {string} [operator] the operator of the filter
- * @param  {number} [value] the value of the filter
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.removeNumericRefinement = function(attribute, operator, value) {
-  this._change({
-    state: this.state.resetPage().removeNumericRefinement(attribute, operator, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Removes a disjunctive filter to a faceted attribute with the `value` provided. If the
- * filter is not set, it doesn't change the filters.
- *
- * If the value is omitted, then this method will remove all the filters for the
- * attribute.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} [value] the associated value
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.removeDisjunctiveFacetRefinement = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().removeDisjunctiveFacetRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#removeDisjunctiveFacetRefinement}
- */
-AlgoliaSearchHelper.prototype.removeDisjunctiveRefine = function() {
-  return this.removeDisjunctiveFacetRefinement.apply(this, arguments);
-};
-
-/**
- * Removes the refinement set on a hierarchical facet.
- * @param {string} facet the facet name
- * @return {AlgoliaSearchHelper}
- * @throws Error if the facet is not defined or if the facet is not refined
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.removeHierarchicalFacetRefinement = function(facet) {
-  this._change({
-    state: this.state.resetPage().removeHierarchicalFacetRefinement(facet),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Removes a filter to a faceted attribute with the `value` provided. If the
- * filter is not set, it doesn't change the filters.
- *
- * If the value is omitted, then this method will remove all the filters for the
- * attribute.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} [value] the associated value
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.removeFacetRefinement = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().removeFacetRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#removeFacetRefinement}
- */
-AlgoliaSearchHelper.prototype.removeRefine = function() {
-  return this.removeFacetRefinement.apply(this, arguments);
-};
-
-/**
- * Removes an exclusion filter to a faceted attribute with the `value` provided. If the
- * filter is not set, it doesn't change the filters.
- *
- * If the value is omitted, then this method will remove all the filters for the
- * attribute.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} [value] the associated value
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.removeFacetExclusion = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().removeExcludeRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#removeFacetExclusion}
- */
-AlgoliaSearchHelper.prototype.removeExclude = function() {
-  return this.removeFacetExclusion.apply(this, arguments);
-};
-
-/**
- * Removes a tag filter with the `tag` provided. If the
- * filter is not set, it doesn't change the filters.
- *
- * This method resets the current page to 0.
- * @param {string} tag tag to remove from the filter
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.removeTag = function(tag) {
-  this._change({
-    state: this.state.resetPage().removeTagRefinement(tag),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Adds or removes an exclusion filter to a faceted attribute with the `value` provided. If
- * the value is set then it removes it, otherwise it adds the filter.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} value the associated value
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.toggleFacetExclusion = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().toggleExcludeFacetRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#toggleFacetExclusion}
- */
-AlgoliaSearchHelper.prototype.toggleExclude = function() {
-  return this.toggleFacetExclusion.apply(this, arguments);
-};
-
-/**
- * Adds or removes a filter to a faceted attribute with the `value` provided. If
- * the value is set then it removes it, otherwise it adds the filter.
- *
- * This method can be used for conjunctive, disjunctive and hierarchical filters.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} value the associated value
- * @return {AlgoliaSearchHelper}
- * @throws Error will throw an error if the facet is not declared in the settings of the helper
- * @fires change
- * @chainable
- * @deprecated since version 2.19.0, see {@link AlgoliaSearchHelper#toggleFacetRefinement}
- */
-AlgoliaSearchHelper.prototype.toggleRefinement = function(facet, value) {
-  return this.toggleFacetRefinement(facet, value);
-};
-
-/**
- * Adds or removes a filter to a faceted attribute with the `value` provided. If
- * the value is set then it removes it, otherwise it adds the filter.
- *
- * This method can be used for conjunctive, disjunctive and hierarchical filters.
- *
- * This method resets the current page to 0.
- * @param  {string} facet the facet to refine
- * @param  {string} value the associated value
- * @return {AlgoliaSearchHelper}
- * @throws Error will throw an error if the facet is not declared in the settings of the helper
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.toggleFacetRefinement = function(facet, value) {
-  this._change({
-    state: this.state.resetPage().toggleFacetRefinement(facet, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * @deprecated since version 2.4.0, see {@link AlgoliaSearchHelper#toggleFacetRefinement}
- */
-AlgoliaSearchHelper.prototype.toggleRefine = function() {
-  return this.toggleFacetRefinement.apply(this, arguments);
-};
-
-/**
- * Adds or removes a tag filter with the `value` provided. If
- * the value is set then it removes it, otherwise it adds the filter.
- *
- * This method resets the current page to 0.
- * @param {string} tag tag to remove or add
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.toggleTag = function(tag) {
-  this._change({
-    state: this.state.resetPage().toggleTagRefinement(tag),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Increments the page number by one.
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- * @example
- * helper.setPage(0).nextPage().getPage();
- * // returns 1
- */
-AlgoliaSearchHelper.prototype.nextPage = function() {
-  var page = this.state.page || 0;
-  return this.setPage(page + 1);
-};
-
-/**
- * Decrements the page number by one.
- * @fires change
- * @return {AlgoliaSearchHelper}
- * @chainable
- * @example
- * helper.setPage(1).previousPage().getPage();
- * // returns 0
- */
-AlgoliaSearchHelper.prototype.previousPage = function() {
-  var page = this.state.page || 0;
-  return this.setPage(page - 1);
-};
-
-/**
- * @private
- */
-function setCurrentPage(page) {
-  if (page < 0) throw new Error('Page requested below 0.');
-
-  this._change({
-    state: this.state.setPage(page),
-    isPageReset: false
-  });
-
-  return this;
-}
-
-/**
- * Change the current page
- * @deprecated
- * @param  {number} page The page number
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.setCurrentPage = setCurrentPage;
-
-/**
- * Updates the current page.
- * @function
- * @param  {number} page The page number
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.setPage = setCurrentPage;
-
-/**
- * Updates the name of the index that will be targeted by the query.
- *
- * This method resets the current page to 0.
- * @param {string} name the index name
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.setIndex = function(name) {
-  this._change({
-    state: this.state.resetPage().setIndex(name),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Update a parameter of the search. This method reset the page
- *
- * The complete list of parameters is available on the
- * [Algolia website](https://www.algolia.com/doc/rest#query-an-index).
- * The most commonly used parameters have their own [shortcuts](#query-parameters-shortcuts)
- * or benefit from higher-level APIs (all the kind of filters and facets have their own API)
- *
- * This method resets the current page to 0.
- * @param {string} parameter name of the parameter to update
- * @param {any} value new value of the parameter
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- * @example
- * helper.setQueryParameter('hitsPerPage', 20).search();
- */
-AlgoliaSearchHelper.prototype.setQueryParameter = function(parameter, value) {
-  this._change({
-    state: this.state.resetPage().setQueryParameter(parameter, value),
-    isPageReset: true
-  });
-
-  return this;
-};
-
-/**
- * Set the whole state (warning: will erase previous state)
- * @param {SearchParameters} newState the whole new state
- * @return {AlgoliaSearchHelper}
- * @fires change
- * @chainable
- */
-AlgoliaSearchHelper.prototype.setState = function(newState) {
-  this._change({
-    state: SearchParameters.make(newState),
-    isPageReset: false
-  });
-
-  return this;
-};
-
-/**
- * Override the current state without triggering a change event.
- * Do not use this method unless you know what you are doing. (see the example
- * for a legit use case)
- * @param {SearchParameters} newState the whole new state
- * @return {AlgoliaSearchHelper}
- * @example
- *  helper.on('change', function(state){
- *    // In this function you might want to find a way to store the state in the url/history
- *    updateYourURL(state)
- *  })
- *  window.onpopstate = function(event){
- *    // This is naive though as you should check if the state is really defined etc.
- *    helper.overrideStateWithoutTriggeringChangeEvent(event.state).search()
- *  }
- * @chainable
- */
-AlgoliaSearchHelper.prototype.overrideStateWithoutTriggeringChangeEvent = function(newState) {
-  this.state = new SearchParameters(newState);
-  return this;
-};
-
-/**
- * Check if an attribute has any numeric, conjunctive, disjunctive or hierarchical filters.
- * @param {string} attribute the name of the attribute
- * @return {boolean} true if the attribute is filtered by at least one value
- * @example
- * // hasRefinements works with numeric, conjunctive, disjunctive and hierarchical filters
- * helper.hasRefinements('price'); // false
- * helper.addNumericRefinement('price', '>', 100);
- * helper.hasRefinements('price'); // true
- *
- * helper.hasRefinements('color'); // false
- * helper.addFacetRefinement('color', 'blue');
- * helper.hasRefinements('color'); // true
- *
- * helper.hasRefinements('material'); // false
- * helper.addDisjunctiveFacetRefinement('material', 'plastic');
- * helper.hasRefinements('material'); // true
- *
- * helper.hasRefinements('categories'); // false
- * helper.toggleFacetRefinement('categories', 'kitchen > knife');
- * helper.hasRefinements('categories'); // true
- *
- */
-AlgoliaSearchHelper.prototype.hasRefinements = function(attribute) {
-  if (objectHasKeys(this.state.getNumericRefinements(attribute))) {
-    return true;
-  } else if (this.state.isConjunctiveFacet(attribute)) {
-    return this.state.isFacetRefined(attribute);
-  } else if (this.state.isDisjunctiveFacet(attribute)) {
-    return this.state.isDisjunctiveFacetRefined(attribute);
-  } else if (this.state.isHierarchicalFacet(attribute)) {
-    return this.state.isHierarchicalFacetRefined(attribute);
-  }
-
-  // there's currently no way to know that the user did call `addNumericRefinement` at some point
-  // thus we cannot distinguish if there once was a numeric refinement that was cleared
-  // so we will return false in every other situations to be consistent
-  // while what we should do here is throw because we did not find the attribute in any type
-  // of refinement
-  return false;
-};
-
-/**
- * Check if a value is excluded for a specific faceted attribute. If the value
- * is omitted then the function checks if there is any excluding refinements.
- *
- * @param  {string}  facet name of the attribute for used for faceting
- * @param  {string}  [value] optional value. If passed will test that this value
-   * is filtering the given facet.
- * @return {boolean} true if refined
- * @example
- * helper.isExcludeRefined('color'); // false
- * helper.isExcludeRefined('color', 'blue') // false
- * helper.isExcludeRefined('color', 'red') // false
- *
- * helper.addFacetExclusion('color', 'red');
- *
- * helper.isExcludeRefined('color'); // true
- * helper.isExcludeRefined('color', 'blue') // false
- * helper.isExcludeRefined('color', 'red') // true
- */
-AlgoliaSearchHelper.prototype.isExcluded = function(facet, value) {
-  return this.state.isExcludeRefined(facet, value);
-};
-
-/**
- * @deprecated since 2.4.0, see {@link AlgoliaSearchHelper#hasRefinements}
- */
-AlgoliaSearchHelper.prototype.isDisjunctiveRefined = function(facet, value) {
-  return this.state.isDisjunctiveFacetRefined(facet, value);
-};
-
-/**
- * Check if the string is a currently filtering tag.
- * @param {string} tag tag to check
- * @return {boolean}
- */
-AlgoliaSearchHelper.prototype.hasTag = function(tag) {
-  return this.state.isTagRefined(tag);
-};
-
-/**
- * @deprecated since 2.4.0, see {@link AlgoliaSearchHelper#hasTag}
- */
-AlgoliaSearchHelper.prototype.isTagRefined = function() {
-  return this.hasTagRefinements.apply(this, arguments);
-};
-
-
-/**
- * Get the name of the currently used index.
- * @return {string}
- * @example
- * helper.setIndex('highestPrice_products').getIndex();
- * // returns 'highestPrice_products'
- */
-AlgoliaSearchHelper.prototype.getIndex = function() {
-  return this.state.index;
-};
-
-function getCurrentPage() {
-  return this.state.page;
-}
-
-/**
- * Get the currently selected page
- * @deprecated
- * @return {number} the current page
- */
-AlgoliaSearchHelper.prototype.getCurrentPage = getCurrentPage;
-/**
- * Get the currently selected page
- * @function
- * @return {number} the current page
- */
-AlgoliaSearchHelper.prototype.getPage = getCurrentPage;
-
-/**
- * Get all the tags currently set to filters the results.
- *
- * @return {string[]} The list of tags currently set.
- */
-AlgoliaSearchHelper.prototype.getTags = function() {
-  return this.state.tagRefinements;
-};
-
-/**
- * Get the list of refinements for a given attribute. This method works with
- * conjunctive, disjunctive, excluding and numerical filters.
- *
- * See also SearchResults#getRefinements
- *
- * @param {string} facetName attribute name used for faceting
- * @return {Array.<FacetRefinement|NumericRefinement>} All Refinement are objects that contain a value, and
- * a type. Numeric also contains an operator.
- * @example
- * helper.addNumericRefinement('price', '>', 100);
- * helper.getRefinements('price');
- * // [
- * //   {
- * //     "value": [
- * //       100
- * //     ],
- * //     "operator": ">",
- * //     "type": "numeric"
- * //   }
- * // ]
- * @example
- * helper.addFacetRefinement('color', 'blue');
- * helper.addFacetExclusion('color', 'red');
- * helper.getRefinements('color');
- * // [
- * //   {
- * //     "value": "blue",
- * //     "type": "conjunctive"
- * //   },
- * //   {
- * //     "value": "red",
- * //     "type": "exclude"
- * //   }
- * // ]
- * @example
- * helper.addDisjunctiveFacetRefinement('material', 'plastic');
- * // [
- * //   {
- * //     "value": "plastic",
- * //     "type": "disjunctive"
- * //   }
- * // ]
- */
-AlgoliaSearchHelper.prototype.getRefinements = function(facetName) {
-  var refinements = [];
-
-  if (this.state.isConjunctiveFacet(facetName)) {
-    var conjRefinements = this.state.getConjunctiveRefinements(facetName);
-
-    conjRefinements.forEach(function(r) {
-      refinements.push({
-        value: r,
-        type: 'conjunctive'
-      });
-    });
-
-    var excludeRefinements = this.state.getExcludeRefinements(facetName);
-
-    excludeRefinements.forEach(function(r) {
-      refinements.push({
-        value: r,
-        type: 'exclude'
-      });
-    });
-  } else if (this.state.isDisjunctiveFacet(facetName)) {
-    var disjRefinements = this.state.getDisjunctiveRefinements(facetName);
-
-    disjRefinements.forEach(function(r) {
-      refinements.push({
-        value: r,
-        type: 'disjunctive'
-      });
-    });
-  }
-
-  var numericRefinements = this.state.getNumericRefinements(facetName);
-
-  Object.keys(numericRefinements).forEach(function(operator) {
-    var value = numericRefinements[operator];
-
-    refinements.push({
-      value: value,
-      operator: operator,
-      type: 'numeric'
-    });
-  });
-
-  return refinements;
-};
-
-/**
- * Return the current refinement for the (attribute, operator)
- * @param {string} attribute attribute in the record
- * @param {string} operator operator applied on the refined values
- * @return {Array.<number|number[]>} refined values
- */
-AlgoliaSearchHelper.prototype.getNumericRefinement = function(attribute, operator) {
-  return this.state.getNumericRefinement(attribute, operator);
-};
-
-/**
- * Get the current breadcrumb for a hierarchical facet, as an array
- * @param  {string} facetName Hierarchical facet name
- * @return {array.<string>} the path as an array of string
- */
-AlgoliaSearchHelper.prototype.getHierarchicalFacetBreadcrumb = function(facetName) {
-  return this.state.getHierarchicalFacetBreadcrumb(facetName);
-};
-
-// /////////// PRIVATE
-
-/**
- * Perform the underlying queries
- * @private
- * @return {undefined}
- * @fires search
- * @fires result
- * @fires error
- */
-AlgoliaSearchHelper.prototype._search = function(options) {
-  var state = this.state;
-  var states = [];
-  var mainQueries = [];
-
-  if (!options.onlyWithDerivedHelpers) {
-    mainQueries = requestBuilder._getQueries(state.index, state);
-
-    states.push({
-      state: state,
-      queriesCount: mainQueries.length,
-      helper: this
-    });
-
-    this.emit('search', {
-      state: state,
-      results: this.lastResults
-    });
-  }
-
-  var derivedQueries = this.derivedHelpers.map(function(derivedHelper) {
-    var derivedState = derivedHelper.getModifiedState(state);
-    var derivedStateQueries = requestBuilder._getQueries(derivedState.index, derivedState);
-
-    states.push({
-      state: derivedState,
-      queriesCount: derivedStateQueries.length,
-      helper: derivedHelper
-    });
-
-    derivedHelper.emit('search', {
-      state: derivedState,
-      results: derivedHelper.lastResults
-    });
-
-    return derivedStateQueries;
-  });
-
-  var queries = Array.prototype.concat.apply(mainQueries, derivedQueries);
-  var queryId = this._queryId++;
-
-  this._currentNbQueries++;
-
-  try {
-    this.client.search(queries)
-      .then(this._dispatchAlgoliaResponse.bind(this, states, queryId))
-      .catch(this._dispatchAlgoliaError.bind(this, queryId));
-  } catch (error) {
-    // If we reach this part, we're in an internal error state
-    this.emit('error', {
-      error: error
-    });
-  }
-};
-
-/**
- * Transform the responses as sent by the server and transform them into a user
- * usable object that merge the results of all the batch requests. It will dispatch
- * over the different helper + derived helpers (when there are some).
- * @private
- * @param {array.<{SearchParameters, AlgoliaQueries, AlgoliaSearchHelper}>}
- *  state state used for to generate the request
- * @param {number} queryId id of the current request
- * @param {object} content content of the response
- * @return {undefined}
- */
-AlgoliaSearchHelper.prototype._dispatchAlgoliaResponse = function(states, queryId, content) {
-  // FIXME remove the number of outdated queries discarded instead of just one
-
-  if (queryId < this._lastQueryIdReceived) {
-    // Outdated answer
-    return;
-  }
-
-  this._currentNbQueries -= (queryId - this._lastQueryIdReceived);
-  this._lastQueryIdReceived = queryId;
-
-  if (this._currentNbQueries === 0) this.emit('searchQueueEmpty');
-
-  var results = content.results.slice();
-
-  states.forEach(function(s) {
-    var state = s.state;
-    var queriesCount = s.queriesCount;
-    var helper = s.helper;
-    var specificResults = results.splice(0, queriesCount);
-
-    var formattedResponse = helper.lastResults = new SearchResults(state, specificResults);
-
-    helper.emit('result', {
-      results: formattedResponse,
-      state: state
-    });
-  });
-};
-
-AlgoliaSearchHelper.prototype._dispatchAlgoliaError = function(queryId, error) {
-  if (queryId < this._lastQueryIdReceived) {
-    // Outdated answer
-    return;
-  }
-
-  this._currentNbQueries -= queryId - this._lastQueryIdReceived;
-  this._lastQueryIdReceived = queryId;
-
-  this.emit('error', {
-    error: error
-  });
-
-  if (this._currentNbQueries === 0) this.emit('searchQueueEmpty');
-};
-
-AlgoliaSearchHelper.prototype.containsRefinement = function(query, facetFilters, numericFilters, tagFilters) {
-  return query ||
-    facetFilters.length !== 0 ||
-    numericFilters.length !== 0 ||
-    tagFilters.length !== 0;
-};
-
-/**
- * Test if there are some disjunctive refinements on the facet
- * @private
- * @param {string} facet the attribute to test
- * @return {boolean}
- */
-AlgoliaSearchHelper.prototype._hasDisjunctiveRefinements = function(facet) {
-  return this.state.disjunctiveRefinements[facet] &&
-    this.state.disjunctiveRefinements[facet].length > 0;
-};
-
-AlgoliaSearchHelper.prototype._change = function(event) {
-  var state = event.state;
-  var isPageReset = event.isPageReset;
-
-  if (state !== this.state) {
-    this.state = state;
-
-    this.emit('change', {
-      state: this.state,
-      results: this.lastResults,
-      isPageReset: isPageReset
-    });
-  }
-};
-
-/**
- * Clears the cache of the underlying Algolia client.
- * @return {AlgoliaSearchHelper}
- */
-AlgoliaSearchHelper.prototype.clearCache = function() {
-  this.client.clearCache && this.client.clearCache();
-  return this;
-};
-
-/**
- * Updates the internal client instance. If the reference of the clients
- * are equal then no update is actually done.
- * @param  {AlgoliaSearch} newClient an AlgoliaSearch client
- * @return {AlgoliaSearchHelper}
- */
-AlgoliaSearchHelper.prototype.setClient = function(newClient) {
-  if (this.client === newClient) return this;
-
-  if (typeof newClient.addAlgoliaAgent === 'function') {
-    newClient.addAlgoliaAgent('JS Helper (' + version + ')');
-  }
-  this.client = newClient;
-
-  return this;
-};
-
-/**
- * Gets the instance of the currently used client.
- * @return {AlgoliaSearch}
- */
-AlgoliaSearchHelper.prototype.getClient = function() {
-  return this.client;
-};
-
-/**
- * Creates an derived instance of the Helper. A derived helper
- * is a way to request other indices synchronised with the lifecycle
- * of the main Helper. This mechanism uses the multiqueries feature
- * of Algolia to aggregate all the requests in a single network call.
- *
- * This method takes a function that is used to create a new SearchParameter
- * that will be used to create requests to Algolia. Those new requests
- * are created just before the `search` event. The signature of the function
- * is `SearchParameters -> SearchParameters`.
- *
- * This method returns a new DerivedHelper which is an EventEmitter
- * that fires the same `search`, `result` and `error` events. Those
- * events, however, will receive data specific to this DerivedHelper
- * and the SearchParameters that is returned by the call of the
- * parameter function.
- * @param {function} fn SearchParameters -> SearchParameters
- * @return {DerivedHelper}
- */
-AlgoliaSearchHelper.prototype.derive = function(fn) {
-  var derivedHelper = new DerivedHelper(this, fn);
-  this.derivedHelpers.push(derivedHelper);
-  return derivedHelper;
-};
-
-/**
- * This method detaches a derived Helper from the main one. Prefer using the one from the
- * derived helper itself, to remove the event listeners too.
- * @private
- * @return {undefined}
- * @throws Error
- */
-AlgoliaSearchHelper.prototype.detachDerivedHelper = function(derivedHelper) {
-  var pos = this.derivedHelpers.indexOf(derivedHelper);
-  if (pos === -1) throw new Error('Derived helper already detached');
-  this.derivedHelpers.splice(pos, 1);
-};
-
-/**
- * This method returns true if there is currently at least one on-going search.
- * @return {boolean} true if there is a search pending
- */
-AlgoliaSearchHelper.prototype.hasPendingRequests = function() {
-  return this._currentNbQueries > 0;
-};
-
-/**
- * @typedef AlgoliaSearchHelper.NumericRefinement
- * @type {object}
- * @property {number[]} value the numbers that are used for filtering this attribute with
- * the operator specified.
- * @property {string} operator the faceting data: value, number of entries
- * @property {string} type will be 'numeric'
- */
-
-/**
- * @typedef AlgoliaSearchHelper.FacetRefinement
- * @type {object}
- * @property {string} value the string use to filter the attribute
- * @property {string} type the type of filter: 'conjunctive', 'disjunctive', 'exclude'
- */
-
-module.exports = AlgoliaSearchHelper;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/compact.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/compact.js ***!
-  \********************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = function compact(array) {
-  if (!Array.isArray(array)) {
-    return [];
-  }
-
-  return array.filter(Boolean);
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/defaultsPure.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/defaultsPure.js ***!
-  \*************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-// NOTE: this behaves like lodash/defaults, but doesn't mutate the target
-// it also preserve keys order
-module.exports = function defaultsPure() {
-  var sources = Array.prototype.slice.call(arguments);
-
-  return sources.reduceRight(function(acc, source) {
-    Object.keys(Object(source)).forEach(function(key) {
-      if (source[key] === undefined) {
-        return;
-      }
-      if (acc[key] !== undefined) {
-        // remove if already added, so that we can add it in correct order
-        delete acc[key];
-      }
-      acc[key] = source[key];
-    });
-    return acc;
-  }, {});
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/escapeFacetValue.js":
-/*!*****************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/escapeFacetValue.js ***!
-  \*****************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-/**
- * Replaces a leading - with \-
- * @private
- * @param {any} value the facet value to replace
- * @returns any
- */
-function escapeFacetValue(value) {
-  if (typeof value !== 'string') return value;
-
-  return String(value).replace(/^-/, '\\-');
-}
-
-/**
- * Replaces a leading \- with -
- * @private
- * @param {any} value the escaped facet value
- * @returns any
- */
-function unescapeFacetValue(value) {
-  if (typeof value !== 'string') return value;
-
-  return value.replace(/^\\-/, '-');
-}
-
-module.exports = {
-  escapeFacetValue: escapeFacetValue,
-  unescapeFacetValue: unescapeFacetValue
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/find.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/find.js ***!
-  \*****************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-// @MAJOR can be replaced by native Array#find when we change support
-module.exports = function find(array, comparator) {
-  if (!Array.isArray(array)) {
-    return undefined;
-  }
-
-  for (var i = 0; i < array.length; i++) {
-    if (comparator(array[i])) {
-      return array[i];
-    }
-  }
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/findIndex.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/findIndex.js ***!
-  \**********************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-// @MAJOR can be replaced by native Array#findIndex when we change support
-module.exports = function find(array, comparator) {
-  if (!Array.isArray(array)) {
-    return -1;
-  }
-
-  for (var i = 0; i < array.length; i++) {
-    if (comparator(array[i])) {
-      return i;
-    }
-  }
-  return -1;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/formatSort.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/formatSort.js ***!
-  \***********************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var find = __webpack_require__(/*! ./find */ "./node_modules/algoliasearch-helper/src/functions/find.js");
-
-/**
- * Transform sort format from user friendly notation to lodash format
- * @param {string[]} sortBy array of predicate of the form "attribute:order"
- * @param {string[]} [defaults] array of predicate of the form "attribute:order"
- * @return {array.<string[]>} array containing 2 elements : attributes, orders
- */
-module.exports = function formatSort(sortBy, defaults) {
-  var defaultInstructions = (defaults || []).map(function(sort) {
-    return sort.split(':');
-  });
-
-  return sortBy.reduce(
-    function preparePredicate(out, sort) {
-      var sortInstruction = sort.split(':');
-
-      var matchingDefault = find(defaultInstructions, function(
-        defaultInstruction
-      ) {
-        return defaultInstruction[0] === sortInstruction[0];
-      });
-
-      if (sortInstruction.length > 1 || !matchingDefault) {
-        out[0].push(sortInstruction[0]);
-        out[1].push(sortInstruction[1]);
-        return out;
-      }
-
-      out[0].push(matchingDefault[0]);
-      out[1].push(matchingDefault[1]);
-      return out;
-    },
-    [[], []]
-  );
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/inherits.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/inherits.js ***!
-  \*********************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-function inherits(ctor, superCtor) {
-  ctor.prototype = Object.create(superCtor.prototype, {
-    constructor: {
-      value: ctor,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-}
-
-module.exports = inherits;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/intersection.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/intersection.js ***!
-  \*************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-function intersection(arr1, arr2) {
-  return arr1.filter(function(value, index) {
-    return (
-      arr2.indexOf(value) > -1 &&
-      arr1.indexOf(value) === index /* skips duplicates */
-    );
-  });
-}
-
-module.exports = intersection;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/merge.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/merge.js ***!
-  \******************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-function clone(value) {
-  if (typeof value === 'object' && value !== null) {
-    return _merge(Array.isArray(value) ? [] : {}, value);
-  }
-  return value;
-}
-
-function isObjectOrArrayOrFunction(value) {
-  return (
-    typeof value === 'function' ||
-    Array.isArray(value) ||
-    Object.prototype.toString.call(value) === '[object Object]'
-  );
-}
-
-function _merge(target, source) {
-  if (target === source) {
-    return target;
-  }
-
-  for (var key in source) {
-    if (
-      !Object.prototype.hasOwnProperty.call(source, key) ||
-      key === '__proto__'
-    ) {
-      continue;
-    }
-
-    var sourceVal = source[key];
-    var targetVal = target[key];
-
-    if (typeof targetVal !== 'undefined' && typeof sourceVal === 'undefined') {
-      continue;
-    }
-
-    if (
-      isObjectOrArrayOrFunction(targetVal) &&
-      isObjectOrArrayOrFunction(sourceVal)
-    ) {
-      target[key] = _merge(targetVal, sourceVal);
-    } else {
-      target[key] = clone(sourceVal);
-    }
-  }
-  return target;
-}
-
-/**
- * This method is like Object.assign, but recursively merges own and inherited
- * enumerable keyed properties of source objects into the destination object.
- *
- * NOTE: this behaves like lodash/merge, but:
- * - does mutate functions if they are a source
- * - treats non-plain objects as plain
- * - does not work for circular objects
- * - treats sparse arrays as sparse
- * - does not convert Array-like objects (Arguments, NodeLists, etc.) to arrays
- *
- * @param {Object} object The destination object.
- * @param {...Object} [sources] The source objects.
- * @returns {Object} Returns `object`.
- */
-
-function merge(target) {
-  if (!isObjectOrArrayOrFunction(target)) {
-    target = {};
-  }
-
-  for (var i = 1, l = arguments.length; i < l; i++) {
-    var source = arguments[i];
-
-    if (isObjectOrArrayOrFunction(source)) {
-      _merge(target, source);
-    }
-  }
-  return target;
-}
-
-module.exports = merge;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/objectHasKeys.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/objectHasKeys.js ***!
-  \**************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-function objectHasKeys(obj) {
-  return obj && Object.keys(obj).length > 0;
-}
-
-module.exports = objectHasKeys;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/omit.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/omit.js ***!
-  \*****************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-// https://github.com/babel/babel/blob/3aaafae053fa75febb3aa45d45b6f00646e30ba4/packages/babel-helpers/src/helpers.js#L604-L620
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source === null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key;
-  var i;
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-  return target;
-}
-
-module.exports = _objectWithoutPropertiesLoose;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/orderBy.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/orderBy.js ***!
-  \********************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-function compareAscending(value, other) {
-  if (value !== other) {
-    var valIsDefined = value !== undefined;
-    var valIsNull = value === null;
-
-    var othIsDefined = other !== undefined;
-    var othIsNull = other === null;
-
-    if (
-      (!othIsNull && value > other) ||
-      (valIsNull && othIsDefined) ||
-      !valIsDefined
-    ) {
-      return 1;
-    }
-    if (
-      (!valIsNull && value < other) ||
-      (othIsNull && valIsDefined) ||
-      !othIsDefined
-    ) {
-      return -1;
-    }
-  }
-  return 0;
-}
-
-/**
- * @param {Array<object>} collection object with keys in attributes
- * @param {Array<string>} iteratees attributes
- * @param {Array<string>} orders asc | desc
- */
-function orderBy(collection, iteratees, orders) {
-  if (!Array.isArray(collection)) {
-    return [];
-  }
-
-  if (!Array.isArray(orders)) {
-    orders = [];
-  }
-
-  var result = collection.map(function(value, index) {
-    return {
-      criteria: iteratees.map(function(iteratee) {
-        return value[iteratee];
-      }),
-      index: index,
-      value: value
-    };
-  });
-
-  result.sort(function comparer(object, other) {
-    var index = -1;
-
-    while (++index < object.criteria.length) {
-      var res = compareAscending(object.criteria[index], other.criteria[index]);
-      if (res) {
-        if (index >= orders.length) {
-          return res;
-        }
-        if (orders[index] === 'desc') {
-          return -res;
-        }
-        return res;
-      }
-    }
-
-    // This ensures a stable sort in V8 and other engines.
-    // See https://bugs.chromium.org/p/v8/issues/detail?id=90 for more details.
-    return object.index - other.index;
-  });
-
-  return result.map(function(res) {
-    return res.value;
-  });
-}
-
-module.exports = orderBy;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/functions/valToNumber.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/functions/valToNumber.js ***!
-  \************************************************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-function valToNumber(v) {
-  if (typeof v === 'number') {
-    return v;
-  } else if (typeof v === 'string') {
-    return parseFloat(v);
-  } else if (Array.isArray(v)) {
-    return v.map(valToNumber);
-  }
-
-  throw new Error('The value should be a number, a parsable string or an array of those.');
-}
-
-module.exports = valToNumber;
-
-
-/***/ }),
-
-/***/ "./node_modules/algoliasearch-helper/src/requestBuilder.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/requestBuilder.js ***!
-  \*****************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-var merge = __webpack_require__(/*! ./functions/merge */ "./node_modules/algoliasearch-helper/src/functions/merge.js");
-
-function sortObject(obj) {
-  return Object.keys(obj)
-    .sort(function(a, b) {
-      return a.localeCompare(b);
-    })
-    .reduce(function(acc, curr) {
-      acc[curr] = obj[curr];
-      return acc;
-    }, {});
-}
-
-var requestBuilder = {
-  /**
-   * Get all the queries to send to the client, those queries can used directly
-   * with the Algolia client.
-   * @private
-   * @return {object[]} The queries
-   */
-  _getQueries: function getQueries(index, state) {
-    var queries = [];
-
-    // One query for the hits
-    queries.push({
-      indexName: index,
-      params: requestBuilder._getHitsSearchParams(state)
-    });
-
-    // One for each disjunctive facets
-    state.getRefinedDisjunctiveFacets().forEach(function(refinedFacet) {
-      queries.push({
-        indexName: index,
-        params: requestBuilder._getDisjunctiveFacetSearchParams(state, refinedFacet)
-      });
-    });
-
-    // More to get the parent levels of the hierarchical facets when refined
-    state.getRefinedHierarchicalFacets().forEach(function(refinedFacet) {
-      var hierarchicalFacet = state.getHierarchicalFacetByName(refinedFacet);
-      var currentRefinement = state.getHierarchicalRefinement(refinedFacet);
-      var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
-
-      // If we are deeper than level 0 (starting from `beer > IPA`)
-      // we want to get all parent values
-      if (currentRefinement.length > 0 && currentRefinement[0].split(separator).length > 1) {
-        // We generate a map of the filters we will use for our facet values queries
-        var filtersMap = currentRefinement[0].split(separator).slice(0, -1).reduce(
-          function createFiltersMap(map, segment, level) {
-            return map.concat({
-              attribute: hierarchicalFacet.attributes[level],
-              value: level === 0
-                ? segment
-                : [map[map.length - 1].value, segment].join(separator)
-            });
-          }
-        , []);
-
-        filtersMap.forEach(function(filter, level) {
-          var params = requestBuilder._getDisjunctiveFacetSearchParams(
-            state,
-            filter.attribute,
-            level === 0
-          );
-
-          // Keep facet filters unrelated to current hierarchical attributes
-          function hasHierarchicalFacetFilter(value) {
-            return hierarchicalFacet.attributes.some(function(attribute) {
-              return attribute === value.split(':')[0];
-            });
-          }
-
-          var filteredFacetFilters = (params.facetFilters || []).reduce(function(acc, facetFilter) {
-            if (Array.isArray(facetFilter)) {
-              var filtered = facetFilter.filter(function(filterValue) {
-                return !hasHierarchicalFacetFilter(filterValue);
-              });
-
-              if (filtered.length > 0) {
-                acc.push(filtered);
-              }
-            }
-
-            if (typeof facetFilter === 'string' && !hasHierarchicalFacetFilter(facetFilter)) {
-              acc.push(facetFilter);
-            }
-
-            return acc;
-          }, []);
-
-          var parent = filtersMap[level - 1];
-          if (level > 0) {
-            params.facetFilters = filteredFacetFilters.concat(parent.attribute + ':' + parent.value);
-          } else {
-            params.facetFilters = filteredFacetFilters.length > 0 ? filteredFacetFilters : undefined;
-          }
-
-          queries.push({indexName: index, params: params});
-        });
-      }
-    });
-
-    return queries;
-  },
-
-  /**
-   * Build search parameters used to fetch hits
-   * @private
-   * @return {object.<string, any>}
-   */
-  _getHitsSearchParams: function(state) {
-    var facets = state.facets
-      .concat(state.disjunctiveFacets)
-      .concat(requestBuilder._getHitsHierarchicalFacetsAttributes(state));
-
-
-    var facetFilters = requestBuilder._getFacetFilters(state);
-    var numericFilters = requestBuilder._getNumericFilters(state);
-    var tagFilters = requestBuilder._getTagFilters(state);
-    var additionalParams = {
-      facets: facets.indexOf('*') > -1 ? ['*'] : facets,
-      tagFilters: tagFilters
-    };
-
-    if (facetFilters.length > 0) {
-      additionalParams.facetFilters = facetFilters;
-    }
-
-    if (numericFilters.length > 0) {
-      additionalParams.numericFilters = numericFilters;
-    }
-
-    return sortObject(merge({}, state.getQueryParams(), additionalParams));
-  },
-
-  /**
-   * Build search parameters used to fetch a disjunctive facet
-   * @private
-   * @param  {string} facet the associated facet name
-   * @param  {boolean} hierarchicalRootLevel ?? FIXME
-   * @return {object}
-   */
-  _getDisjunctiveFacetSearchParams: function(state, facet, hierarchicalRootLevel) {
-    var facetFilters = requestBuilder._getFacetFilters(state, facet, hierarchicalRootLevel);
-    var numericFilters = requestBuilder._getNumericFilters(state, facet);
-    var tagFilters = requestBuilder._getTagFilters(state);
-    var additionalParams = {
-      hitsPerPage: 0,
-      page: 0,
-      analytics: false,
-      clickAnalytics: false
-    };
-
-    if (tagFilters.length > 0) {
-      additionalParams.tagFilters = tagFilters;
-    }
-
-    var hierarchicalFacet = state.getHierarchicalFacetByName(facet);
-
-    if (hierarchicalFacet) {
-      additionalParams.facets = requestBuilder._getDisjunctiveHierarchicalFacetAttribute(
-        state,
-        hierarchicalFacet,
-        hierarchicalRootLevel
-      );
-    } else {
-      additionalParams.facets = facet;
-    }
-
-    if (numericFilters.length > 0) {
-      additionalParams.numericFilters = numericFilters;
-    }
-
-    if (facetFilters.length > 0) {
-      additionalParams.facetFilters = facetFilters;
-    }
-
-    return sortObject(merge({}, state.getQueryParams(), additionalParams));
-  },
-
-  /**
-   * Return the numeric filters in an algolia request fashion
-   * @private
-   * @param {string} [facetName] the name of the attribute for which the filters should be excluded
-   * @return {string[]} the numeric filters in the algolia format
-   */
-  _getNumericFilters: function(state, facetName) {
-    if (state.numericFilters) {
-      return state.numericFilters;
-    }
-
-    var numericFilters = [];
-
-    Object.keys(state.numericRefinements).forEach(function(attribute) {
-      var operators = state.numericRefinements[attribute] || {};
-      Object.keys(operators).forEach(function(operator) {
-        var values = operators[operator] || [];
-        if (facetName !== attribute) {
-          values.forEach(function(value) {
-            if (Array.isArray(value)) {
-              var vs = value.map(function(v) {
-                return attribute + operator + v;
-              });
-              numericFilters.push(vs);
-            } else {
-              numericFilters.push(attribute + operator + value);
-            }
-          });
-        }
-      });
-    });
-
-    return numericFilters;
-  },
-
-  /**
-   * Return the tags filters depending
-   * @private
-   * @return {string}
-   */
-  _getTagFilters: function(state) {
-    if (state.tagFilters) {
-      return state.tagFilters;
-    }
-
-    return state.tagRefinements.join(',');
-  },
-
-
-  /**
-   * Build facetFilters parameter based on current refinements. The array returned
-   * contains strings representing the facet filters in the algolia format.
-   * @private
-   * @param  {string} [facet] if set, the current disjunctive facet
-   * @return {array.<string>}
-   */
-  _getFacetFilters: function(state, facet, hierarchicalRootLevel) {
-    var facetFilters = [];
-
-    var facetsRefinements = state.facetsRefinements || {};
-    Object.keys(facetsRefinements).forEach(function(facetName) {
-      var facetValues = facetsRefinements[facetName] || [];
-      facetValues.forEach(function(facetValue) {
-        facetFilters.push(facetName + ':' + facetValue);
-      });
-    });
-
-    var facetsExcludes = state.facetsExcludes || {};
-    Object.keys(facetsExcludes).forEach(function(facetName) {
-      var facetValues = facetsExcludes[facetName] || [];
-      facetValues.forEach(function(facetValue) {
-        facetFilters.push(facetName + ':-' + facetValue);
-      });
-    });
-
-    var disjunctiveFacetsRefinements = state.disjunctiveFacetsRefinements || {};
-    Object.keys(disjunctiveFacetsRefinements).forEach(function(facetName) {
-      var facetValues = disjunctiveFacetsRefinements[facetName] || [];
-      if (facetName === facet || !facetValues || facetValues.length === 0) {
-        return;
-      }
-      var orFilters = [];
-
-      facetValues.forEach(function(facetValue) {
-        orFilters.push(facetName + ':' + facetValue);
-      });
-
-      facetFilters.push(orFilters);
-    });
-
-    var hierarchicalFacetsRefinements = state.hierarchicalFacetsRefinements || {};
-    Object.keys(hierarchicalFacetsRefinements).forEach(function(facetName) {
-      var facetValues = hierarchicalFacetsRefinements[facetName] || [];
-      var facetValue = facetValues[0];
-
-      if (facetValue === undefined) {
-        return;
-      }
-
-      var hierarchicalFacet = state.getHierarchicalFacetByName(facetName);
-      var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
-      var rootPath = state._getHierarchicalRootPath(hierarchicalFacet);
-      var attributeToRefine;
-      var attributesIndex;
-
-      // we ask for parent facet values only when the `facet` is the current hierarchical facet
-      if (facet === facetName) {
-        // if we are at the root level already, no need to ask for facet values, we get them from
-        // the hits query
-        if (facetValue.indexOf(separator) === -1 || (!rootPath && hierarchicalRootLevel === true) ||
-          (rootPath && rootPath.split(separator).length === facetValue.split(separator).length)) {
-          return;
-        }
-
-        if (!rootPath) {
-          attributesIndex = facetValue.split(separator).length - 2;
-          facetValue = facetValue.slice(0, facetValue.lastIndexOf(separator));
-        } else {
-          attributesIndex = rootPath.split(separator).length - 1;
-          facetValue = rootPath;
-        }
-
-        attributeToRefine = hierarchicalFacet.attributes[attributesIndex];
-      } else {
-        attributesIndex = facetValue.split(separator).length - 1;
-
-        attributeToRefine = hierarchicalFacet.attributes[attributesIndex];
-      }
-
-      if (attributeToRefine) {
-        facetFilters.push([attributeToRefine + ':' + facetValue]);
-      }
-    });
-
-    return facetFilters;
-  },
-
-  _getHitsHierarchicalFacetsAttributes: function(state) {
-    var out = [];
-
-    return state.hierarchicalFacets.reduce(
-      // ask for as much levels as there's hierarchical refinements
-      function getHitsAttributesForHierarchicalFacet(allAttributes, hierarchicalFacet) {
-        var hierarchicalRefinement = state.getHierarchicalRefinement(hierarchicalFacet.name)[0];
-
-        // if no refinement, ask for root level
-        if (!hierarchicalRefinement) {
-          allAttributes.push(hierarchicalFacet.attributes[0]);
-          return allAttributes;
-        }
-
-        var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
-        var level = hierarchicalRefinement.split(separator).length;
-        var newAttributes = hierarchicalFacet.attributes.slice(0, level + 1);
-
-        return allAttributes.concat(newAttributes);
-      }, out);
-  },
-
-  _getDisjunctiveHierarchicalFacetAttribute: function(state, hierarchicalFacet, rootLevel) {
-    var separator = state._getHierarchicalFacetSeparator(hierarchicalFacet);
-    if (rootLevel === true) {
-      var rootPath = state._getHierarchicalRootPath(hierarchicalFacet);
-      var attributeIndex = 0;
-
-      if (rootPath) {
-        attributeIndex = rootPath.split(separator).length;
-      }
-      return [hierarchicalFacet.attributes[attributeIndex]];
-    }
-
-    var hierarchicalRefinement = state.getHierarchicalRefinement(hierarchicalFacet.name)[0] || '';
-    // if refinement is 'beers > IPA > Flying dog',
-    // then we want `facets: ['beers > IPA']` as disjunctive facet (parent level values)
-
-    var parentLevel = hierarchicalRefinement.split(separator).length - 1;
-    return hierarchicalFacet.attributes.slice(0, parentLevel + 1);
-  },
-
-  getSearchForFacetQuery: function(facetName, query, maxFacetHits, state) {
-    var stateForSearchForFacetValues = state.isDisjunctiveFacet(facetName) ?
-      state.clearRefinements(facetName) :
-      state;
-    var searchForFacetSearchParameters = {
-      facetQuery: query,
-      facetName: facetName
-    };
-    if (typeof maxFacetHits === 'number') {
-      searchForFacetSearchParameters.maxFacetHits = maxFacetHits;
-    }
-    return sortObject(merge(
-      {},
-      requestBuilder._getHitsSearchParams(stateForSearchForFacetValues),
-      searchForFacetSearchParameters
+    reject(new AxiosError(
+      'Request failed with status code ' + response.status,
+      [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
+      response.config,
+      response.request,
+      response
     ));
   }
 };
 
-module.exports = requestBuilder;
-
 
 /***/ }),
 
-/***/ "./node_modules/algoliasearch-helper/src/utils/isValidUserToken.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/utils/isValidUserToken.js ***!
-  \*************************************************************************/
-/***/ ((module) => {
+/***/ "./node_modules/axios/lib/core/transformData.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/transformData.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-module.exports = function isValidUserToken(userToken) {
-  if (userToken === null) {
-    return false;
-  }
-  return /^[a-zA-Z0-9_-]{1,64}$/.test(userToken);
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+var defaults = __webpack_require__(/*! ../defaults */ "./node_modules/axios/lib/defaults/index.js");
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  var context = this || defaults;
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn.call(context, data, headers);
+  });
+
+  return data;
 };
 
 
 /***/ }),
 
-/***/ "./node_modules/algoliasearch-helper/src/version.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/algoliasearch-helper/src/version.js ***!
-  \**********************************************************/
+/***/ "./node_modules/axios/lib/defaults/index.js":
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/defaults/index.js ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+/* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+var normalizeHeaderName = __webpack_require__(/*! ../helpers/normalizeHeaderName */ "./node_modules/axios/lib/helpers/normalizeHeaderName.js");
+var AxiosError = __webpack_require__(/*! ../core/AxiosError */ "./node_modules/axios/lib/core/AxiosError.js");
+var transitionalDefaults = __webpack_require__(/*! ./transitional */ "./node_modules/axios/lib/defaults/transitional.js");
+var toFormData = __webpack_require__(/*! ../helpers/toFormData */ "./node_modules/axios/lib/helpers/toFormData.js");
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(/*! ../adapters/xhr */ "./node_modules/axios/lib/adapters/xhr.js");
+  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(/*! ../adapters/http */ "./node_modules/axios/lib/adapters/xhr.js");
+  }
+  return adapter;
+}
+
+function stringifySafely(rawValue, parser, encoder) {
+  if (utils.isString(rawValue)) {
+    try {
+      (parser || JSON.parse)(rawValue);
+      return utils.trim(rawValue);
+    } catch (e) {
+      if (e.name !== 'SyntaxError') {
+        throw e;
+      }
+    }
+  }
+
+  return (encoder || JSON.stringify)(rawValue);
+}
+
+var defaults = {
+
+  transitional: transitionalDefaults,
+
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Accept');
+    normalizeHeaderName(headers, 'Content-Type');
+
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+
+    var isObjectPayload = utils.isObject(data);
+    var contentType = headers && headers['Content-Type'];
+
+    var isFileList;
+
+    if ((isFileList = utils.isFileList(data)) || (isObjectPayload && contentType === 'multipart/form-data')) {
+      var _FormData = this.env && this.env.FormData;
+      return toFormData(isFileList ? {'files[]': data} : data, _FormData && new _FormData());
+    } else if (isObjectPayload || contentType === 'application/json') {
+      setContentTypeIfUnset(headers, 'application/json');
+      return stringifySafely(data);
+    }
+
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    var transitional = this.transitional || defaults.transitional;
+    var silentJSONParsing = transitional && transitional.silentJSONParsing;
+    var forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+    var strictJSONParsing = !silentJSONParsing && this.responseType === 'json';
+
+    if (strictJSONParsing || (forcedJSONParsing && utils.isString(data) && data.length)) {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        if (strictJSONParsing) {
+          if (e.name === 'SyntaxError') {
+            throw AxiosError.from(e, AxiosError.ERR_BAD_RESPONSE, this, null, this.response);
+          }
+          throw e;
+        }
+      }
+    }
+
+    return data;
+  }],
+
+  /**
+   * A timeout in milliseconds to abort a request. If set to 0 (default) a
+   * timeout is not created.
+   */
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+  maxBodyLength: -1,
+
+  env: {
+    FormData: __webpack_require__(/*! ./env/FormData */ "./node_modules/axios/lib/helpers/null.js")
+  },
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  },
+
+  headers: {
+    common: {
+      'Accept': 'application/json, text/plain, */*'
+    }
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/defaults/transitional.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/defaults/transitional.js ***!
+  \*********************************************************/
 /***/ ((module) => {
 
 "use strict";
 
 
-module.exports = '3.11.1';
+module.exports = {
+  silentJSONParsing: true,
+  forcedJSONParsing: true,
+  clarifyTimeoutError: false
+};
 
 
 /***/ }),
 
-/***/ "./node_modules/algoliasearch/dist/algoliasearch-lite.umd.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/algoliasearch/dist/algoliasearch-lite.umd.js ***!
-  \*******************************************************************/
-/***/ (function(module) {
+/***/ "./node_modules/axios/lib/env/data.js":
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/env/data.js ***!
+  \********************************************/
+/***/ ((module) => {
 
-/*! algoliasearch-lite.umd.js | 4.14.2 | © Algolia, inc. | https://github.com/algolia/algoliasearch-client-javascript */
-!function(e,t){ true?module.exports=t():0}(this,(function(){"use strict";function e(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function t(e,t){var r=Object.keys(e);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(e);t&&(n=n.filter((function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable}))),r.push.apply(r,n)}return r}function r(r){for(var n=1;n<arguments.length;n++){var o=null!=arguments[n]?arguments[n]:{};n%2?t(Object(o),!0).forEach((function(t){e(r,t,o[t])})):Object.getOwnPropertyDescriptors?Object.defineProperties(r,Object.getOwnPropertyDescriptors(o)):t(Object(o)).forEach((function(e){Object.defineProperty(r,e,Object.getOwnPropertyDescriptor(o,e))}))}return r}function n(e,t){if(null==e)return{};var r,n,o=function(e,t){if(null==e)return{};var r,n,o={},a=Object.keys(e);for(n=0;n<a.length;n++)r=a[n],t.indexOf(r)>=0||(o[r]=e[r]);return o}(e,t);if(Object.getOwnPropertySymbols){var a=Object.getOwnPropertySymbols(e);for(n=0;n<a.length;n++)r=a[n],t.indexOf(r)>=0||Object.prototype.propertyIsEnumerable.call(e,r)&&(o[r]=e[r])}return o}function o(e,t){return function(e){if(Array.isArray(e))return e}(e)||function(e,t){if(!(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e)))return;var r=[],n=!0,o=!1,a=void 0;try{for(var u,i=e[Symbol.iterator]();!(n=(u=i.next()).done)&&(r.push(u.value),!t||r.length!==t);n=!0);}catch(e){o=!0,a=e}finally{try{n||null==i.return||i.return()}finally{if(o)throw a}}return r}(e,t)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance")}()}function a(e){return function(e){if(Array.isArray(e)){for(var t=0,r=new Array(e.length);t<e.length;t++)r[t]=e[t];return r}}(e)||function(e){if(Symbol.iterator in Object(e)||"[object Arguments]"===Object.prototype.toString.call(e))return Array.from(e)}(e)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance")}()}function u(e){var t,r="algoliasearch-client-js-".concat(e.key),n=function(){return void 0===t&&(t=e.localStorage||window.localStorage),t},a=function(){return JSON.parse(n().getItem(r)||"{}")};return{get:function(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{miss:function(){return Promise.resolve()}};return Promise.resolve().then((function(){var r=JSON.stringify(e),n=a()[r];return Promise.all([n||t(),void 0!==n])})).then((function(e){var t=o(e,2),n=t[0],a=t[1];return Promise.all([n,a||r.miss(n)])})).then((function(e){return o(e,1)[0]}))},set:function(e,t){return Promise.resolve().then((function(){var o=a();return o[JSON.stringify(e)]=t,n().setItem(r,JSON.stringify(o)),t}))},delete:function(e){return Promise.resolve().then((function(){var t=a();delete t[JSON.stringify(e)],n().setItem(r,JSON.stringify(t))}))},clear:function(){return Promise.resolve().then((function(){n().removeItem(r)}))}}}function i(e){var t=a(e.caches),r=t.shift();return void 0===r?{get:function(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{miss:function(){return Promise.resolve()}},n=t();return n.then((function(e){return Promise.all([e,r.miss(e)])})).then((function(e){return o(e,1)[0]}))},set:function(e,t){return Promise.resolve(t)},delete:function(e){return Promise.resolve()},clear:function(){return Promise.resolve()}}:{get:function(e,n){var o=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{miss:function(){return Promise.resolve()}};return r.get(e,n,o).catch((function(){return i({caches:t}).get(e,n,o)}))},set:function(e,n){return r.set(e,n).catch((function(){return i({caches:t}).set(e,n)}))},delete:function(e){return r.delete(e).catch((function(){return i({caches:t}).delete(e)}))},clear:function(){return r.clear().catch((function(){return i({caches:t}).clear()}))}}}function s(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{serializable:!0},t={};return{get:function(r,n){var o=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{miss:function(){return Promise.resolve()}},a=JSON.stringify(r);if(a in t)return Promise.resolve(e.serializable?JSON.parse(t[a]):t[a]);var u=n(),i=o&&o.miss||function(){return Promise.resolve()};return u.then((function(e){return i(e)})).then((function(){return u}))},set:function(r,n){return t[JSON.stringify(r)]=e.serializable?JSON.stringify(n):n,Promise.resolve(n)},delete:function(e){return delete t[JSON.stringify(e)],Promise.resolve()},clear:function(){return t={},Promise.resolve()}}}function c(e){for(var t=e.length-1;t>0;t--){var r=Math.floor(Math.random()*(t+1)),n=e[t];e[t]=e[r],e[r]=n}return e}function l(e,t){return t?(Object.keys(t).forEach((function(r){e[r]=t[r](e)})),e):e}function f(e){for(var t=arguments.length,r=new Array(t>1?t-1:0),n=1;n<t;n++)r[n-1]=arguments[n];var o=0;return e.replace(/%s/g,(function(){return encodeURIComponent(r[o++])}))}var h={WithinQueryParameters:0,WithinHeaders:1};function d(e,t){var r=e||{},n=r.data||{};return Object.keys(r).forEach((function(e){-1===["timeout","headers","queryParameters","data","cacheable"].indexOf(e)&&(n[e]=r[e])})),{data:Object.entries(n).length>0?n:void 0,timeout:r.timeout||t,headers:r.headers||{},queryParameters:r.queryParameters||{},cacheable:r.cacheable}}var m={Read:1,Write:2,Any:3},p=1,v=2,y=3;function g(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:p;return r(r({},e),{},{status:t,lastUpdate:Date.now()})}function b(e){return"string"==typeof e?{protocol:"https",url:e,accept:m.Any}:{protocol:e.protocol||"https",url:e.url,accept:e.accept||m.Any}}var O="GET",P="POST";function q(e,t){return Promise.all(t.map((function(t){return e.get(t,(function(){return Promise.resolve(g(t))}))}))).then((function(e){var r=e.filter((function(e){return function(e){return e.status===p||Date.now()-e.lastUpdate>12e4}(e)})),n=e.filter((function(e){return function(e){return e.status===y&&Date.now()-e.lastUpdate<=12e4}(e)})),o=[].concat(a(r),a(n));return{getTimeout:function(e,t){return(0===n.length&&0===e?1:n.length+3+e)*t},statelessHosts:o.length>0?o.map((function(e){return b(e)})):t}}))}function w(e,t,n,o){var u=[],i=function(e,t){if(e.method===O||void 0===e.data&&void 0===t.data)return;var n=Array.isArray(e.data)?e.data:r(r({},e.data),t.data);return JSON.stringify(n)}(n,o),s=function(e,t){var n=r(r({},e.headers),t.headers),o={};return Object.keys(n).forEach((function(e){var t=n[e];o[e.toLowerCase()]=t})),o}(e,o),c=n.method,l=n.method!==O?{}:r(r({},n.data),o.data),f=r(r(r({"x-algolia-agent":e.userAgent.value},e.queryParameters),l),o.queryParameters),h=0,d=function t(r,a){var l=r.pop();if(void 0===l)throw{name:"RetryError",message:"Unreachable hosts - your application id may be incorrect. If the error persists, contact support@algolia.com.",transporterStackTrace:A(u)};var d={data:i,headers:s,method:c,url:S(l,n.path,f),connectTimeout:a(h,e.timeouts.connect),responseTimeout:a(h,o.timeout)},m=function(e){var t={request:d,response:e,host:l,triesLeft:r.length};return u.push(t),t},p={onSuccess:function(e){return function(e){try{return JSON.parse(e.content)}catch(t){throw function(e,t){return{name:"DeserializationError",message:e,response:t}}(t.message,e)}}(e)},onRetry:function(n){var o=m(n);return n.isTimedOut&&h++,Promise.all([e.logger.info("Retryable failure",x(o)),e.hostsCache.set(l,g(l,n.isTimedOut?y:v))]).then((function(){return t(r,a)}))},onFail:function(e){throw m(e),function(e,t){var r=e.content,n=e.status,o=r;try{o=JSON.parse(r).message}catch(e){}return function(e,t,r){return{name:"ApiError",message:e,status:t,transporterStackTrace:r}}(o,n,t)}(e,A(u))}};return e.requester.send(d).then((function(e){return function(e,t){return function(e){var t=e.status;return e.isTimedOut||function(e){var t=e.isTimedOut,r=e.status;return!t&&0==~~r}(e)||2!=~~(t/100)&&4!=~~(t/100)}(e)?t.onRetry(e):2==~~(e.status/100)?t.onSuccess(e):t.onFail(e)}(e,p)}))};return q(e.hostsCache,t).then((function(e){return d(a(e.statelessHosts).reverse(),e.getTimeout)}))}function j(e){var t={value:"Algolia for JavaScript (".concat(e,")"),add:function(e){var r="; ".concat(e.segment).concat(void 0!==e.version?" (".concat(e.version,")"):"");return-1===t.value.indexOf(r)&&(t.value="".concat(t.value).concat(r)),t}};return t}function S(e,t,r){var n=T(r),o="".concat(e.protocol,"://").concat(e.url,"/").concat("/"===t.charAt(0)?t.substr(1):t);return n.length&&(o+="?".concat(n)),o}function T(e){return Object.keys(e).map((function(t){return f("%s=%s",t,(r=e[t],"[object Object]"===Object.prototype.toString.call(r)||"[object Array]"===Object.prototype.toString.call(r)?JSON.stringify(e[t]):e[t]));var r})).join("&")}function A(e){return e.map((function(e){return x(e)}))}function x(e){var t=e.request.headers["x-algolia-api-key"]?{"x-algolia-api-key":"*****"}:{};return r(r({},e),{},{request:r(r({},e.request),{},{headers:r(r({},e.request.headers),t)})})}var N=function(e){var t=e.appId,n=function(e,t,r){var n={"x-algolia-api-key":r,"x-algolia-application-id":t};return{headers:function(){return e===h.WithinHeaders?n:{}},queryParameters:function(){return e===h.WithinQueryParameters?n:{}}}}(void 0!==e.authMode?e.authMode:h.WithinHeaders,t,e.apiKey),a=function(e){var t=e.hostsCache,r=e.logger,n=e.requester,a=e.requestsCache,u=e.responsesCache,i=e.timeouts,s=e.userAgent,c=e.hosts,l=e.queryParameters,f={hostsCache:t,logger:r,requester:n,requestsCache:a,responsesCache:u,timeouts:i,userAgent:s,headers:e.headers,queryParameters:l,hosts:c.map((function(e){return b(e)})),read:function(e,t){var r=d(t,f.timeouts.read),n=function(){return w(f,f.hosts.filter((function(e){return 0!=(e.accept&m.Read)})),e,r)};if(!0!==(void 0!==r.cacheable?r.cacheable:e.cacheable))return n();var a={request:e,mappedRequestOptions:r,transporter:{queryParameters:f.queryParameters,headers:f.headers}};return f.responsesCache.get(a,(function(){return f.requestsCache.get(a,(function(){return f.requestsCache.set(a,n()).then((function(e){return Promise.all([f.requestsCache.delete(a),e])}),(function(e){return Promise.all([f.requestsCache.delete(a),Promise.reject(e)])})).then((function(e){var t=o(e,2);t[0];return t[1]}))}))}),{miss:function(e){return f.responsesCache.set(a,e)}})},write:function(e,t){return w(f,f.hosts.filter((function(e){return 0!=(e.accept&m.Write)})),e,d(t,f.timeouts.write))}};return f}(r(r({hosts:[{url:"".concat(t,"-dsn.algolia.net"),accept:m.Read},{url:"".concat(t,".algolia.net"),accept:m.Write}].concat(c([{url:"".concat(t,"-1.algolianet.com")},{url:"".concat(t,"-2.algolianet.com")},{url:"".concat(t,"-3.algolianet.com")}]))},e),{},{headers:r(r(r({},n.headers()),{"content-type":"application/x-www-form-urlencoded"}),e.headers),queryParameters:r(r({},n.queryParameters()),e.queryParameters)}));return l({transporter:a,appId:t,addAlgoliaAgent:function(e,t){a.userAgent.add({segment:e,version:t})},clearCache:function(){return Promise.all([a.requestsCache.clear(),a.responsesCache.clear()]).then((function(){}))}},e.methods)},C=function(e){return function(t,r){return t.method===O?e.transporter.read(t,r):e.transporter.write(t,r)}},k=function(e){return function(t){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},n={transporter:e.transporter,appId:e.appId,indexName:t};return l(n,r.methods)}},J=function(e){return function(t,n){var o=t.map((function(e){return r(r({},e),{},{params:T(e.params||{})})}));return e.transporter.read({method:P,path:"1/indexes/*/queries",data:{requests:o},cacheable:!0},n)}},E=function(e){return function(t,o){return Promise.all(t.map((function(t){var a=t.params,u=a.facetName,i=a.facetQuery,s=n(a,["facetName","facetQuery"]);return k(e)(t.indexName,{methods:{searchForFacetValues:R}}).searchForFacetValues(u,i,r(r({},o),s))})))}},I=function(e){return function(t,r,n){return e.transporter.read({method:P,path:f("1/answers/%s/prediction",e.indexName),data:{query:t,queryLanguages:r},cacheable:!0},n)}},F=function(e){return function(t,r){return e.transporter.read({method:P,path:f("1/indexes/%s/query",e.indexName),data:{query:t},cacheable:!0},r)}},R=function(e){return function(t,r,n){return e.transporter.read({method:P,path:f("1/indexes/%s/facets/%s/query",e.indexName,t),data:{facetQuery:r},cacheable:!0},n)}},D=1,W=2,H=3;function Q(e,t,n){var o,a={appId:e,apiKey:t,timeouts:{connect:1,read:2,write:30},requester:{send:function(e){return new Promise((function(t){var r=new XMLHttpRequest;r.open(e.method,e.url,!0),Object.keys(e.headers).forEach((function(t){return r.setRequestHeader(t,e.headers[t])}));var n,o=function(e,n){return setTimeout((function(){r.abort(),t({status:0,content:n,isTimedOut:!0})}),1e3*e)},a=o(e.connectTimeout,"Connection timeout");r.onreadystatechange=function(){r.readyState>r.OPENED&&void 0===n&&(clearTimeout(a),n=o(e.responseTimeout,"Socket timeout"))},r.onerror=function(){0===r.status&&(clearTimeout(a),clearTimeout(n),t({content:r.responseText||"Network request failed",status:r.status,isTimedOut:!1}))},r.onload=function(){clearTimeout(a),clearTimeout(n),t({content:r.responseText,status:r.status,isTimedOut:!1})},r.send(e.data)}))}},logger:(o=H,{debug:function(e,t){return D>=o&&console.debug(e,t),Promise.resolve()},info:function(e,t){return W>=o&&console.info(e,t),Promise.resolve()},error:function(e,t){return console.error(e,t),Promise.resolve()}}),responsesCache:s(),requestsCache:s({serializable:!1}),hostsCache:i({caches:[u({key:"".concat("4.14.2","-").concat(e)}),s()]}),userAgent:j("4.14.2").add({segment:"Browser",version:"lite"}),authMode:h.WithinQueryParameters};return N(r(r(r({},a),n),{},{methods:{search:J,searchForFacetValues:E,multipleQueries:J,multipleSearchForFacetValues:E,customRequest:C,initIndex:function(e){return function(t){return k(e)(t,{methods:{search:F,searchForFacetValues:R,findAnswers:I}})}}}}))}return Q.version="4.14.2",Q}));
+module.exports = {
+  "version": "0.27.2"
+};
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/bind.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/bind.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
 
 
 /***/ }),
 
-/***/ "./resources/js/components/Search/index.jsx":
+/***/ "./node_modules/axios/lib/helpers/buildURL.js":
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      } else {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    var hashmarkIndex = url.indexOf('#');
+    if (hashmarkIndex !== -1) {
+      url = url.slice(0, hashmarkIndex);
+    }
+
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/combineURLs.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
+  \*******************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/cookies.js":
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+    (function standardBrowserEnv() {
+      return {
+        write: function write(name, value, expires, path, domain, secure) {
+          var cookie = [];
+          cookie.push(name + '=' + encodeURIComponent(value));
+
+          if (utils.isNumber(expires)) {
+            cookie.push('expires=' + new Date(expires).toGMTString());
+          }
+
+          if (utils.isString(path)) {
+            cookie.push('path=' + path);
+          }
+
+          if (utils.isString(domain)) {
+            cookie.push('domain=' + domain);
+          }
+
+          if (secure === true) {
+            cookie.push('secure');
+          }
+
+          document.cookie = cookie.join('; ');
+        },
+
+        read: function read(name) {
+          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+          return (match ? decodeURIComponent(match[3]) : null);
+        },
+
+        remove: function remove(name) {
+          this.write(name, '', Date.now() - 86400000);
+        }
+      };
+    })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return {
+        write: function write() {},
+        read: function read() { return null; },
+        remove: function remove() {}
+      };
+    })()
+);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAbsoluteURL.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
+  \*********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAxiosError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAxiosError.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+/**
+ * Determines whether the payload is an error thrown by Axios
+ *
+ * @param {*} payload The value to test
+ * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
+ */
+module.exports = function isAxiosError(payload) {
+  return utils.isObject(payload) && (payload.isAxiosError === true);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isURLSameOrigin.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isURLSameOrigin.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+    (function standardBrowserEnv() {
+      var msie = /(msie|trident)/i.test(navigator.userAgent);
+      var urlParsingNode = document.createElement('a');
+      var originURL;
+
+      /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+      function resolveURL(url) {
+        var href = url;
+
+        if (msie) {
+        // IE needs attribute set twice to normalize properties
+          urlParsingNode.setAttribute('href', href);
+          href = urlParsingNode.href;
+        }
+
+        urlParsingNode.setAttribute('href', href);
+
+        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+        return {
+          href: urlParsingNode.href,
+          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+          host: urlParsingNode.host,
+          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+          hostname: urlParsingNode.hostname,
+          port: urlParsingNode.port,
+          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+            urlParsingNode.pathname :
+            '/' + urlParsingNode.pathname
+        };
+      }
+
+      originURL = resolveURL(window.location.href);
+
+      /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+      return function isURLSameOrigin(requestURL) {
+        var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+        return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+      };
+    })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return function isURLSameOrigin() {
+        return true;
+      };
+    })()
+);
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/normalizeHeaderName.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
+  \***************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/null.js":
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/null.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+// eslint-disable-next-line strict
+module.exports = null;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/parseHeaders.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
+
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+  });
+
+  return parsed;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/parseProtocol.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseProtocol.js ***!
+  \*********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = function parseProtocol(url) {
+  var match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
+  return match && match[1] || '';
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/spread.js":
 /*!**************************************************!*\
-  !*** ./resources/js/components/Search/index.jsx ***!
+  !*** ./node_modules/axios/lib/helpers/spread.js ***!
   \**************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/toFormData.js":
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/toFormData.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+/* provided dependency */ var Buffer = __webpack_require__(/*! buffer */ "./node_modules/buffer/index.js")["Buffer"];
+
+
+var utils = __webpack_require__(/*! ../utils */ "./node_modules/axios/lib/utils.js");
+
+/**
+ * Convert a data object to FormData
+ * @param {Object} obj
+ * @param {?Object} [formData]
+ * @returns {Object}
+ **/
+
+function toFormData(obj, formData) {
+  // eslint-disable-next-line no-param-reassign
+  formData = formData || new FormData();
+
+  var stack = [];
+
+  function convertValue(value) {
+    if (value === null) return '';
+
+    if (utils.isDate(value)) {
+      return value.toISOString();
+    }
+
+    if (utils.isArrayBuffer(value) || utils.isTypedArray(value)) {
+      return typeof Blob === 'function' ? new Blob([value]) : Buffer.from(value);
+    }
+
+    return value;
+  }
+
+  function build(data, parentKey) {
+    if (utils.isPlainObject(data) || utils.isArray(data)) {
+      if (stack.indexOf(data) !== -1) {
+        throw Error('Circular reference detected in ' + parentKey);
+      }
+
+      stack.push(data);
+
+      utils.forEach(data, function each(value, key) {
+        if (utils.isUndefined(value)) return;
+        var fullKey = parentKey ? parentKey + '.' + key : key;
+        var arr;
+
+        if (value && !parentKey && typeof value === 'object') {
+          if (utils.endsWith(key, '{}')) {
+            // eslint-disable-next-line no-param-reassign
+            value = JSON.stringify(value);
+          } else if (utils.endsWith(key, '[]') && (arr = utils.toArray(value))) {
+            // eslint-disable-next-line func-names
+            arr.forEach(function(el) {
+              !utils.isUndefined(el) && formData.append(fullKey, convertValue(el));
+            });
+            return;
+          }
+        }
+
+        build(value, fullKey);
+      });
+
+      stack.pop();
+    } else {
+      formData.append(parentKey, convertValue(data));
+    }
+  }
+
+  build(obj);
+
+  return formData;
+}
+
+module.exports = toFormData;
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/validator.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/validator.js ***!
+  \*****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var VERSION = (__webpack_require__(/*! ../env/data */ "./node_modules/axios/lib/env/data.js").version);
+var AxiosError = __webpack_require__(/*! ../core/AxiosError */ "./node_modules/axios/lib/core/AxiosError.js");
+
+var validators = {};
+
+// eslint-disable-next-line func-names
+['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach(function(type, i) {
+  validators[type] = function validator(thing) {
+    return typeof thing === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
+  };
+});
+
+var deprecatedWarnings = {};
+
+/**
+ * Transitional option validator
+ * @param {function|boolean?} validator - set to false if the transitional option has been removed
+ * @param {string?} version - deprecated version / removed since version
+ * @param {string?} message - some message with additional info
+ * @returns {function}
+ */
+validators.transitional = function transitional(validator, version, message) {
+  function formatMessage(opt, desc) {
+    return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+  }
+
+  // eslint-disable-next-line func-names
+  return function(value, opt, opts) {
+    if (validator === false) {
+      throw new AxiosError(
+        formatMessage(opt, ' has been removed' + (version ? ' in ' + version : '')),
+        AxiosError.ERR_DEPRECATED
+      );
+    }
+
+    if (version && !deprecatedWarnings[opt]) {
+      deprecatedWarnings[opt] = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        formatMessage(
+          opt,
+          ' has been deprecated since v' + version + ' and will be removed in the near future'
+        )
+      );
+    }
+
+    return validator ? validator(value, opt, opts) : true;
+  };
+};
+
+/**
+ * Assert object's properties type
+ * @param {object} options
+ * @param {object} schema
+ * @param {boolean?} allowUnknown
+ */
+
+function assertOptions(options, schema, allowUnknown) {
+  if (typeof options !== 'object') {
+    throw new AxiosError('options must be an object', AxiosError.ERR_BAD_OPTION_VALUE);
+  }
+  var keys = Object.keys(options);
+  var i = keys.length;
+  while (i-- > 0) {
+    var opt = keys[i];
+    var validator = schema[opt];
+    if (validator) {
+      var value = options[opt];
+      var result = value === undefined || validator(value, opt, options);
+      if (result !== true) {
+        throw new AxiosError('option ' + opt + ' must be ' + result, AxiosError.ERR_BAD_OPTION_VALUE);
+      }
+      continue;
+    }
+    if (allowUnknown !== true) {
+      throw new AxiosError('Unknown option ' + opt, AxiosError.ERR_BAD_OPTION);
+    }
+  }
+}
+
+module.exports = {
+  assertOptions: assertOptions,
+  validators: validators
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/utils.js":
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/utils.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var bind = __webpack_require__(/*! ./helpers/bind */ "./node_modules/axios/lib/helpers/bind.js");
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+// eslint-disable-next-line func-names
+var kindOf = (function(cache) {
+  // eslint-disable-next-line func-names
+  return function(thing) {
+    var str = toString.call(thing);
+    return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+  };
+})(Object.create(null));
+
+function kindOfTest(type) {
+  type = type.toLowerCase();
+  return function isKindOf(thing) {
+    return kindOf(thing) === type;
+  };
+}
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return Array.isArray(val);
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is a Buffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Buffer, otherwise false
+ */
+function isBuffer(val) {
+  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
+    && typeof val.constructor.isBuffer === 'function' && val.constructor.isBuffer(val);
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @function
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+var isArrayBuffer = kindOfTest('ArrayBuffer');
+
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a plain Object
+ *
+ * @param {Object} val The value to test
+ * @return {boolean} True if value is a plain Object, otherwise false
+ */
+function isPlainObject(val) {
+  if (kindOf(val) !== 'object') {
+    return false;
+  }
+
+  var prototype = Object.getPrototypeOf(val);
+  return prototype === null || prototype === Object.prototype;
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @function
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+var isDate = kindOfTest('Date');
+
+/**
+ * Determine if a value is a File
+ *
+ * @function
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+var isFile = kindOfTest('File');
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @function
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+var isBlob = kindOfTest('Blob');
+
+/**
+ * Determine if a value is a FileList
+ *
+ * @function
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+var isFileList = kindOfTest('FileList');
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} thing The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(thing) {
+  var pattern = '[object FormData]';
+  return thing && (
+    (typeof FormData === 'function' && thing instanceof FormData) ||
+    toString.call(thing) === pattern ||
+    (isFunction(thing.toString) && thing.toString() === pattern)
+  );
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ * @function
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+var isURLSearchParams = kindOfTest('URLSearchParams');
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ * nativescript
+ *  navigator.product -> 'NativeScript' or 'NS'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && (navigator.product === 'ReactNative' ||
+                                           navigator.product === 'NativeScript' ||
+                                           navigator.product === 'NS')) {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (isPlainObject(result[key]) && isPlainObject(val)) {
+      result[key] = merge(result[key], val);
+    } else if (isPlainObject(val)) {
+      result[key] = merge({}, val);
+    } else if (isArray(val)) {
+      result[key] = val.slice();
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+/**
+ * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+ *
+ * @param {string} content with BOM
+ * @return {string} content value without BOM
+ */
+function stripBOM(content) {
+  if (content.charCodeAt(0) === 0xFEFF) {
+    content = content.slice(1);
+  }
+  return content;
+}
+
+/**
+ * Inherit the prototype methods from one constructor into another
+ * @param {function} constructor
+ * @param {function} superConstructor
+ * @param {object} [props]
+ * @param {object} [descriptors]
+ */
+
+function inherits(constructor, superConstructor, props, descriptors) {
+  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
+  constructor.prototype.constructor = constructor;
+  props && Object.assign(constructor.prototype, props);
+}
+
+/**
+ * Resolve object with deep prototype chain to a flat object
+ * @param {Object} sourceObj source object
+ * @param {Object} [destObj]
+ * @param {Function} [filter]
+ * @returns {Object}
+ */
+
+function toFlatObject(sourceObj, destObj, filter) {
+  var props;
+  var i;
+  var prop;
+  var merged = {};
+
+  destObj = destObj || {};
+
+  do {
+    props = Object.getOwnPropertyNames(sourceObj);
+    i = props.length;
+    while (i-- > 0) {
+      prop = props[i];
+      if (!merged[prop]) {
+        destObj[prop] = sourceObj[prop];
+        merged[prop] = true;
+      }
+    }
+    sourceObj = Object.getPrototypeOf(sourceObj);
+  } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+
+  return destObj;
+}
+
+/*
+ * determines whether a string ends with the characters of a specified string
+ * @param {String} str
+ * @param {String} searchString
+ * @param {Number} [position= 0]
+ * @returns {boolean}
+ */
+function endsWith(str, searchString, position) {
+  str = String(str);
+  if (position === undefined || position > str.length) {
+    position = str.length;
+  }
+  position -= searchString.length;
+  var lastIndex = str.indexOf(searchString, position);
+  return lastIndex !== -1 && lastIndex === position;
+}
+
+
+/**
+ * Returns new array from array like object
+ * @param {*} [thing]
+ * @returns {Array}
+ */
+function toArray(thing) {
+  if (!thing) return null;
+  var i = thing.length;
+  if (isUndefined(i)) return null;
+  var arr = new Array(i);
+  while (i-- > 0) {
+    arr[i] = thing[i];
+  }
+  return arr;
+}
+
+// eslint-disable-next-line func-names
+var isTypedArray = (function(TypedArray) {
+  // eslint-disable-next-line func-names
+  return function(thing) {
+    return TypedArray && thing instanceof TypedArray;
+  };
+})(typeof Uint8Array !== 'undefined' && Object.getPrototypeOf(Uint8Array));
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isPlainObject: isPlainObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim,
+  stripBOM: stripBOM,
+  inherits: inherits,
+  toFlatObject: toFlatObject,
+  kindOf: kindOf,
+  kindOfTest: kindOfTest,
+  endsWith: endsWith,
+  toArray: toArray,
+  isTypedArray: isTypedArray,
+  isFileList: isFileList
+};
+
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/components/Discord/Fields/ColorPicker.jsx":
+/*!********************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/Fields/ColorPicker.jsx ***!
+  \********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5832,31 +2516,572 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! algoliasearch/lite */ "./node_modules/algoliasearch/dist/algoliasearch-lite.umd.js");
-/* harmony import */ var algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_instantsearch_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-instantsearch-dom */ "./node_modules/react-instantsearch-core/dist/es/widgets/InstantSearch.js");
-/* harmony import */ var react_instantsearch_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-instantsearch-dom */ "./node_modules/react-instantsearch-dom/dist/es/widgets/SearchBox.js");
-/* harmony import */ var react_instantsearch_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-instantsearch-dom */ "./node_modules/react-instantsearch-dom/dist/es/widgets/Hits.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-var searchClient = algoliasearch_lite__WEBPACK_IMPORTED_MODULE_1___default()('Y0X8ZCRBXG', '52c42c01e372d7bd64136651c56ffe94');
+var ColorPicker = function ColorPicker(props) {
+  var name = props.name,
+      label = props.label,
+      width = props.width;
 
-var Search = function Search() {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_instantsearch_dom__WEBPACK_IMPORTED_MODULE_2__["default"], {
-    searchClient: searchClient,
-    indexName: "Messages"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_instantsearch_dom__WEBPACK_IMPORTED_MODULE_3__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_instantsearch_dom__WEBPACK_IMPORTED_MODULE_4__["default"], null));
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+      _useState2 = _slicedToArray(_useState, 2),
+      color = _useState2[0],
+      setColor = _useState2[1];
+
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
+      _useState4 = _slicedToArray(_useState3, 2),
+      background = _useState4[0],
+      setBackground = _useState4[1];
+
+  var onChange = function onChange(event) {
+    var hex = event.target.value;
+    setColor(hex.replace('#', ''));
+    var red = parseInt(hex.slice(1, 3), 16);
+    var green = parseInt(hex.slice(3, 5), 16);
+    var blue = parseInt(hex.slice(5, 7), 16);
+    setBackground({
+      backgroundColor: "rgb(".concat(red, ", ").concat(green, ", ").concat(blue, ")")
+    });
+  };
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "field width-".concat(width)
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "heading"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    htmlFor: name
+  }, label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "input ltr"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    id: "fields-color-container",
+    className: "flex color-container"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "color"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "color-preview",
+    style: background
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    type: "color",
+    className: "color-preview-input",
+    onChange: onChange
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "color-input-container"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "color-hex-indicator light code"
+  }, "#"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    type: "text",
+    className: "color-input text",
+    name: "color",
+    size: "10",
+    defaultValue: color
+  })))));
 };
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Search);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ColorPicker);
 
 /***/ }),
 
-/***/ "./resources/js/sprinkles.jsx":
-/*!************************************!*\
-  !*** ./resources/js/sprinkles.jsx ***!
-  \************************************/
+/***/ "./modules/discordbot/resources/components/Discord/Fields/Matrix.jsx":
+/*!***************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/Fields/Matrix.jsx ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _molecules_RoleEmoji__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../molecules/RoleEmoji */ "./modules/discordbot/resources/components/Discord/molecules/RoleEmoji.jsx");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+
+
+
+var Matrix = function Matrix(props) {
+  var name = props.name,
+      label = props.label,
+      width = props.width,
+      roles = props.roles,
+      emojis = props.emojis;
+
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState2 = _slicedToArray(_useState, 2),
+      rows = _useState2[0],
+      setRows = _useState2[1];
+
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+      _useState4 = _slicedToArray(_useState3, 2),
+      rowCount = _useState4[0],
+      setRowCount = _useState4[1];
+
+  var addRow = function addRow() {
+    setRowCount(rowCount + 1);
+    setRows(rows.concat([{
+      name: 'foo',
+      label: 'Foobar',
+      index: rowCount
+    }]));
+  };
+
+  var removeRow = function removeRow(id) {
+    setRows(rows.filter(function (row) {
+      return row.index !== id;
+    }));
+  };
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "field width-".concat(width)
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "heading"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    htmlFor: name
+  }, label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "input ltr"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "matrix matrix-field",
+    style: {
+      position: 'relative'
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "blocks"
+  }, rows.map(function (row) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_molecules_RoleEmoji__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      name: row.name,
+      label: row.label,
+      id: row.index,
+      key: row.index,
+      roles: roles,
+      emojis: emojis,
+      removeRow: removeRow
+    });
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "buttons last"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "btngroup"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
+    type: "button",
+    className: "btn dashed add icon",
+    onClick: addRow
+  }, "Row"))))));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Matrix);
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/components/Discord/Fields/Select.jsx":
+/*!***************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/Fields/Select.jsx ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+var Select = function Select(props) {
+  var name = props.name,
+      label = props.label,
+      onChange = props.onChange,
+      options = props.options,
+      width = props.width;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "field width-".concat(width)
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "heading"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    htmlFor: name
+  }, label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "input ltr"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "select"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("select", {
+    name: name,
+    onChange: onChange
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+    value: ""
+  }, "---"), options.map(function (option) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+      key: option.id,
+      value: option.id
+    }, option.name);
+  })))));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Select);
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/components/Discord/Fields/TextArea.jsx":
+/*!*****************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/Fields/TextArea.jsx ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var TextArea = function TextArea(props) {
+  var name = props.name,
+      label = props.label,
+      width = props.width;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "field width-".concat(width)
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "heading"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    htmlFor: name
+  }, label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "input ltr"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("textarea", {
+    id: name,
+    type: "text",
+    className: "text fullwidth",
+    name: name
+  })));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TextArea);
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/components/Discord/Fields/TextInput.jsx":
+/*!******************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/Fields/TextInput.jsx ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var TextInput = function TextInput(props) {
+  var name = props.name,
+      label = props.label,
+      width = props.width;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "field width-".concat(width)
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "heading"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    htmlFor: name
+  }, label)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "input ltr"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    id: name,
+    type: "text",
+    className: "text".concat(width === '100' ? ' fullwidth' : ''),
+    name: name
+  })));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TextInput);
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/components/Discord/config/discord-context.jsx":
+/*!************************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/config/discord-context.jsx ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DiscordContext": () => (/* binding */ DiscordContext)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+var DiscordContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createContext({});
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/components/Discord/index.jsx":
+/*!*******************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/index.jsx ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _config_discord_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./config/discord-context */ "./modules/discordbot/resources/components/Discord/config/discord-context.jsx");
+/* harmony import */ var _Fields_ColorPicker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Fields/ColorPicker */ "./modules/discordbot/resources/components/Discord/Fields/ColorPicker.jsx");
+/* harmony import */ var _Fields_Matrix__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Fields/Matrix */ "./modules/discordbot/resources/components/Discord/Fields/Matrix.jsx");
+/* harmony import */ var _Fields_Select__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Fields/Select */ "./modules/discordbot/resources/components/Discord/Fields/Select.jsx");
+/* harmony import */ var _Fields_TextArea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Fields/TextArea */ "./modules/discordbot/resources/components/Discord/Fields/TextArea.jsx");
+/* harmony import */ var _Fields_TextInput__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Fields/TextInput */ "./modules/discordbot/resources/components/Discord/Fields/TextInput.jsx");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+
+
+
+
+
+
+
+
+var Discord = function Discord() {
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
+      _useState2 = _slicedToArray(_useState, 2),
+      state = _useState2[0],
+      setState = _useState2[1];
+
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState4 = _slicedToArray(_useState3, 2),
+      channels = _useState4[0],
+      setChannels = _useState4[1];
+
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState6 = _slicedToArray(_useState5, 2),
+      emojis = _useState6[0],
+      setEmojis = _useState6[1];
+
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState8 = _slicedToArray(_useState7, 2),
+      guilds = _useState8[0],
+      setGuilds = _useState8[1];
+
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState10 = _slicedToArray(_useState9, 2),
+      roles = _useState10[0],
+      setRoles = _useState10[1];
+
+  var getChannels = function getChannels(event) {
+    setChannels([]);
+
+    if (state.guildId) {
+      axios.get('/admin/actions/discordbot/guild/channels', {
+        params: {
+          guildId: state.guildId
+        }
+      }).then(function (response) {
+        setChannels(response.data);
+      });
+    }
+  };
+
+  var getEmojis = function getEmojis() {
+    setEmojis([]);
+
+    if (state.guildId) {
+      axios.get('/admin/actions/discordbot/guild/emojis', {
+        params: {
+          guildId: state.guildId
+        }
+      }).then(function (response) {
+        setEmojis(response.data);
+      });
+    }
+  };
+
+  var getGuilds = function getGuilds() {
+    axios.get('/admin/actions/discordbot/member/guilds').then(function (response) {
+      setGuilds(response.data);
+    });
+  };
+
+  var setGuild = function setGuild(event) {
+    var guildId = event.target.value;
+    setState({
+      guildId: guildId
+    });
+  };
+
+  var getRoles = function getRoles() {
+    setRoles([]);
+
+    if (state.guildId) {
+      axios.get('/admin/actions/discordbot/guild/roles', {
+        params: {
+          guildId: state.guildId
+        }
+      }).then(function (response) {
+        setRoles(response.data);
+      });
+    }
+  };
+
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    return getGuilds();
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    getChannels();
+    getEmojis();
+    getRoles();
+  }, [state]);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_config_discord_context__WEBPACK_IMPORTED_MODULE_1__.DiscordContext.Provider, {
+    value: state
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
+    className: "flex-fields",
+    method: "POST",
+    action: "/admin/actions/discordbot/guild/post"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_TextInput__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    name: "title",
+    label: "Title",
+    width: "100"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_Select__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    name: "guild",
+    label: "Guild",
+    width: "50",
+    options: guilds,
+    onChange: setGuild
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_Select__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    name: "channel",
+    label: "Channel",
+    width: "50",
+    options: channels
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_ColorPicker__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    name: "color",
+    label: "Color",
+    width: "25"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_TextArea__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    name: "description",
+    label: "Description",
+    width: "75"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_Matrix__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    name: "roles",
+    label: "Roles",
+    width: "100",
+    roles: roles,
+    emojis: emojis
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    type: "submit"
+  })));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Discord);
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/components/Discord/molecules/RoleEmoji.jsx":
+/*!*********************************************************************************!*\
+  !*** ./modules/discordbot/resources/components/Discord/molecules/RoleEmoji.jsx ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _config_discord_context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config/discord-context */ "./modules/discordbot/resources/components/Discord/config/discord-context.jsx");
+/* harmony import */ var _Fields_Select__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Fields/Select */ "./modules/discordbot/resources/components/Discord/Fields/Select.jsx");
+
+
+
+
+var RoleEmoji = function RoleEmoji(props) {
+  var roles = props.roles,
+      emojis = props.emojis,
+      id = props.id,
+      removeRow = props.removeRow;
+  var state = (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_config_discord_context__WEBPACK_IMPORTED_MODULE_1__.DiscordContext);
+
+  var handleClick = function handleClick() {
+    removeRow(id);
+  };
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "matrixblock"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "titlebar"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "blocktype"
+  }, "Row")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "actions"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", {
+    className: "error",
+    "data-icon": "remove",
+    type: "button",
+    role: "button",
+    onClick: handleClick
+  }, "Delete")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "fields"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "flex-fields"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_Select__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    name: "role[".concat(id, "]"),
+    label: "Role",
+    width: "50",
+    options: roles
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_Fields_Select__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    name: "emoji[".concat(id, "]"),
+    label: "Emoji",
+    width: "50",
+    options: emojis
+  }))));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RoleEmoji);
+
+/***/ }),
+
+/***/ "./modules/discordbot/resources/sprinkles.jsx":
+/*!****************************************************!*\
+  !*** ./modules/discordbot/resources/sprinkles.jsx ***!
+  \****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5865,7 +3090,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getSprinklesComponent": () => (/* binding */ getSprinklesComponent)
 /* harmony export */ });
 var getComponentContext = function getComponentContext() {
-  return __webpack_require__("./resources/js/components sync recursive \\.(\\/index)?jsx$");
+  return __webpack_require__("./modules/discordbot/resources/components sync recursive \\.(\\/index)?jsx$");
 };
 
 var getComponent = function getComponent(context, componentName) {
@@ -5902,966 +3127,2267 @@ function getSprinklesComponent() {
 
 /***/ }),
 
-/***/ "./node_modules/classnames/index.js":
-/*!******************************************!*\
-  !*** ./node_modules/classnames/index.js ***!
-  \******************************************/
-/***/ ((module, exports) => {
+/***/ "./node_modules/base64-js/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/base64-js/index.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, exports) => {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	Copyright (c) 2018 Jed Watson.
-	Licensed under the MIT License (MIT), see
-	http://jedwatson.github.io/classnames
-*/
-/* global define */
+"use strict";
 
-(function () {
-	'use strict';
 
-	var hasOwn = {}.hasOwnProperty;
-	var nativeCodeString = '[native code]';
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
 
-	function classNames() {
-		var classes = [];
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-		for (var i = 0; i < arguments.length; i++) {
-			var arg = arguments[i];
-			if (!arg) continue;
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
 
-			var argType = typeof arg;
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
 
-			if (argType === 'string' || argType === 'number') {
-				classes.push(arg);
-			} else if (Array.isArray(arg)) {
-				if (arg.length) {
-					var inner = classNames.apply(null, arg);
-					if (inner) {
-						classes.push(inner);
-					}
-				}
-			} else if (argType === 'object') {
-				if (arg.toString !== Object.prototype.toString && !arg.toString.toString().includes('[native code]')) {
-					classes.push(arg.toString());
-					continue;
-				}
+function getLens (b64) {
+  var len = b64.length
 
-				for (var key in arg) {
-					if (hasOwn.call(arg, key) && arg[key]) {
-						classes.push(key);
-					}
-				}
-			}
-		}
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
 
-		return classes.join(' ');
-	}
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
 
-	if ( true && module.exports) {
-		classNames.default = classNames;
-		module.exports = classNames;
-	} else if (true) {
-		// register as 'classnames', consistent with npm package name
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
-			return classNames;
-		}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {}
-}());
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
+}
+
+// base64 is 4/3 + up to two characters of the original data
+function byteLength (b64) {
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function toByteArray (b64) {
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
+
+  var i
+  for (i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
+  }
+
+  return parts.join('')
+}
 
 
 /***/ }),
 
-/***/ "./node_modules/object-assign/index.js":
-/*!*********************************************!*\
-  !*** ./node_modules/object-assign/index.js ***!
-  \*********************************************/
-/***/ ((module) => {
+/***/ "./node_modules/buffer/index.js":
+/*!**************************************!*\
+  !*** ./node_modules/buffer/index.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+
+
+var base64 = __webpack_require__(/*! base64-js */ "./node_modules/base64-js/index.js")
+var ieee754 = __webpack_require__(/*! ieee754 */ "./node_modules/ieee754/index.js")
+var isArray = __webpack_require__(/*! isarray */ "./node_modules/isarray/index.js")
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = __webpack_require__.g.TYPED_ARRAY_SUPPORT !== undefined
+  ? __webpack_require__.g.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
 /*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
-
-/* eslint-disable no-unused-vars */
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
-
-		// Detect buggy property enumeration order in older V8 versions.
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
-
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
-
-		return true;
-	} catch (err) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
-}
-
-module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/prop-types/checkPropTypes.js":
-/*!***************************************************!*\
-  !*** ./node_modules/prop-types/checkPropTypes.js ***!
-  \***************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * Export kMaxLength after typed array support is determined.
  */
+exports.kMaxLength = kMaxLength()
 
+function typedArraySupport () {
+  try {
+    var arr = new Uint8Array(1)
+    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+    return arr.foo() === 42 && // typed array instances can be augmented
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
+}
 
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
 
-var printWarning = function() {};
-
-if (true) {
-  var ReactPropTypesSecret = __webpack_require__(/*! ./lib/ReactPropTypesSecret */ "./node_modules/prop-types/lib/ReactPropTypesSecret.js");
-  var loggedTypeFailures = {};
-  var has = __webpack_require__(/*! ./lib/has */ "./node_modules/prop-types/lib/has.js");
-
-  printWarning = function(text) {
-    var message = 'Warning: ' + text;
-    if (typeof console !== 'undefined') {
-      console.error(message);
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length)
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length)
     }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) { /**/ }
-  };
+    that.length = length
+  }
+
+  return that
 }
 
 /**
- * Assert that the values match with the type specs.
- * Error messages are memorized and will only be shown once.
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
  *
- * @param {object} typeSpecs Map of name to a ReactPropType
- * @param {object} values Runtime values that need to be type-checked
- * @param {string} location e.g. "prop", "context", "child context"
- * @param {string} componentName Name of the component for error messages.
- * @param {?Function} getStack Returns the component stack.
- * @private
+ * The `Uint8Array` prototype remains unmodified.
  */
-function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
-  if (true) {
-    for (var typeSpecName in typeSpecs) {
-      if (has(typeSpecs, typeSpecName)) {
-        var error;
-        // Prop type validation may throw. In case they do, we don't want to
-        // fail the render phase where it didn't fail before. So we log it.
-        // After these have been cleaned up, we'll let them throw.
-        try {
-          // This is intentionally an invariant that gets caught. It's the same
-          // behavior as without this statement except with a better message.
-          if (typeof typeSpecs[typeSpecName] !== 'function') {
-            var err = Error(
-              (componentName || 'React class') + ': ' + location + ' type `' + typeSpecName + '` is invalid; ' +
-              'it must be a function, usually from the `prop-types` package, but received `' + typeof typeSpecs[typeSpecName] + '`.' +
-              'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.'
-            );
-            err.name = 'Invariant Violation';
-            throw err;
-          }
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret);
-        } catch (ex) {
-          error = ex;
-        }
-        if (error && !(error instanceof Error)) {
-          printWarning(
-            (componentName || 'React class') + ': type specification of ' +
-            location + ' `' + typeSpecName + '` is invalid; the type checker ' +
-            'function must return `null` or an `Error` but returned a ' + typeof error + '. ' +
-            'You may have forgotten to pass an argument to the type checker ' +
-            'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' +
-            'shape all require an argument).'
-          );
-        }
-        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-          // Only monitor this failure once because there tends to be a lot of the
-          // same error.
-          loggedTypeFailures[error.message] = true;
 
-          var stack = getStack ? getStack() : '';
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
 
-          printWarning(
-            'Failed ' + location + ' type: ' + error.message + (stack != null ? stack : '')
-          );
-        }
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
+}
+
+Buffer.poolSize = 8192 // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
+}
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size)
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+}
+
+function allocUnsafe (that, size) {
+  assertSize(size)
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0
+    }
+  }
+  return that
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+}
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0
+  that = createBuffer(that, length)
+
+  var actual = that.write(string, encoding)
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual)
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0
+  that = createBuffer(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array)
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset)
+  } else {
+    array = new Uint8Array(array, byteOffset, length)
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array)
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0
+    that = createBuffer(that, len)
+
+    if (that.length === 0) {
+      return that
+    }
+
+    obj.copy(that, 0, 0, len)
+    return that
+  }
+
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
       }
+      return fromArrayLike(that, obj)
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (length) {
+  if (+length != length) { // eslint-disable-line eqeqeq
+    length = 0
+  }
+  return Buffer.alloc(+length)
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length)
+  var pos = 0
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i]
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos)
+    pos += buf.length
+  }
+  return buffer
+}
+
+function byteLength (string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string
+  }
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0
+  start >>>= 0
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
     }
   }
 }
 
-/**
- * Resets warning cache when testing.
- *
- * @private
- */
-checkPropTypes.resetWarningCache = function() {
-  if (true) {
-    loggedTypeFailures = {};
-  }
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true
+
+function swap (b, n, m) {
+  var i = b[n]
+  b[n] = b[m]
+  b[m] = i
 }
 
-module.exports = checkPropTypes;
-
-
-/***/ }),
-
-/***/ "./node_modules/prop-types/factoryWithTypeCheckers.js":
-/*!************************************************************!*\
-  !*** ./node_modules/prop-types/factoryWithTypeCheckers.js ***!
-  \************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-var ReactIs = __webpack_require__(/*! react-is */ "./node_modules/react-is/index.js");
-var assign = __webpack_require__(/*! object-assign */ "./node_modules/object-assign/index.js");
-
-var ReactPropTypesSecret = __webpack_require__(/*! ./lib/ReactPropTypesSecret */ "./node_modules/prop-types/lib/ReactPropTypesSecret.js");
-var has = __webpack_require__(/*! ./lib/has */ "./node_modules/prop-types/lib/has.js");
-var checkPropTypes = __webpack_require__(/*! ./checkPropTypes */ "./node_modules/prop-types/checkPropTypes.js");
-
-var printWarning = function() {};
-
-if (true) {
-  printWarning = function(text) {
-    var message = 'Warning: ' + text;
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1)
+  }
+  return this
 }
 
-function emptyFunctionThatReturnsNull() {
-  return null;
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3)
+    swap(this, i + 1, i + 2)
+  }
+  return this
 }
 
-module.exports = function(isValidElement, throwOnDirectAccess) {
-  /* global Symbol */
-  var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
-  var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7)
+    swap(this, i + 1, i + 6)
+    swap(this, i + 2, i + 5)
+    swap(this, i + 3, i + 4)
+  }
+  return this
+}
 
-  /**
-   * Returns the iterator method function contained on the iterable object.
-   *
-   * Be sure to invoke the function with the iterable as context:
-   *
-   *     var iteratorFn = getIteratorFn(myIterable);
-   *     if (iteratorFn) {
-   *       var iterator = iteratorFn.call(myIterable);
-   *       ...
-   *     }
-   *
-   * @param {?object} maybeIterable
-   * @return {?function}
-   */
-  function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if (typeof iteratorFn === 'function') {
-      return iteratorFn;
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0
+  }
+  if (thisStart === undefined) {
+    thisStart = 0
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0
+  end >>>= 0
+  thisStart >>>= 0
+  thisEnd >>>= 0
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart
+  var y = end - start
+  var len = Math.min(x, y)
+
+  var thisCopy = this.slice(thisStart, thisEnd)
+  var targetCopy = target.slice(start, end)
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i]
+      y = targetCopy[i]
+      break
     }
   }
 
-  /**
-   * Collection of methods that allow declaration and validation of props that are
-   * supplied to React components. Example usage:
-   *
-   *   var Props = require('ReactPropTypes');
-   *   var MyArticle = React.createClass({
-   *     propTypes: {
-   *       // An optional string prop named "description".
-   *       description: Props.string,
-   *
-   *       // A required enum prop named "category".
-   *       category: Props.oneOf(['News','Photos']).isRequired,
-   *
-   *       // A prop named "dialog" that requires an instance of Dialog.
-   *       dialog: Props.instanceOf(Dialog).isRequired
-   *     },
-   *     render: function() { ... }
-   *   });
-   *
-   * A more formal specification of how these methods are used:
-   *
-   *   type := array|bool|func|object|number|string|oneOf([...])|instanceOf(...)
-   *   decl := ReactPropTypes.{type}(.isRequired)?
-   *
-   * Each and every declaration produces a function with the same signature. This
-   * allows the creation of custom validation functions. For example:
-   *
-   *  var MyLink = React.createClass({
-   *    propTypes: {
-   *      // An optional string or URI prop named "href".
-   *      href: function(props, propName, componentName) {
-   *        var propValue = props[propName];
-   *        if (propValue != null && typeof propValue !== 'string' &&
-   *            !(propValue instanceof URI)) {
-   *          return new Error(
-   *            'Expected a string or an URI for ' + propName + ' in ' +
-   *            componentName
-   *          );
-   *        }
-   *      }
-   *    },
-   *    render: function() {...}
-   *  });
-   *
-   * @internal
-   */
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
 
-  var ANONYMOUS = '<<anonymous>>';
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
 
-  // Important!
-  // Keep this list in sync with production version in `./factoryWithThrowingShims.js`.
-  var ReactPropTypes = {
-    array: createPrimitiveTypeChecker('array'),
-    bigint: createPrimitiveTypeChecker('bigint'),
-    bool: createPrimitiveTypeChecker('boolean'),
-    func: createPrimitiveTypeChecker('function'),
-    number: createPrimitiveTypeChecker('number'),
-    object: createPrimitiveTypeChecker('object'),
-    string: createPrimitiveTypeChecker('string'),
-    symbol: createPrimitiveTypeChecker('symbol'),
-
-    any: createAnyTypeChecker(),
-    arrayOf: createArrayOfTypeChecker,
-    element: createElementTypeChecker(),
-    elementType: createElementTypeTypeChecker(),
-    instanceOf: createInstanceTypeChecker,
-    node: createNodeChecker(),
-    objectOf: createObjectOfTypeChecker,
-    oneOf: createEnumTypeChecker,
-    oneOfType: createUnionTypeChecker,
-    shape: createShapeTypeChecker,
-    exact: createStrictShapeTypeChecker,
-  };
-
-  /**
-   * inlined Object.is polyfill to avoid requiring consumers ship their own
-   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-   */
-  /*eslint-disable no-self-compare*/
-  function is(x, y) {
-    // SameValue algorithm
-    if (x === y) {
-      // Steps 1-5, 7-10
-      // Steps 6.b-6.e: +0 != -0
-      return x !== 0 || 1 / x === 1 / y;
-    } else {
-      // Step 6.a: NaN == NaN
-      return x !== x && y !== y;
-    }
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset
+    byteOffset = 0
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000
   }
-  /*eslint-enable no-self-compare*/
-
-  /**
-   * We use an Error-like object for backward compatibility as people may call
-   * PropTypes directly and inspect their output. However, we don't use real
-   * Errors anymore. We don't inspect their stack anyway, and creating them
-   * is prohibitively expensive if they are created too often, such as what
-   * happens in oneOfType() for any type before the one that matched.
-   */
-  function PropTypeError(message, data) {
-    this.message = message;
-    this.data = data && typeof data === 'object' ? data: {};
-    this.stack = '';
+  byteOffset = +byteOffset  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1)
   }
-  // Make `instanceof Error` still work for returned errors.
-  PropTypeError.prototype = Error.prototype;
 
-  function createChainableTypeChecker(validate) {
-    if (true) {
-      var manualPropTypeCallCache = {};
-      var manualPropTypeWarningCount = 0;
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding)
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
     }
-    function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
-      componentName = componentName || ANONYMOUS;
-      propFullName = propFullName || propName;
-
-      if (secret !== ReactPropTypesSecret) {
-        if (throwOnDirectAccess) {
-          // New behavior only for users of `prop-types` package
-          var err = new Error(
-            'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
-            'Use `PropTypes.checkPropTypes()` to call them. ' +
-            'Read more at http://fb.me/use-check-prop-types'
-          );
-          err.name = 'Invariant Violation';
-          throw err;
-        } else if ( true && typeof console !== 'undefined') {
-          // Old behavior for people using React.PropTypes
-          var cacheKey = componentName + ':' + propName;
-          if (
-            !manualPropTypeCallCache[cacheKey] &&
-            // Avoid spamming the console because they are often not actionable except for lib authors
-            manualPropTypeWarningCount < 3
-          ) {
-            printWarning(
-              'You are manually calling a React.PropTypes validation ' +
-              'function for the `' + propFullName + '` prop on `' + componentName + '`. This is deprecated ' +
-              'and will throw in the standalone `prop-types` package. ' +
-              'You may be seeing this warning due to a third-party PropTypes ' +
-              'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.'
-            );
-            manualPropTypeCallCache[cacheKey] = true;
-            manualPropTypeWarningCount++;
-          }
-        }
-      }
-      if (props[propName] == null) {
-        if (isRequired) {
-          if (props[propName] === null) {
-            return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
-          }
-          return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
-        }
-        return null;
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
       } else {
-        return validate(props, propName, componentName, location, propFullName);
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
       }
     }
-
-    var chainedCheckType = checkType.bind(null, false);
-    chainedCheckType.isRequired = checkType.bind(null, true);
-
-    return chainedCheckType;
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
   }
 
-  function createPrimitiveTypeChecker(expectedType) {
-    function validate(props, propName, componentName, location, propFullName, secret) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== expectedType) {
-        // `propValue` being instance of, say, date/regexp, pass the 'object'
-        // check, but we can offer a more precise error message here rather than
-        // 'of type `object`'.
-        var preciseType = getPreciseType(propValue);
+  throw new TypeError('val must be string, number or Buffer')
+}
 
-        return new PropTypeError(
-          'Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'),
-          {expectedType: expectedType}
-        );
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1
+  var arrLength = arr.length
+  var valLength = val.length
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase()
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
       }
-      return null;
+      indexSize = 2
+      arrLength /= 2
+      valLength /= 2
+      byteOffset /= 2
     }
-    return createChainableTypeChecker(validate);
   }
 
-  function createAnyTypeChecker() {
-    return createChainableTypeChecker(emptyFunctionThatReturnsNull);
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
+    } else {
+      return buf.readUInt16BE(i * indexSize)
+    }
   }
 
-  function createArrayOfTypeChecker(typeChecker) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (typeof typeChecker !== 'function') {
-        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
+  var i
+  if (dir) {
+    var foundIndex = -1
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex
+        foundIndex = -1
       }
-      var propValue = props[propName];
-      if (!Array.isArray(propValue)) {
-        var propType = getPropType(propValue);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
-      }
-      for (var i = 0; i < propValue.length; i++) {
-        var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
-        if (error instanceof Error) {
-          return error;
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false
+          break
         }
       }
-      return null;
+      if (found) return i
     }
-    return createChainableTypeChecker(validate);
   }
 
-  function createElementTypeChecker() {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      if (!isValidElement(propValue)) {
-        var propType = getPropType(propValue);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
-      }
-      return null;
+  return -1
+}
+
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+}
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
     }
-    return createChainableTypeChecker(validate);
   }
 
-  function createElementTypeTypeChecker() {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      if (!ReactIs.isValidElementType(propValue)) {
-        var propType = getPropType(propValue);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement type.'));
-      }
-      return null;
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
     }
-    return createChainableTypeChecker(validate);
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
   }
 
-  function createInstanceTypeChecker(expectedClass) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (!(props[propName] instanceof expectedClass)) {
-        var expectedClassName = expectedClass.name || ANONYMOUS;
-        var actualClassName = getClassName(props[propName]);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
   }
 
-  function createEnumTypeChecker(expectedValues) {
-    if (!Array.isArray(expectedValues)) {
-      if (true) {
-        if (arguments.length > 1) {
-          printWarning(
-            'Invalid arguments supplied to oneOf, expected an array, got ' + arguments.length + ' arguments. ' +
-            'A common mistake is to write oneOf(x, y, z) instead of oneOf([x, y, z]).'
-          );
-        } else {
-          printWarning('Invalid argument supplied to oneOf, expected an array.');
-        }
-      }
-      return emptyFunctionThatReturnsNull;
-    }
+  if (!encoding) encoding = 'utf8'
 
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      for (var i = 0; i < expectedValues.length; i++) {
-        if (is(propValue, expectedValues[i])) {
-          return null;
-        }
-      }
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
 
-      var valuesString = JSON.stringify(expectedValues, function replacer(key, value) {
-        var type = getPreciseType(value);
-        if (type === 'symbol') {
-          return String(value);
-        }
-        return value;
-      });
-      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + String(propValue) + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
     }
-    return createChainableTypeChecker(validate);
   }
+}
 
-  function createObjectOfTypeChecker(typeChecker) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (typeof typeChecker !== 'function') {
-        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
-      }
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
-      }
-      for (var key in propValue) {
-        if (has(propValue, key)) {
-          var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-          if (error instanceof Error) {
-            return error;
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
           }
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createUnionTypeChecker(arrayOfTypeCheckers) {
-    if (!Array.isArray(arrayOfTypeCheckers)) {
-       true ? printWarning('Invalid argument supplied to oneOfType, expected an instance of array.') : 0;
-      return emptyFunctionThatReturnsNull;
-    }
-
-    for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
-      var checker = arrayOfTypeCheckers[i];
-      if (typeof checker !== 'function') {
-        printWarning(
-          'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
-          'received ' + getPostfixForTypeWarning(checker) + ' at index ' + i + '.'
-        );
-        return emptyFunctionThatReturnsNull;
-      }
-    }
-
-    function validate(props, propName, componentName, location, propFullName) {
-      var expectedTypes = [];
-      for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
-        var checker = arrayOfTypeCheckers[i];
-        var checkerResult = checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret);
-        if (checkerResult == null) {
-          return null;
-        }
-        if (checkerResult.data && has(checkerResult.data, 'expectedType')) {
-          expectedTypes.push(checkerResult.data.expectedType);
-        }
-      }
-      var expectedTypesMessage = (expectedTypes.length > 0) ? ', expected one of type [' + expectedTypes.join(', ') + ']': '';
-      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`' + expectedTypesMessage + '.'));
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createNodeChecker() {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (!isNode(props[propName])) {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function invalidValidatorError(componentName, location, propFullName, key, type) {
-    return new PropTypeError(
-      (componentName || 'React class') + ': ' + location + ' type `' + propFullName + '.' + key + '` is invalid; ' +
-      'it must be a function, usually from the `prop-types` package, but received `' + type + '`.'
-    );
-  }
-
-  function createShapeTypeChecker(shapeTypes) {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
-      }
-      for (var key in shapeTypes) {
-        var checker = shapeTypes[key];
-        if (typeof checker !== 'function') {
-          return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
-        }
-        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-        if (error) {
-          return error;
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createStrictShapeTypeChecker(shapeTypes) {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
-      }
-      // We need to check all keys in case some are required but missing from props.
-      var allKeys = assign({}, props[propName], shapeTypes);
-      for (var key in allKeys) {
-        var checker = shapeTypes[key];
-        if (has(shapeTypes, key) && typeof checker !== 'function') {
-          return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
-        }
-        if (!checker) {
-          return new PropTypeError(
-            'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
-            '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
-            '\nValid keys: ' + JSON.stringify(Object.keys(shapeTypes), null, '  ')
-          );
-        }
-        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-        if (error) {
-          return error;
-        }
-      }
-      return null;
-    }
-
-    return createChainableTypeChecker(validate);
-  }
-
-  function isNode(propValue) {
-    switch (typeof propValue) {
-      case 'number':
-      case 'string':
-      case 'undefined':
-        return true;
-      case 'boolean':
-        return !propValue;
-      case 'object':
-        if (Array.isArray(propValue)) {
-          return propValue.every(isNode);
-        }
-        if (propValue === null || isValidElement(propValue)) {
-          return true;
-        }
-
-        var iteratorFn = getIteratorFn(propValue);
-        if (iteratorFn) {
-          var iterator = iteratorFn.call(propValue);
-          var step;
-          if (iteratorFn !== propValue.entries) {
-            while (!(step = iterator.next()).done) {
-              if (!isNode(step.value)) {
-                return false;
-              }
-            }
-          } else {
-            // Iterator will provide entry [k,v] tuples rather than values.
-            while (!(step = iterator.next()).done) {
-              var entry = step.value;
-              if (entry) {
-                if (!isNode(entry[1])) {
-                  return false;
-                }
-              }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
             }
           }
-        } else {
-          return false;
-        }
-
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  function isSymbol(propType, propValue) {
-    // Native Symbol.
-    if (propType === 'symbol') {
-      return true;
-    }
-
-    // falsy value can't be a Symbol
-    if (!propValue) {
-      return false;
-    }
-
-    // 19.4.3.5 Symbol.prototype[@@toStringTag] === 'Symbol'
-    if (propValue['@@toStringTag'] === 'Symbol') {
-      return true;
-    }
-
-    // Fallback for non-spec compliant Symbols which are polyfilled.
-    if (typeof Symbol === 'function' && propValue instanceof Symbol) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // Equivalent of `typeof` but with special handling for array and regexp.
-  function getPropType(propValue) {
-    var propType = typeof propValue;
-    if (Array.isArray(propValue)) {
-      return 'array';
-    }
-    if (propValue instanceof RegExp) {
-      // Old webkits (at least until Android 4.0) return 'function' rather than
-      // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
-      // passes PropTypes.object.
-      return 'object';
-    }
-    if (isSymbol(propType, propValue)) {
-      return 'symbol';
-    }
-    return propType;
-  }
-
-  // This handles more types than `getPropType`. Only used for error messages.
-  // See `createPrimitiveTypeChecker`.
-  function getPreciseType(propValue) {
-    if (typeof propValue === 'undefined' || propValue === null) {
-      return '' + propValue;
-    }
-    var propType = getPropType(propValue);
-    if (propType === 'object') {
-      if (propValue instanceof Date) {
-        return 'date';
-      } else if (propValue instanceof RegExp) {
-        return 'regexp';
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
       }
     }
-    return propType;
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
   }
 
-  // Returns a string that is postfixed to a warning about an invalid type.
-  // For example, "undefined" or "of type array"
-  function getPostfixForTypeWarning(value) {
-    var type = getPreciseType(value);
-    switch (type) {
-      case 'array':
-      case 'object':
-        return 'an ' + type;
-      case 'boolean':
-      case 'date':
-      case 'regexp':
-        return 'a ' + type;
-      default:
-        return type;
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
+
+function latin1Slice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end)
+    newBuf.__proto__ = Buffer.prototype
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start]
     }
   }
 
-  // Returns class name of the object, if any.
-  function getClassName(propValue) {
-    if (!propValue.constructor || !propValue.constructor.name) {
-      return ANONYMOUS;
-    }
-    return propValue.constructor.name;
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
   }
 
-  ReactPropTypes.checkPropTypes = checkPropTypes;
-  ReactPropTypes.resetWarningCache = checkPropTypes.resetWarningCache;
-  ReactPropTypes.PropTypes = ReactPropTypes;
+  return val
+}
 
-  return ReactPropTypes;
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    )
+  }
+
+  return len
+}
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start
+      start = 0
+      end = this.length
+    } else if (typeof end === 'string') {
+      encoding = end
+      end = this.length
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if (code < 256) {
+        val = code
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0
+  end = end === undefined ? this.length : end >>> 0
+
+  if (!val) val = 0
+
+  var i
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString())
+    var len = bytes.length
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/ieee754/index.js":
+/*!***************************************!*\
+  !*** ./node_modules/ieee754/index.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = ((value * c) - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/isarray/index.js":
+/*!***************************************!*\
+  !*** ./node_modules/isarray/index.js ***!
+  \***************************************/
+/***/ ((module) => {
+
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
 };
 
 
 /***/ }),
 
-/***/ "./node_modules/prop-types/index.js":
-/*!******************************************!*\
-  !*** ./node_modules/prop-types/index.js ***!
-  \******************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-if (true) {
-  var ReactIs = __webpack_require__(/*! react-is */ "./node_modules/react-is/index.js");
-
-  // By explicitly using `prop-types` you are opting into new development behavior.
-  // http://fb.me/prop-types-in-prod
-  var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(/*! ./factoryWithTypeCheckers */ "./node_modules/prop-types/factoryWithTypeCheckers.js")(ReactIs.isElement, throwOnDirectAccess);
-} else {}
-
-
-/***/ }),
-
-/***/ "./node_modules/prop-types/lib/ReactPropTypesSecret.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/prop-types/lib/ReactPropTypesSecret.js ***!
-  \*************************************************************/
+/***/ "./node_modules/process/browser.js":
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
 /***/ ((module) => {
 
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
 
 
 
-var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
 
-module.exports = ReactPropTypesSecret;
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
 
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
 
-/***/ }),
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
 
-/***/ "./node_modules/prop-types/lib/has.js":
-/*!********************************************!*\
-  !*** ./node_modules/prop-types/lib/has.js ***!
-  \********************************************/
-/***/ ((module) => {
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
 
-module.exports = Function.call.bind(Object.prototype.hasOwnProperty);
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 
 /***/ }),
@@ -36784,3290 +35310,6 @@ if (false) {} else {
 
 /***/ }),
 
-/***/ "./node_modules/react-fast-compare/index.js":
-/*!**************************************************!*\
-  !*** ./node_modules/react-fast-compare/index.js ***!
-  \**************************************************/
-/***/ ((module) => {
-
-/* global Map:readonly, Set:readonly, ArrayBuffer:readonly */
-
-var hasElementType = typeof Element !== 'undefined';
-var hasMap = typeof Map === 'function';
-var hasSet = typeof Set === 'function';
-var hasArrayBuffer = typeof ArrayBuffer === 'function' && !!ArrayBuffer.isView;
-
-// Note: We **don't** need `envHasBigInt64Array` in fde es6/index.js
-
-function equal(a, b) {
-  // START: fast-deep-equal es6/index.js 3.1.1
-  if (a === b) return true;
-
-  if (a && b && typeof a == 'object' && typeof b == 'object') {
-    if (a.constructor !== b.constructor) return false;
-
-    var length, i, keys;
-    if (Array.isArray(a)) {
-      length = a.length;
-      if (length != b.length) return false;
-      for (i = length; i-- !== 0;)
-        if (!equal(a[i], b[i])) return false;
-      return true;
-    }
-
-    // START: Modifications:
-    // 1. Extra `has<Type> &&` helpers in initial condition allow es6 code
-    //    to co-exist with es5.
-    // 2. Replace `for of` with es5 compliant iteration using `for`.
-    //    Basically, take:
-    //
-    //    ```js
-    //    for (i of a.entries())
-    //      if (!b.has(i[0])) return false;
-    //    ```
-    //
-    //    ... and convert to:
-    //
-    //    ```js
-    //    it = a.entries();
-    //    while (!(i = it.next()).done)
-    //      if (!b.has(i.value[0])) return false;
-    //    ```
-    //
-    //    **Note**: `i` access switches to `i.value`.
-    var it;
-    if (hasMap && (a instanceof Map) && (b instanceof Map)) {
-      if (a.size !== b.size) return false;
-      it = a.entries();
-      while (!(i = it.next()).done)
-        if (!b.has(i.value[0])) return false;
-      it = a.entries();
-      while (!(i = it.next()).done)
-        if (!equal(i.value[1], b.get(i.value[0]))) return false;
-      return true;
-    }
-
-    if (hasSet && (a instanceof Set) && (b instanceof Set)) {
-      if (a.size !== b.size) return false;
-      it = a.entries();
-      while (!(i = it.next()).done)
-        if (!b.has(i.value[0])) return false;
-      return true;
-    }
-    // END: Modifications
-
-    if (hasArrayBuffer && ArrayBuffer.isView(a) && ArrayBuffer.isView(b)) {
-      length = a.length;
-      if (length != b.length) return false;
-      for (i = length; i-- !== 0;)
-        if (a[i] !== b[i]) return false;
-      return true;
-    }
-
-    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
-    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
-    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
-
-    keys = Object.keys(a);
-    length = keys.length;
-    if (length !== Object.keys(b).length) return false;
-
-    for (i = length; i-- !== 0;)
-      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
-    // END: fast-deep-equal
-
-    // START: react-fast-compare
-    // custom handling for DOM elements
-    if (hasElementType && a instanceof Element) return false;
-
-    // custom handling for React/Preact
-    for (i = length; i-- !== 0;) {
-      if ((keys[i] === '_owner' || keys[i] === '__v' || keys[i] === '__o') && a.$$typeof) {
-        // React-specific: avoid traversing React elements' _owner
-        // Preact-specific: avoid traversing Preact elements' __v and __o
-        //    __v = $_original / $_vnode
-        //    __o = $_owner
-        // These properties contain circular references and are not needed when
-        // comparing the actual elements (and not their owners)
-        // .$$typeof and ._store on just reasonable markers of elements
-
-        continue;
-      }
-
-      // all other properties should be traversed as usual
-      if (!equal(a[keys[i]], b[keys[i]])) return false;
-    }
-    // END: react-fast-compare
-
-    // START: fast-deep-equal
-    return true;
-  }
-
-  return a !== a && b !== b;
-}
-// end fast-deep-equal
-
-module.exports = function isEqual(a, b) {
-  try {
-    return equal(a, b);
-  } catch (error) {
-    if (((error.message || '').match(/stack|recursion/i))) {
-      // warn on circular references, don't crash
-      // browsers give this different errors name and messages:
-      // chrome/safari: "RangeError", "Maximum call stack size exceeded"
-      // firefox: "InternalError", too much recursion"
-      // edge: "Error", "Out of stack space"
-      console.warn('react-fast-compare cannot handle circular refs');
-      return false;
-    }
-    // some other error. we should definitely know about these
-    throw error;
-  }
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/connectors/connectHits.js":
-/*!*********************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/connectors/connectHits.js ***!
-  \*********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _core_createConnector_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/createConnector.js */ "./node_modules/react-instantsearch-core/dist/es/core/createConnector.js");
-/* harmony import */ var _core_indexUtils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/indexUtils.js */ "./node_modules/react-instantsearch-core/dist/es/core/indexUtils.js");
-/* harmony import */ var _core_utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/utils.js */ "./node_modules/react-instantsearch-core/dist/es/core/utils.js");
-
-
-
-/**
- * connectHits connector provides the logic to create connected
- * components that will render the results retrieved from
- * Algolia.
- *
- * To configure the number of hits retrieved, use [HitsPerPage widget](widgets/HitsPerPage.html),
- * [connectHitsPerPage connector](connectors/connectHitsPerPage.html) or pass the hitsPerPage
- * prop to a [Configure](guide/Search_parameters.html) widget.
- *
- * **Warning:** you will need to use the **objectID** property available on every hit as a key
- * when iterating over them. This will ensure you have the best possible UI experience
- * especially on slow networks.
- * @name connectHits
- * @kind connector
- * @providedPropType {array.<object>} hits - the records that matched the search state
- * @example
- * import React from 'react';
- * import algoliasearch from 'algoliasearch/lite';
- * import { InstantSearch, Highlight, connectHits } from 'react-instantsearch-dom';
- *
- * const searchClient = algoliasearch(
- *   'latency',
- *   '6be0576ff61c053d5f9a3225e2a90f76'
- * );
- * const CustomHits = connectHits(({ hits }) => (
- *   <div>
- *     {hits.map(hit =>
- *       <p key={hit.objectID}>
- *         <Highlight attribute="name" hit={hit} />
- *       </p>
- *     )}
- *   </div>
- * ));
- *
- * const App = () => (
- *   <InstantSearch
- *     searchClient={searchClient}
- *     indexName="instant_search"
- *   >
- *     <CustomHits />
- *   </InstantSearch>
- * );
- */
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_core_createConnector_js__WEBPACK_IMPORTED_MODULE_0__["default"])({
-  displayName: 'AlgoliaHits',
-  $$type: 'ais.hits',
-  getProvidedProps: function getProvidedProps(props, searchState, searchResults) {
-    var results = (0,_core_indexUtils_js__WEBPACK_IMPORTED_MODULE_1__.getResults)(searchResults, {
-      ais: props.contextValue,
-      multiIndexContext: props.indexContextValue
-    });
-
-    if (!results) {
-      return {
-        hits: []
-      };
-    }
-
-    var hitsWithPositions = (0,_core_utils_js__WEBPACK_IMPORTED_MODULE_2__.addAbsolutePositions)(results.hits, results.hitsPerPage, results.page);
-    var hitsWithPositionsAndQueryID = (0,_core_utils_js__WEBPACK_IMPORTED_MODULE_2__.addQueryID)(hitsWithPositions, results.queryID);
-    return {
-      hits: hitsWithPositionsAndQueryID
-    };
-  },
-
-  /**
-   * Hits needs to be considered as a widget to trigger a search,
-   * even if no other widgets are used.
-   *
-   * To be considered as a widget you need either:
-   * - getSearchParameters
-   * - getMetadata
-   * - transitionState
-   *
-   * See: createConnector.tsx
-   */
-  getSearchParameters: function getSearchParameters(searchParameters) {
-    return searchParameters;
-  }
-}));
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/connectors/connectSearchBox.js":
-/*!**************************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/connectors/connectSearchBox.js ***!
-  \**************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _core_createConnector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/createConnector.js */ "./node_modules/react-instantsearch-core/dist/es/core/createConnector.js");
-/* harmony import */ var _core_indexUtils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/indexUtils.js */ "./node_modules/react-instantsearch-core/dist/es/core/indexUtils.js");
-
-
-
-
-
-function getId() {
-  return 'query';
-}
-
-function getCurrentRefinement(props, searchState, context) {
-  var id = getId(props);
-  var currentRefinement = (0,_core_indexUtils_js__WEBPACK_IMPORTED_MODULE_1__.getCurrentRefinementValue)(props, searchState, context, id, '');
-
-  if (currentRefinement) {
-    return currentRefinement;
-  }
-
-  return '';
-}
-
-function _refine(props, searchState, nextRefinement, context) {
-  var id = getId();
-
-  var nextValue = (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, id, nextRefinement);
-
-  var resetPage = true;
-  return (0,_core_indexUtils_js__WEBPACK_IMPORTED_MODULE_1__.refineValue)(searchState, nextValue, context, resetPage);
-}
-
-function _cleanUp(props, searchState, context) {
-  return (0,_core_indexUtils_js__WEBPACK_IMPORTED_MODULE_1__.cleanUpValue)(searchState, context, getId());
-}
-/**
- * connectSearchBox connector provides the logic to build a widget that will
- * let the user search for a query
- * @name connectSearchBox
- * @kind connector
- * @propType {string} [defaultRefinement] - Provide a default value for the query
- * @providedPropType {function} refine - a function to change the current query
- * @providedPropType {string} currentRefinement - the current query used
- * @providedPropType {boolean} isSearchStalled - a flag that indicates if InstantSearch has detected that searches are stalled
- */
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_core_createConnector_js__WEBPACK_IMPORTED_MODULE_2__["default"])({
-  displayName: 'AlgoliaSearchBox',
-  $$type: 'ais.searchBox',
-  propTypes: {
-    defaultRefinement: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string)
-  },
-  getProvidedProps: function getProvidedProps(props, searchState, searchResults) {
-    return {
-      currentRefinement: getCurrentRefinement(props, searchState, {
-        ais: props.contextValue,
-        multiIndexContext: props.indexContextValue
-      }),
-      isSearchStalled: searchResults.isSearchStalled
-    };
-  },
-  refine: function refine(props, searchState, nextRefinement) {
-    return _refine(props, searchState, nextRefinement, {
-      ais: props.contextValue,
-      multiIndexContext: props.indexContextValue
-    });
-  },
-  cleanUp: function cleanUp(props, searchState) {
-    return _cleanUp(props, searchState, {
-      ais: props.contextValue,
-      multiIndexContext: props.indexContextValue
-    });
-  },
-  getSearchParameters: function getSearchParameters(searchParameters, props, searchState) {
-    return searchParameters.setQuery(getCurrentRefinement(props, searchState, {
-      ais: props.contextValue,
-      multiIndexContext: props.indexContextValue
-    }));
-  },
-  getMetadata: function getMetadata(props, searchState) {
-    var id = getId(props);
-    var currentRefinement = getCurrentRefinement(props, searchState, {
-      ais: props.contextValue,
-      multiIndexContext: props.indexContextValue
-    });
-    return {
-      id: id,
-      index: (0,_core_indexUtils_js__WEBPACK_IMPORTED_MODULE_1__.getIndexId)({
-        ais: props.contextValue,
-        multiIndexContext: props.indexContextValue
-      }),
-      items: currentRefinement === null ? [] : [{
-        label: "".concat(id, ": ").concat(currentRefinement),
-        value: function value(nextState) {
-          return _refine(props, nextState, '', {
-            ais: props.contextValue,
-            multiIndexContext: props.indexContextValue
-          });
-        },
-        currentRefinement: currentRefinement
-      }]
-    };
-  }
-}));
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/context.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/context.js ***!
-  \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "IndexConsumer": () => (/* binding */ IndexConsumer),
-/* harmony export */   "IndexProvider": () => (/* binding */ IndexProvider),
-/* harmony export */   "InstantSearchConsumer": () => (/* binding */ InstantSearchConsumer),
-/* harmony export */   "InstantSearchProvider": () => (/* binding */ InstantSearchProvider),
-/* harmony export */   "instantSearchContext": () => (/* binding */ instantSearchContext)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-
-var instantSearchContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.createContext)({
-  onInternalStateUpdate: function onInternalStateUpdate() {
-    return undefined;
-  },
-  createHrefForState: function createHrefForState() {
-    return '#';
-  },
-  onSearchForFacetValues: function onSearchForFacetValues() {
-    return undefined;
-  },
-  onSearchStateChange: function onSearchStateChange() {
-    return undefined;
-  },
-  onSearchParameters: function onSearchParameters() {
-    return undefined;
-  },
-  store: {},
-  widgetsManager: {},
-  mainTargetedIndex: ''
-});
-var InstantSearchConsumer = instantSearchContext.Consumer,
-    InstantSearchProvider = instantSearchContext.Provider;
-
-
-var _createContext = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.createContext)(undefined),
-    IndexConsumer = _createContext.Consumer,
-    IndexProvider = _createContext.Provider;
-
-
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/createConnector.js":
-/*!*******************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/createConnector.js ***!
-  \*******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "createConnectorWithoutContext": () => (/* binding */ createConnectorWithoutContext),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js");
-/* harmony import */ var _babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/esm/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/esm/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
-/* harmony import */ var _babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/helpers/esm/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @babel/runtime/helpers/esm/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react-fast-compare */ "./node_modules/react-fast-compare/index.js");
-/* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(react_fast_compare__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./utils.js */ "./node_modules/react-instantsearch-core/dist/es/core/utils.js");
-/* harmony import */ var _context_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./context.js */ "./node_modules/react-instantsearch-core/dist/es/core/context.js");
-
-
-
-
-
-
-
-
-
-var _excluded = ["contextValue"];
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_7__["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_7__["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0,_babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_6__["default"])(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-
-
-
-
-
-/**
- * Connectors are the HOC used to transform React components
- * into InstantSearch widgets.
- * In order to simplify the construction of such connectors
- * `createConnector` takes a description and transform it into
- * a connector.
- * @param {ConnectorDescription} connectorDesc the description of the connector
- * @return {Connector} a function that wraps a component into
- * an instantsearch connected one.
- */
-function createConnectorWithoutContext(connectorDesc) {
-  if (!connectorDesc.displayName) {
-    throw new Error('`createConnector` requires you to provide a `displayName` property.');
-  }
-
-  var isWidget = typeof connectorDesc.getSearchParameters === 'function' || typeof connectorDesc.getMetadata === 'function' || typeof connectorDesc.transitionState === 'function';
-  return function (Composed) {
-    var additionalWidgetProperties = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var Connector = /*#__PURE__*/function (_Component) {
-      (0,_babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_5__["default"])(Connector, _Component);
-
-      var _super = _createSuper(Connector);
-
-      function Connector(props) {
-        var _this;
-
-        (0,_babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_2__["default"])(this, Connector);
-
-        _this = _super.call(this, props);
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), "unsubscribe", void 0);
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), "unregisterWidget", void 0);
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), "isUnmounting", false);
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), "state", {
-          providedProps: _this.getProvidedProps(_this.props)
-        });
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), "refine", function () {
-          var _ref;
-
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          _this.props.contextValue.onInternalStateUpdate( // refine will always be defined here because the prop is only given conditionally
-          (_ref = connectorDesc.refine).call.apply(_ref, [(0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), _this.props, _this.props.contextValue.store.getState().widgets].concat(args)));
-        });
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), "createURL", function () {
-          var _ref2;
-
-          for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-          }
-
-          return _this.props.contextValue.createHrefForState( // refine will always be defined here because the prop is only given conditionally
-          (_ref2 = connectorDesc.refine).call.apply(_ref2, [(0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), _this.props, _this.props.contextValue.store.getState().widgets].concat(args)));
-        });
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), "searchForFacetValues", function () {
-          var _ref3;
-
-          for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-            args[_key3] = arguments[_key3];
-          }
-
-          _this.props.contextValue.onSearchForFacetValues( // searchForFacetValues will always be defined here because the prop is only given conditionally
-          (_ref3 = connectorDesc.searchForFacetValues).call.apply(_ref3, [(0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this), _this.props, _this.props.contextValue.store.getState().widgets].concat(args)));
-        });
-
-        if (connectorDesc.getSearchParameters) {
-          _this.props.contextValue.onSearchParameters(connectorDesc.getSearchParameters.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this)), {
-            ais: _this.props.contextValue,
-            multiIndexContext: _this.props.indexContextValue
-          }, _this.props, connectorDesc.getMetadata && connectorDesc.getMetadata.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__["default"])(_this)), connectorDesc.displayName);
-        }
-
-        return _this;
-      }
-
-      (0,_babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_3__["default"])(Connector, [{
-        key: "componentDidMount",
-        value: function componentDidMount() {
-          var _this2 = this;
-
-          this.unsubscribe = this.props.contextValue.store.subscribe(function () {
-            if (!_this2.isUnmounting) {
-              _this2.setState({
-                providedProps: _this2.getProvidedProps(_this2.props)
-              });
-            }
-          });
-
-          if (isWidget) {
-            this.unregisterWidget = this.props.contextValue.widgetsManager.registerWidget(this);
-          }
-        }
-      }, {
-        key: "shouldComponentUpdate",
-        value: function shouldComponentUpdate(nextProps, nextState) {
-          if (typeof connectorDesc.shouldComponentUpdate === 'function') {
-            return connectorDesc.shouldComponentUpdate.call(this, this.props, nextProps, this.state, nextState);
-          }
-
-          var propsEqual = (0,_utils_js__WEBPACK_IMPORTED_MODULE_11__.shallowEqual)(this.props, nextProps);
-
-          if (this.state.providedProps === null || nextState.providedProps === null) {
-            if (this.state.providedProps === nextState.providedProps) {
-              return !propsEqual;
-            }
-
-            return true;
-          }
-
-          return !propsEqual || !(0,_utils_js__WEBPACK_IMPORTED_MODULE_11__.shallowEqual)(this.state.providedProps, nextState.providedProps);
-        }
-      }, {
-        key: "componentDidUpdate",
-        value: function componentDidUpdate(prevProps) {
-          if (!react_fast_compare__WEBPACK_IMPORTED_MODULE_10___default()(prevProps, this.props)) {
-            this.setState({
-              providedProps: this.getProvidedProps(this.props)
-            });
-
-            if (isWidget) {
-              this.props.contextValue.widgetsManager.update();
-
-              if (typeof connectorDesc.transitionState === 'function') {
-                this.props.contextValue.onSearchStateChange(connectorDesc.transitionState.call(this, this.props, this.props.contextValue.store.getState().widgets, this.props.contextValue.store.getState().widgets));
-              }
-            }
-          }
-        }
-      }, {
-        key: "componentWillUnmount",
-        value: function componentWillUnmount() {
-          this.isUnmounting = true;
-
-          if (this.unsubscribe) {
-            this.unsubscribe();
-          }
-
-          if (this.unregisterWidget) {
-            this.unregisterWidget();
-
-            if (typeof connectorDesc.cleanUp === 'function') {
-              var nextState = connectorDesc.cleanUp.call(this, this.props, this.props.contextValue.store.getState().widgets);
-              this.props.contextValue.store.setState(_objectSpread(_objectSpread({}, this.props.contextValue.store.getState()), {}, {
-                widgets: nextState
-              }));
-              this.props.contextValue.onSearchStateChange((0,_utils_js__WEBPACK_IMPORTED_MODULE_11__.removeEmptyKey)(nextState));
-            }
-          }
-        }
-      }, {
-        key: "getProvidedProps",
-        value: function getProvidedProps(props) {
-          var _this$props$contextVa = this.props.contextValue.store.getState(),
-              widgets = _this$props$contextVa.widgets,
-              results = _this$props$contextVa.results,
-              resultsFacetValues = _this$props$contextVa.resultsFacetValues,
-              searching = _this$props$contextVa.searching,
-              searchingForFacetValues = _this$props$contextVa.searchingForFacetValues,
-              isSearchStalled = _this$props$contextVa.isSearchStalled,
-              metadata = _this$props$contextVa.metadata,
-              error = _this$props$contextVa.error;
-
-          var searchResults = {
-            results: results,
-            searching: searching,
-            searchingForFacetValues: searchingForFacetValues,
-            isSearchStalled: isSearchStalled,
-            error: error
-          };
-          return connectorDesc.getProvidedProps.call(this, props, widgets, searchResults, metadata, // @MAJOR: move this attribute on the `searchResults` it doesn't
-          // makes sense to have it into a separate argument. The search
-          // flags are on the object why not the results?
-          resultsFacetValues);
-        }
-      }, {
-        key: "getSearchParameters",
-        value: function getSearchParameters(searchParameters) {
-          if (typeof connectorDesc.getSearchParameters === 'function') {
-            return connectorDesc.getSearchParameters.call(this, searchParameters, this.props, this.props.contextValue.store.getState().widgets);
-          }
-
-          return null;
-        }
-      }, {
-        key: "getMetadata",
-        value: function getMetadata(nextWidgetsState) {
-          if (typeof connectorDesc.getMetadata === 'function') {
-            return connectorDesc.getMetadata.call(this, this.props, nextWidgetsState);
-          }
-
-          return {};
-        }
-      }, {
-        key: "transitionState",
-        value: function transitionState(prevWidgetsState, nextWidgetsState) {
-          if (typeof connectorDesc.transitionState === 'function') {
-            return connectorDesc.transitionState.call(this, this.props, prevWidgetsState, nextWidgetsState);
-          }
-
-          return nextWidgetsState;
-        }
-      }, {
-        key: "render",
-        value: function render() {
-          var _this$props = this.props,
-              contextValue = _this$props.contextValue,
-              props = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_1__["default"])(_this$props, _excluded);
-
-          var providedProps = this.state.providedProps;
-
-          if (providedProps === null) {
-            return null;
-          }
-
-          var refineProps = typeof connectorDesc.refine === 'function' ? {
-            refine: this.refine,
-            createURL: this.createURL
-          } : {};
-          var searchForFacetValuesProps = typeof connectorDesc.searchForFacetValues === 'function' ? {
-            searchForItems: this.searchForFacetValues
-          } : {};
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_9___default().createElement(Composed, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, providedProps, refineProps, searchForFacetValuesProps));
-        }
-      }]);
-
-      return Connector;
-    }(react__WEBPACK_IMPORTED_MODULE_9__.Component);
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])(Connector, "displayName", "".concat(connectorDesc.displayName, "(").concat((0,_utils_js__WEBPACK_IMPORTED_MODULE_11__.getDisplayName)(Composed), ")"));
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])(Connector, "$$type", connectorDesc.$$type);
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])(Connector, "$$widgetType", additionalWidgetProperties.$$widgetType);
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])(Connector, "propTypes", connectorDesc.propTypes);
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])(Connector, "defaultProps", connectorDesc.defaultProps);
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_8__["default"])(Connector, "_connectorDesc", connectorDesc);
-
-    return Connector;
-  };
-}
-
-var createConnectorWithContext = function createConnectorWithContext(connectorDesc) {
-  return function (Composed, additionalWidgetProperties) {
-    var Connector = createConnectorWithoutContext(connectorDesc)(Composed, additionalWidgetProperties);
-
-    var ConnectorWrapper = function ConnectorWrapper(props) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_9___default().createElement(_context_js__WEBPACK_IMPORTED_MODULE_12__.InstantSearchConsumer, null, function (contextValue) {
-        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_9___default().createElement(_context_js__WEBPACK_IMPORTED_MODULE_12__.IndexConsumer, null, function (indexContextValue) {
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_9___default().createElement(Connector, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
-            contextValue: contextValue,
-            indexContextValue: indexContextValue
-          }, props));
-        });
-      });
-    };
-
-    return ConnectorWrapper;
-  };
-};
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (createConnectorWithContext);
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/createInstantSearchManager.js":
-/*!******************************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/createInstantSearchManager.js ***!
-  \******************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ createInstantSearchManager)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js");
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! algoliasearch-helper */ "./node_modules/algoliasearch-helper/index.js");
-/* harmony import */ var algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _createWidgetsManager_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./createWidgetsManager.js */ "./node_modules/react-instantsearch-core/dist/es/core/createWidgetsManager.js");
-/* harmony import */ var _createStore_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./createStore.js */ "./node_modules/react-instantsearch-core/dist/es/core/createStore.js");
-/* harmony import */ var _highlight_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./highlight.js */ "./node_modules/react-instantsearch-core/dist/es/core/highlight.js");
-/* harmony import */ var _indexUtils_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./indexUtils.js */ "./node_modules/react-instantsearch-core/dist/es/core/indexUtils.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _version_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./version.js */ "./node_modules/react-instantsearch-core/dist/es/core/version.js");
-
-
-var _excluded = ["resultsFacetValues"],
-    _excluded2 = ["resultsFacetValues"],
-    _excluded3 = ["resultsFacetValues"];
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-
-
-
-
-
-
-
-function addAlgoliaAgents(searchClient) {
-  if (typeof searchClient.addAlgoliaAgent === 'function') {
-    searchClient.addAlgoliaAgent("react (".concat(react__WEBPACK_IMPORTED_MODULE_3__.version, ")"));
-    searchClient.addAlgoliaAgent("react-instantsearch (".concat(_version_js__WEBPACK_IMPORTED_MODULE_4__["default"], ")"));
-  }
-}
-
-var isMultiIndexContext = function isMultiIndexContext(widget) {
-  return (0,_indexUtils_js__WEBPACK_IMPORTED_MODULE_5__.hasMultipleIndices)({
-    ais: widget.props.contextValue,
-    multiIndexContext: widget.props.indexContextValue
-  });
-};
-
-var isTargetedIndexEqualIndex = function isTargetedIndexEqualIndex(widget, indexId) {
-  return widget.props.indexContextValue.targetedIndex === indexId;
-}; // Relying on the `indexId` is a bit brittle to detect the `Index` widget.
-// Since it's a class we could rely on `instanceof` or similar. We never
-// had an issue though. Works for now.
-
-
-var isIndexWidget = function isIndexWidget(widget) {
-  return Boolean(widget.props.indexId);
-};
-
-var isIndexWidgetEqualIndex = function isIndexWidgetEqualIndex(widget, indexId) {
-  return widget.props.indexId === indexId;
-};
-
-var sortIndexWidgetsFirst = function sortIndexWidgetsFirst(firstWidget, secondWidget) {
-  var isFirstWidgetIndex = isIndexWidget(firstWidget);
-  var isSecondWidgetIndex = isIndexWidget(secondWidget);
-
-  if (isFirstWidgetIndex && !isSecondWidgetIndex) {
-    return -1;
-  }
-
-  if (!isFirstWidgetIndex && isSecondWidgetIndex) {
-    return 1;
-  }
-
-  return 0;
-}; // This function is copied from the algoliasearch v4 API Client. If modified,
-// consider updating it also in `serializeQueryParameters` from `@algolia/transporter`.
-
-
-function serializeQueryParameters(parameters) {
-  var isObjectOrArray = function isObjectOrArray(value) {
-    return Object.prototype.toString.call(value) === '[object Object]' || Object.prototype.toString.call(value) === '[object Array]';
-  };
-
-  var encode = function encode(format) {
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var i = 0;
-    return format.replace(/%s/g, function () {
-      return encodeURIComponent(args[i++]);
-    });
-  };
-
-  return Object.keys(parameters).map(function (key) {
-    return encode('%s=%s', key, isObjectOrArray(parameters[key]) ? JSON.stringify(parameters[key]) : parameters[key]);
-  }).join('&');
-}
-/**
- * Creates a new instance of the InstantSearchManager which controls the widgets and
- * trigger the search when the widgets are updated.
- * @param {string} indexName - the main index name
- * @param {object} initialState - initial widget state
- * @param {object} SearchParameters - optional additional parameters to send to the algolia API
- * @param {number} stalledSearchDelay - time (in ms) after the search is stalled
- * @return {InstantSearchManager} a new instance of InstantSearchManager
- */
-
-
-function createInstantSearchManager(_ref) {
-  var indexName = _ref.indexName,
-      _ref$initialState = _ref.initialState,
-      initialState = _ref$initialState === void 0 ? {} : _ref$initialState,
-      searchClient = _ref.searchClient,
-      resultsState = _ref.resultsState,
-      stalledSearchDelay = _ref.stalledSearchDelay;
-  var helper = algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default()(searchClient, indexName, _objectSpread({}, _highlight_js__WEBPACK_IMPORTED_MODULE_6__.HIGHLIGHT_TAGS));
-  addAlgoliaAgents(searchClient);
-  helper.on('search', handleNewSearch).on('result', handleSearchSuccess({
-    indexId: indexName
-  })).on('error', handleSearchError);
-  var skip = false;
-  var stalledSearchTimer = null;
-  var initialSearchParameters = helper.state;
-  var searchCounter;
-  var widgetsManager = (0,_createWidgetsManager_js__WEBPACK_IMPORTED_MODULE_7__["default"])(onWidgetsUpdate);
-  hydrateSearchClient(searchClient, resultsState);
-  var store = (0,_createStore_js__WEBPACK_IMPORTED_MODULE_8__["default"])({
-    widgets: initialState,
-    metadata: hydrateMetadata(resultsState),
-    results: hydrateResultsState(resultsState),
-    error: null,
-    searching: false,
-    isSearchStalled: true,
-    searchingForFacetValues: false
-  });
-
-  function skipSearch() {
-    skip = true;
-  }
-
-  function updateClient(client) {
-    addAlgoliaAgents(client);
-    helper.setClient(client);
-    search();
-  }
-
-  function clearCache() {
-    helper.clearCache();
-    search();
-  }
-
-  function getMetadata(state) {
-    return widgetsManager.getWidgets().filter(function (widget) {
-      return Boolean(widget.getMetadata);
-    }).map(function (widget) {
-      return widget.getMetadata(state);
-    });
-  }
-
-  function getSearchParameters() {
-    var sharedParameters = widgetsManager.getWidgets().filter(function (widget) {
-      return Boolean(widget.getSearchParameters);
-    }).filter(function (widget) {
-      return !isMultiIndexContext(widget) && !isIndexWidget(widget);
-    }).reduce(function (res, widget) {
-      return widget.getSearchParameters(res);
-    }, initialSearchParameters);
-    var mainParameters = widgetsManager.getWidgets().filter(function (widget) {
-      return Boolean(widget.getSearchParameters);
-    }).filter(function (widget) {
-      var targetedIndexEqualMainIndex = isMultiIndexContext(widget) && isTargetedIndexEqualIndex(widget, indexName);
-      var subIndexEqualMainIndex = isIndexWidget(widget) && isIndexWidgetEqualIndex(widget, indexName);
-      return targetedIndexEqualMainIndex || subIndexEqualMainIndex;
-    }) // We have to sort the `Index` widgets first so the `index` parameter
-    // is correctly set in the `reduce` function for the following widgets
-    .sort(sortIndexWidgetsFirst).reduce(function (res, widget) {
-      return widget.getSearchParameters(res);
-    }, sharedParameters);
-    var derivedIndices = widgetsManager.getWidgets().filter(function (widget) {
-      return Boolean(widget.getSearchParameters);
-    }).filter(function (widget) {
-      var targetedIndexNotEqualMainIndex = isMultiIndexContext(widget) && !isTargetedIndexEqualIndex(widget, indexName);
-      var subIndexNotEqualMainIndex = isIndexWidget(widget) && !isIndexWidgetEqualIndex(widget, indexName);
-      return targetedIndexNotEqualMainIndex || subIndexNotEqualMainIndex;
-    }) // We have to sort the `Index` widgets first so the `index` parameter
-    // is correctly set in the `reduce` function for the following widgets
-    .sort(sortIndexWidgetsFirst).reduce(function (indices, widget) {
-      var indexId = isMultiIndexContext(widget) ? widget.props.indexContextValue.targetedIndex : widget.props.indexId;
-      var widgets = indices[indexId] || [];
-      return _objectSpread(_objectSpread({}, indices), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, indexId, widgets.concat(widget)));
-    }, {});
-    var derivedParameters = Object.keys(derivedIndices).map(function (indexId) {
-      return {
-        parameters: derivedIndices[indexId].reduce(function (res, widget) {
-          return widget.getSearchParameters(res);
-        }, sharedParameters),
-        indexId: indexId
-      };
-    });
-    return {
-      mainParameters: mainParameters,
-      derivedParameters: derivedParameters
-    };
-  }
-
-  function search() {
-    if (!skip) {
-      var _getSearchParameters = getSearchParameters(helper.state),
-          mainParameters = _getSearchParameters.mainParameters,
-          derivedParameters = _getSearchParameters.derivedParameters;
-
-      searchCounter = derivedParameters.length + 1; // We have to call `slice` because the method `detach` on the derived
-      // helpers mutates the value `derivedHelpers`. The `forEach` loop does
-      // not iterate on each value and we're not able to correctly clear the
-      // previous derived helpers (memory leak + useless requests).
-
-      helper.derivedHelpers.slice().forEach(function (derivedHelper) {
-        // Since we detach the derived helpers on **every** new search they
-        // won't receive intermediate results in case of a stalled search.
-        // Only the last result is dispatched by the derived helper because
-        // they are not detached yet:
-        //
-        // - a -> main helper receives results
-        // - ap -> main helper receives results
-        // - app -> main helper + derived helpers receive results
-        //
-        // The quick fix is to avoid to detach them on search but only once they
-        // received the results. But it means that in case of a stalled search
-        // all the derived helpers not detached yet register a new search inside
-        // the helper. The number grows fast in case of a bad network and it's
-        // not deterministic.
-        derivedHelper.detach();
-      });
-      derivedParameters.forEach(function (_ref2) {
-        var indexId = _ref2.indexId,
-            parameters = _ref2.parameters;
-        var derivedHelper = helper.derive(function () {
-          return parameters;
-        });
-        derivedHelper.on('result', handleSearchSuccess({
-          indexId: indexId
-        })).on('error', handleSearchError);
-      });
-      helper.setState(mainParameters);
-      helper.search();
-    }
-  }
-
-  function handleSearchSuccess(_ref3) {
-    var indexId = _ref3.indexId;
-    return function (event) {
-      searchCounter--;
-      var state = store.getState();
-      var isDerivedHelpersEmpty = !helper.derivedHelpers.length;
-      var results = state.results ? state.results : {}; // Switching from mono index to multi index and vice versa must reset the
-      // results to an empty object, otherwise we keep reference of stalled and
-      // unused results.
-
-      results = !isDerivedHelpersEmpty && results.getFacetByName ? {} : results;
-
-      if (!isDerivedHelpersEmpty) {
-        results = _objectSpread(_objectSpread({}, results), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, indexId, event.results));
-      } else {
-        results = event.results;
-      }
-
-      var currentState = store.getState();
-      var nextIsSearchStalled = currentState.isSearchStalled;
-
-      if (!helper.hasPendingRequests()) {
-        clearTimeout(stalledSearchTimer);
-        stalledSearchTimer = null;
-        nextIsSearchStalled = false;
-      }
-
-      var resultsFacetValues = currentState.resultsFacetValues,
-          partialState = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__["default"])(currentState, _excluded);
-
-      store.setState(_objectSpread(_objectSpread({}, partialState), {}, {
-        results: results,
-        isSearchStalled: nextIsSearchStalled,
-        searching: searchCounter > 0,
-        error: null
-      }));
-    };
-  }
-
-  function handleSearchError(_ref4) {
-    var error = _ref4.error;
-    var currentState = store.getState();
-    var nextIsSearchStalled = currentState.isSearchStalled;
-
-    if (!helper.hasPendingRequests()) {
-      clearTimeout(stalledSearchTimer);
-      nextIsSearchStalled = false;
-    }
-
-    var resultsFacetValues = currentState.resultsFacetValues,
-        partialState = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__["default"])(currentState, _excluded2);
-
-    store.setState(_objectSpread(_objectSpread({}, partialState), {}, {
-      isSearchStalled: nextIsSearchStalled,
-      error: error,
-      searching: false
-    }));
-  }
-
-  function handleNewSearch() {
-    if (!stalledSearchTimer) {
-      stalledSearchTimer = setTimeout(function () {
-        var _store$getState = store.getState(),
-            resultsFacetValues = _store$getState.resultsFacetValues,
-            partialState = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__["default"])(_store$getState, _excluded3);
-
-        store.setState(_objectSpread(_objectSpread({}, partialState), {}, {
-          isSearchStalled: true
-        }));
-      }, stalledSearchDelay);
-    }
-  }
-
-  function hydrateSearchClient(client, results) {
-    if (!results) {
-      return;
-    } // Disable cache hydration on:
-    // - Algoliasearch API Client < v4 with cache disabled
-    // - Third party clients (detected by the `addAlgoliaAgent` function missing)
-
-
-    if ((!client.transporter || client._cacheHydrated) && (!client._useCache || typeof client.addAlgoliaAgent !== 'function')) {
-      return;
-    } // Algoliasearch API Client >= v4
-    // To hydrate the client we need to populate the cache with the data from
-    // the server (done in `hydrateSearchClientWithMultiIndexRequest` or
-    // `hydrateSearchClientWithSingleIndexRequest`). But since there is no way
-    // for us to compute the key the same way as `algoliasearch-client` we need
-    // to populate it on a custom key and override the `search` method to
-    // search on it first.
-
-
-    if (client.transporter && !client._cacheHydrated) {
-      client._cacheHydrated = true;
-      var baseMethod = client.search;
-
-      client.search = function (requests) {
-        for (var _len2 = arguments.length, methodArgs = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-          methodArgs[_key2 - 1] = arguments[_key2];
-        }
-
-        var requestsWithSerializedParams = requests.map(function (request) {
-          return _objectSpread(_objectSpread({}, request), {}, {
-            params: serializeQueryParameters(request.params)
-          });
-        });
-        return client.transporter.responsesCache.get({
-          method: 'search',
-          args: [requestsWithSerializedParams].concat(methodArgs)
-        }, function () {
-          return baseMethod.apply(void 0, [requests].concat(methodArgs));
-        });
-      };
-    }
-
-    if (Array.isArray(results.results)) {
-      hydrateSearchClientWithMultiIndexRequest(client, results.results);
-      return;
-    }
-
-    hydrateSearchClientWithSingleIndexRequest(client, results);
-  }
-
-  function hydrateSearchClientWithMultiIndexRequest(client, results) {
-    // Algoliasearch API Client >= v4
-    // Populate the cache with the data from the server
-    if (client.transporter) {
-      client.transporter.responsesCache.set({
-        method: 'search',
-        args: [results.reduce(function (acc, result) {
-          return acc.concat(result.rawResults.map(function (request) {
-            return {
-              indexName: request.index,
-              params: request.params
-            };
-          }));
-        }, [])]
-      }, {
-        results: results.reduce(function (acc, result) {
-          return acc.concat(result.rawResults);
-        }, [])
-      });
-      return;
-    } // Algoliasearch API Client < v4
-    // Prior to client v4 we didn't have a proper API to hydrate the client
-    // cache from the outside. The following code populates the cache with
-    // a single-index result. You can find more information about the
-    // computation of the key inside the client (see link below).
-    // https://github.com/algolia/algoliasearch-client-javascript/blob/c27e89ff92b2a854ae6f40dc524bffe0f0cbc169/src/AlgoliaSearchCore.js#L232-L240
-
-
-    var key = "/1/indexes/*/queries_body_".concat(JSON.stringify({
-      requests: results.reduce(function (acc, result) {
-        return acc.concat(result.rawResults.map(function (request) {
-          return {
-            indexName: request.index,
-            params: request.params
-          };
-        }));
-      }, [])
-    }));
-    client.cache = _objectSpread(_objectSpread({}, client.cache), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, key, JSON.stringify({
-      results: results.reduce(function (acc, result) {
-        return acc.concat(result.rawResults);
-      }, [])
-    })));
-  }
-
-  function hydrateSearchClientWithSingleIndexRequest(client, results) {
-    // Algoliasearch API Client >= v4
-    // Populate the cache with the data from the server
-    if (client.transporter) {
-      client.transporter.responsesCache.set({
-        method: 'search',
-        args: [results.rawResults.map(function (request) {
-          return {
-            indexName: request.index,
-            params: request.params
-          };
-        })]
-      }, {
-        results: results.rawResults
-      });
-      return;
-    } // Algoliasearch API Client < v4
-    // Prior to client v4 we didn't have a proper API to hydrate the client
-    // cache from the outside. The following code populates the cache with
-    // a single-index result. You can find more information about the
-    // computation of the key inside the client (see link below).
-    // https://github.com/algolia/algoliasearch-client-javascript/blob/c27e89ff92b2a854ae6f40dc524bffe0f0cbc169/src/AlgoliaSearchCore.js#L232-L240
-
-
-    var key = "/1/indexes/*/queries_body_".concat(JSON.stringify({
-      requests: results.rawResults.map(function (request) {
-        return {
-          indexName: request.index,
-          params: request.params
-        };
-      })
-    }));
-    client.cache = _objectSpread(_objectSpread({}, client.cache), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, key, JSON.stringify({
-      results: results.rawResults
-    })));
-  }
-
-  function hydrateResultsState(results) {
-    if (!results) {
-      return null;
-    }
-
-    if (Array.isArray(results.results)) {
-      return results.results.reduce(function (acc, result) {
-        return _objectSpread(_objectSpread({}, acc), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, result._internalIndexId, new (algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default().SearchResults)(new (algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default().SearchParameters)(result.state), result.rawResults)));
-      }, {});
-    }
-
-    return new (algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default().SearchResults)(new (algoliasearch_helper__WEBPACK_IMPORTED_MODULE_2___default().SearchParameters)(results.state), results.rawResults);
-  } // Called whenever a widget has been rendered with new props.
-
-
-  function onWidgetsUpdate() {
-    var metadata = getMetadata(store.getState().widgets);
-    store.setState(_objectSpread(_objectSpread({}, store.getState()), {}, {
-      metadata: metadata,
-      searching: true
-    })); // Since the `getSearchParameters` method of widgets also depends on props,
-    // the result search parameters might have changed.
-
-    search();
-  }
-
-  function transitionState(nextSearchState) {
-    var searchState = store.getState().widgets;
-    return widgetsManager.getWidgets().filter(function (widget) {
-      return Boolean(widget.transitionState);
-    }).reduce(function (res, widget) {
-      return widget.transitionState(searchState, res);
-    }, nextSearchState);
-  }
-
-  function onExternalStateUpdate(nextSearchState) {
-    var metadata = getMetadata(nextSearchState);
-    store.setState(_objectSpread(_objectSpread({}, store.getState()), {}, {
-      widgets: nextSearchState,
-      metadata: metadata,
-      searching: true
-    }));
-    search();
-  }
-
-  function onSearchForFacetValues(_ref5) {
-    var facetName = _ref5.facetName,
-        query = _ref5.query,
-        _ref5$maxFacetHits = _ref5.maxFacetHits,
-        maxFacetHits = _ref5$maxFacetHits === void 0 ? 10 : _ref5$maxFacetHits;
-    // The values 1, 100 are the min / max values that the engine accepts.
-    // see: https://www.algolia.com/doc/api-reference/api-parameters/maxFacetHits
-    var maxFacetHitsWithinRange = Math.max(1, Math.min(maxFacetHits, 100));
-    store.setState(_objectSpread(_objectSpread({}, store.getState()), {}, {
-      searchingForFacetValues: true
-    }));
-    helper.searchForFacetValues(facetName, query, maxFacetHitsWithinRange).then(function (content) {
-      var _objectSpread7;
-
-      store.setState(_objectSpread(_objectSpread({}, store.getState()), {}, {
-        error: null,
-        searchingForFacetValues: false,
-        resultsFacetValues: _objectSpread(_objectSpread({}, store.getState().resultsFacetValues), {}, (_objectSpread7 = {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])(_objectSpread7, facetName, content.facetHits), (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])(_objectSpread7, "query", query), _objectSpread7))
-      }));
-    }, function (error) {
-      store.setState(_objectSpread(_objectSpread({}, store.getState()), {}, {
-        searchingForFacetValues: false,
-        error: error
-      }));
-    }).catch(function (error) {
-      // Since setState is synchronous, any error that occurs in the render of a
-      // component will be swallowed by this promise.
-      // This is a trick to make the error show up correctly in the console.
-      // See http://stackoverflow.com/a/30741722/969302
-      setTimeout(function () {
-        throw error;
-      });
-    });
-  }
-
-  function updateIndex(newIndex) {
-    initialSearchParameters = initialSearchParameters.setIndex(newIndex); // No need to trigger a new search here as the widgets will also update and trigger it if needed.
-  }
-
-  function getWidgetsIds() {
-    return store.getState().metadata.reduce(function (res, meta) {
-      return typeof meta.id !== 'undefined' ? res.concat(meta.id) : res;
-    }, []);
-  }
-
-  return {
-    store: store,
-    widgetsManager: widgetsManager,
-    getWidgetsIds: getWidgetsIds,
-    getSearchParameters: getSearchParameters,
-    onSearchForFacetValues: onSearchForFacetValues,
-    onExternalStateUpdate: onExternalStateUpdate,
-    transitionState: transitionState,
-    updateClient: updateClient,
-    updateIndex: updateIndex,
-    clearCache: clearCache,
-    skipSearch: skipSearch
-  };
-}
-
-function hydrateMetadata(resultsState) {
-  if (!resultsState) {
-    return [];
-  } // add a value noop, which gets replaced once the widgets are mounted
-
-
-  return resultsState.metadata.map(function (datum) {
-    return _objectSpread(_objectSpread({
-      value: function value() {
-        return {};
-      }
-    }, datum), {}, {
-      items: datum.items && datum.items.map(function (item) {
-        return _objectSpread(_objectSpread({
-          value: function value() {
-            return {};
-          }
-        }, item), {}, {
-          items: item.items && item.items.map(function (nestedItem) {
-            return _objectSpread({
-              value: function value() {
-                return {};
-              }
-            }, nestedItem);
-          })
-        });
-      })
-    });
-  });
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/createStore.js":
-/*!***************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/createStore.js ***!
-  \***************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ createStore)
-/* harmony export */ });
-function createStore(initialState) {
-  var state = initialState;
-  var listeners = [];
-  return {
-    getState: function getState() {
-      return state;
-    },
-    setState: function setState(nextState) {
-      state = nextState;
-      listeners.forEach(function (listener) {
-        return listener();
-      });
-    },
-    subscribe: function subscribe(listener) {
-      listeners.push(listener);
-      return function unsubscribe() {
-        listeners.splice(listeners.indexOf(listener), 1);
-      };
-    }
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/createWidgetsManager.js":
-/*!************************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/createWidgetsManager.js ***!
-  \************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ createWidgetsManager)
-/* harmony export */ });
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils.js */ "./node_modules/react-instantsearch-core/dist/es/core/utils.js");
-
-function createWidgetsManager(onWidgetsUpdate) {
-  var widgets = []; // Is an update scheduled?
-
-  var scheduled = false; // The state manager's updates need to be batched since more than one
-  // component can register or unregister widgets during the same tick.
-
-  function scheduleUpdate() {
-    if (scheduled) {
-      return;
-    }
-
-    scheduled = true;
-    (0,_utils_js__WEBPACK_IMPORTED_MODULE_0__.defer)(function () {
-      scheduled = false;
-      onWidgetsUpdate();
-    });
-  }
-
-  return {
-    registerWidget: function registerWidget(widget) {
-      widgets.push(widget);
-      scheduleUpdate();
-      return function unregisterWidget() {
-        widgets.splice(widgets.indexOf(widget), 1);
-        scheduleUpdate();
-      };
-    },
-    update: scheduleUpdate,
-    getWidgets: function getWidgets() {
-      return widgets;
-    }
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/highlight.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/highlight.js ***!
-  \*************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "HIGHLIGHT_TAGS": () => (/* binding */ HIGHLIGHT_TAGS),
-/* harmony export */   "parseAlgoliaHit": () => (/* binding */ parseAlgoliaHit)
-/* harmony export */ });
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils.js */ "./node_modules/react-instantsearch-core/dist/es/core/utils.js");
-
-var HIGHLIGHT_TAGS = {
-  highlightPreTag: "<ais-highlight-0000000000>",
-  highlightPostTag: "</ais-highlight-0000000000>"
-};
-/**
- * Parses an highlighted attribute into an array of objects with the string value, and
- * a boolean that indicated if this part is highlighted.
- *
- * @param {string} preTag - string used to identify the start of an highlighted value
- * @param {string} postTag - string used to identify the end of an highlighted value
- * @param {string} highlightedValue - highlighted attribute as returned by Algolia highlight feature
- * @return {object[]} - An array of {value: string, isHighlighted: boolean}.
- */
-
-function parseHighlightedAttribute(_ref) {
-  var preTag = _ref.preTag,
-      postTag = _ref.postTag,
-      _ref$highlightedValue = _ref.highlightedValue,
-      highlightedValue = _ref$highlightedValue === void 0 ? '' : _ref$highlightedValue;
-  var splitByPreTag = highlightedValue.split(preTag);
-  var firstValue = splitByPreTag.shift();
-  var elements = firstValue === '' ? [] : [{
-    value: firstValue,
-    isHighlighted: false
-  }];
-
-  if (postTag === preTag) {
-    var isHighlighted = true;
-    splitByPreTag.forEach(function (split) {
-      elements.push({
-        value: split,
-        isHighlighted: isHighlighted
-      });
-      isHighlighted = !isHighlighted;
-    });
-  } else {
-    splitByPreTag.forEach(function (split) {
-      var splitByPostTag = split.split(postTag);
-      elements.push({
-        value: splitByPostTag[0],
-        isHighlighted: true
-      });
-
-      if (splitByPostTag[1] !== '') {
-        elements.push({
-          value: splitByPostTag[1],
-          isHighlighted: false
-        });
-      }
-    });
-  }
-
-  return elements;
-}
-/**
- * Find an highlighted attribute given an `attribute` and an `highlightProperty`, parses it,
- * and provided an array of objects with the string value and a boolean if this
- * value is highlighted.
- *
- * In order to use this feature, highlight must be activated in the configuration of
- * the index. The `preTag` and `postTag` attributes are respectively highlightPreTag and
- * highlightPostTag in Algolia configuration.
- *
- * @param {string} preTag - string used to identify the start of an highlighted value
- * @param {string} postTag - string used to identify the end of an highlighted value
- * @param {string} highlightProperty - the property that contains the highlight structure in the results
- * @param {string} attribute - the highlighted attribute to look for
- * @param {object} hit - the actual hit returned by Algolia.
- * @return {object[]} - An array of {value: string, isHighlighted: boolean}.
- */
-
-
-function parseAlgoliaHit(_ref2) {
-  var _ref2$preTag = _ref2.preTag,
-      preTag = _ref2$preTag === void 0 ? '<em>' : _ref2$preTag,
-      _ref2$postTag = _ref2.postTag,
-      postTag = _ref2$postTag === void 0 ? '</em>' : _ref2$postTag,
-      highlightProperty = _ref2.highlightProperty,
-      attribute = _ref2.attribute,
-      hit = _ref2.hit;
-  if (!hit) throw new Error('`hit`, the matching record, must be provided');
-  var highlightObject = (0,_utils_js__WEBPACK_IMPORTED_MODULE_0__.getPropertyByPath)(hit[highlightProperty], attribute) || {};
-
-  if (Array.isArray(highlightObject)) {
-    return highlightObject.map(function (item) {
-      return parseHighlightedAttribute({
-        preTag: preTag,
-        postTag: postTag,
-        highlightedValue: item.value
-      });
-    });
-  }
-
-  return parseHighlightedAttribute({
-    preTag: preTag,
-    postTag: postTag,
-    highlightedValue: highlightObject.value
-  });
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/indexUtils.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/indexUtils.js ***!
-  \**************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "cleanUpValue": () => (/* binding */ cleanUpValue),
-/* harmony export */   "getCurrentRefinementValue": () => (/* binding */ getCurrentRefinementValue),
-/* harmony export */   "getIndexId": () => (/* binding */ getIndexId),
-/* harmony export */   "getResults": () => (/* binding */ getResults),
-/* harmony export */   "hasMultipleIndices": () => (/* binding */ hasMultipleIndices),
-/* harmony export */   "refineValue": () => (/* binding */ refineValue)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ "./node_modules/react-instantsearch-core/dist/es/core/utils.js");
-
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-
-function getIndexId(context) {
-  return hasMultipleIndices(context) ? context.multiIndexContext.targetedIndex : context.ais.mainTargetedIndex;
-}
-/**
- * @returns {import('algoliasearch-helper').SearchResults} results
- */
-
-function getResults(searchResults, context) {
-  if (searchResults.results) {
-    if (searchResults.results.hits) {
-      return searchResults.results;
-    }
-
-    var indexId = getIndexId(context);
-
-    if (searchResults.results[indexId]) {
-      return searchResults.results[indexId];
-    }
-  }
-
-  return null;
-}
-function hasMultipleIndices(context) {
-  return context && context.multiIndexContext;
-}
-function refineValue(searchState, nextRefinement, context, resetPage, namespace) {
-  if (hasMultipleIndices(context)) {
-    var indexId = getIndexId(context);
-    return namespace ? refineMultiIndexWithNamespace(searchState, nextRefinement, indexId, resetPage, namespace) : refineMultiIndex(searchState, nextRefinement, indexId, resetPage);
-  } else {
-    // When we have a multi index page with shared widgets we should also
-    // reset their page to 1 if the resetPage is provided. Otherwise the
-    // indices will always be reset
-    // see: https://github.com/algolia/react-instantsearch/issues/310
-    // see: https://github.com/algolia/react-instantsearch/issues/637
-    if (searchState.indices && resetPage) {
-      Object.keys(searchState.indices).forEach(function (targetedIndex) {
-        searchState = refineValue(searchState, {
-          page: 1
-        }, {
-          multiIndexContext: {
-            targetedIndex: targetedIndex
-          }
-        }, true, namespace);
-      });
-    }
-
-    return namespace ? refineSingleIndexWithNamespace(searchState, nextRefinement, resetPage, namespace) : refineSingleIndex(searchState, nextRefinement, resetPage);
-  }
-}
-
-function refineMultiIndex(searchState, nextRefinement, indexId, resetPage) {
-  var page = resetPage ? {
-    page: 1
-  } : undefined;
-  var state = searchState.indices && searchState.indices[indexId] ? _objectSpread(_objectSpread({}, searchState.indices), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, indexId, _objectSpread(_objectSpread(_objectSpread({}, searchState.indices[indexId]), nextRefinement), page))) : _objectSpread(_objectSpread({}, searchState.indices), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, indexId, _objectSpread(_objectSpread({}, nextRefinement), page)));
-  return _objectSpread(_objectSpread({}, searchState), {}, {
-    indices: state
-  });
-}
-
-function refineSingleIndex(searchState, nextRefinement, resetPage) {
-  var page = resetPage ? {
-    page: 1
-  } : undefined;
-  return _objectSpread(_objectSpread(_objectSpread({}, searchState), nextRefinement), page);
-}
-
-function refineMultiIndexWithNamespace(searchState, nextRefinement, indexId, resetPage, namespace) {
-  var _objectSpread4;
-
-  var page = resetPage ? {
-    page: 1
-  } : undefined;
-  var state = searchState.indices && searchState.indices[indexId] ? _objectSpread(_objectSpread({}, searchState.indices), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, indexId, _objectSpread(_objectSpread({}, searchState.indices[indexId]), {}, (_objectSpread4 = {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(_objectSpread4, namespace, _objectSpread(_objectSpread({}, searchState.indices[indexId][namespace]), nextRefinement)), (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(_objectSpread4, "page", 1), _objectSpread4)))) : _objectSpread(_objectSpread({}, searchState.indices), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, indexId, _objectSpread((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, namespace, nextRefinement), page)));
-  return _objectSpread(_objectSpread({}, searchState), {}, {
-    indices: state
-  });
-}
-
-function refineSingleIndexWithNamespace(searchState, nextRefinement, resetPage, namespace) {
-  var page = resetPage ? {
-    page: 1
-  } : undefined;
-  return _objectSpread(_objectSpread({}, searchState), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, namespace, _objectSpread(_objectSpread({}, searchState[namespace]), nextRefinement)), page);
-}
-
-function getNamespaceAndAttributeName(id) {
-  var parts = id.match(/^([^.]*)\.(.*)/);
-  var namespace = parts && parts[1];
-  var attributeName = parts && parts[2];
-  return {
-    namespace: namespace,
-    attributeName: attributeName
-  };
-}
-
-function hasRefinements(_ref) {
-  var multiIndex = _ref.multiIndex,
-      indexId = _ref.indexId,
-      namespace = _ref.namespace,
-      attributeName = _ref.attributeName,
-      id = _ref.id,
-      searchState = _ref.searchState;
-
-  if (multiIndex && namespace) {
-    return searchState.indices && searchState.indices[indexId] && searchState.indices[indexId][namespace] && Object.hasOwnProperty.call(searchState.indices[indexId][namespace], attributeName);
-  }
-
-  if (multiIndex) {
-    return searchState.indices && searchState.indices[indexId] && Object.hasOwnProperty.call(searchState.indices[indexId], id);
-  }
-
-  if (namespace) {
-    return searchState[namespace] && Object.hasOwnProperty.call(searchState[namespace], attributeName);
-  }
-
-  return Object.hasOwnProperty.call(searchState, id);
-}
-
-function getRefinements(_ref2) {
-  var multiIndex = _ref2.multiIndex,
-      indexId = _ref2.indexId,
-      namespace = _ref2.namespace,
-      attributeName = _ref2.attributeName,
-      id = _ref2.id,
-      searchState = _ref2.searchState;
-
-  if (multiIndex && namespace) {
-    return searchState.indices[indexId][namespace][attributeName];
-  }
-
-  if (multiIndex) {
-    return searchState.indices[indexId][id];
-  }
-
-  if (namespace) {
-    return searchState[namespace][attributeName];
-  }
-
-  return searchState[id];
-}
-
-function getCurrentRefinementValue(props, searchState, context, id, defaultValue) {
-  var indexId = getIndexId(context);
-
-  var _getNamespaceAndAttri = getNamespaceAndAttributeName(id),
-      namespace = _getNamespaceAndAttri.namespace,
-      attributeName = _getNamespaceAndAttri.attributeName;
-
-  var multiIndex = hasMultipleIndices(context);
-  var args = {
-    multiIndex: multiIndex,
-    indexId: indexId,
-    namespace: namespace,
-    attributeName: attributeName,
-    id: id,
-    searchState: searchState
-  };
-  var hasRefinementsValue = hasRefinements(args);
-
-  if (hasRefinementsValue) {
-    return getRefinements(args);
-  }
-
-  if (props.defaultRefinement) {
-    return props.defaultRefinement;
-  }
-
-  return defaultValue;
-}
-function cleanUpValue(searchState, context, id) {
-  var indexId = getIndexId(context);
-
-  var _getNamespaceAndAttri2 = getNamespaceAndAttributeName(id),
-      namespace = _getNamespaceAndAttri2.namespace,
-      attributeName = _getNamespaceAndAttri2.attributeName;
-
-  if (hasMultipleIndices(context) && Boolean(searchState.indices)) {
-    return cleanUpValueWithMultiIndex({
-      attribute: attributeName,
-      searchState: searchState,
-      indexId: indexId,
-      id: id,
-      namespace: namespace
-    });
-  }
-
-  return cleanUpValueWithSingleIndex({
-    attribute: attributeName,
-    searchState: searchState,
-    id: id,
-    namespace: namespace
-  });
-}
-
-function cleanUpValueWithSingleIndex(_ref3) {
-  var searchState = _ref3.searchState,
-      id = _ref3.id,
-      namespace = _ref3.namespace,
-      attribute = _ref3.attribute;
-
-  if (namespace) {
-    return _objectSpread(_objectSpread({}, searchState), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, namespace, (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.omit)(searchState[namespace], [attribute])));
-  }
-
-  return (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.omit)(searchState, [id]);
-}
-
-function cleanUpValueWithMultiIndex(_ref4) {
-  var searchState = _ref4.searchState,
-      indexId = _ref4.indexId,
-      id = _ref4.id,
-      namespace = _ref4.namespace,
-      attribute = _ref4.attribute;
-  var indexSearchState = searchState.indices[indexId];
-
-  if (namespace && indexSearchState) {
-    return _objectSpread(_objectSpread({}, searchState), {}, {
-      indices: _objectSpread(_objectSpread({}, searchState.indices), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, indexId, _objectSpread(_objectSpread({}, indexSearchState), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, namespace, (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.omit)(indexSearchState[namespace], [attribute])))))
-    });
-  }
-
-  if (indexSearchState) {
-    return _objectSpread(_objectSpread({}, searchState), {}, {
-      indices: _objectSpread(_objectSpread({}, searchState.indices), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])({}, indexId, (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.omit)(indexSearchState, [id])))
-    });
-  }
-
-  return searchState;
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/metadata.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/metadata.js ***!
-  \************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getMetadataPayload": () => (/* binding */ getMetadataPayload),
-/* harmony export */   "injectMetadata": () => (/* binding */ injectMetadata),
-/* harmony export */   "isMetadataEnabled": () => (/* binding */ isMetadataEnabled)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/typeof */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
-
-function isMetadataEnabled() {
-  return (typeof window === "undefined" ? "undefined" : (0,_babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(window)) === 'object' && (0,_babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(window.navigator) === 'object' && typeof window.navigator.userAgent === 'string' && window.navigator.userAgent.includes('Algolia Crawler') && (0,_babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(window.document) === 'object';
-}
-function getMetadataPayload(widgets, searchClient) {
-  var internalProps = ['contextValue', 'indexContextValue'];
-  var widgetsPayload = widgets.map(function (_ref) {
-    var props = _ref.props,
-        constructor = _ref.constructor;
-
-    var _ref2 = constructor._connectorDesc || {},
-        _ref2$defaultProps = _ref2.defaultProps,
-        defaultProps = _ref2$defaultProps === void 0 ? {} : _ref2$defaultProps,
-        _ref2$displayName = _ref2.displayName,
-        displayName = _ref2$displayName === void 0 ? constructor.displayName : _ref2$displayName;
-
-    return {
-      displayName: displayName,
-      $$type: constructor.$$type,
-      $$widgetType: constructor.$$widgetType,
-      params: Object.keys(props).filter(function (prop) {
-        return !internalProps.includes(prop) && defaultProps[prop] !== props[prop] && props[prop] !== undefined;
-      })
-    };
-  });
-  var client = searchClient;
-  var ua = client.transporter && client.transporter.userAgent ? client.transporter.userAgent.value : client._ua;
-  return {
-    ua: ua,
-    widgets: widgetsPayload
-  };
-}
-function injectMetadata(widgets, searchClient) {
-  var payloadContainer = document.createElement('meta');
-  var refNode = document.querySelector('head');
-  payloadContainer.name = 'algolia:metadata';
-  var payload = getMetadataPayload(widgets, searchClient);
-  payloadContainer.content = JSON.stringify(payload);
-  refNode.appendChild(payloadContainer);
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/translatable.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/translatable.js ***!
-  \****************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ translatable)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var _babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/esm/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
-/* harmony import */ var _babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/esm/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/helpers/esm/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_8__);
-
-
-
-
-
-
-
-
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_6__["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_6__["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0,_babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_5__["default"])(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-
-
-var withKeysPropType = function withKeysPropType(keys) {
-  return function (props, propName, componentName) {
-    var prop = props[propName];
-
-    if (prop) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (var _i = 0, _Object$keys = Object.keys(prop); _i < _Object$keys.length; _i++) {
-        var key = _Object$keys[_i];
-
-        if (keys.indexOf(key) === -1) {
-          return new Error("Unknown `".concat(propName, "` key `").concat(key, "`. Check the render method ") + "of `".concat(componentName, "`."));
-        }
-      }
-    }
-
-    return undefined;
-  };
-};
-
-function translatable(defaultTranslations) {
-  return function (Composed) {
-    var Translatable = /*#__PURE__*/function (_Component) {
-      (0,_babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(Translatable, _Component);
-
-      var _super = _createSuper(Translatable);
-
-      function Translatable() {
-        var _this;
-
-        (0,_babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Translatable);
-
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-
-        _this = _super.call.apply(_super, [this].concat(args));
-
-        (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__["default"])(_this), "translate", function (key) {
-          var translations = _this.props.translations;
-          var translation = translations && translations.hasOwnProperty(key) ? translations[key] : defaultTranslations[key];
-
-          if (typeof translation === 'function') {
-            for (var _len2 = arguments.length, params = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-              params[_key2 - 1] = arguments[_key2];
-            }
-
-            return translation.apply(void 0, params);
-          }
-
-          return translation;
-        });
-
-        return _this;
-      }
-
-      (0,_babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Translatable, [{
-        key: "render",
-        value: function render() {
-          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement(Composed, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
-            translate: this.translate
-          }, this.props));
-        }
-      }]);
-
-      return Translatable;
-    }(react__WEBPACK_IMPORTED_MODULE_8__.Component);
-
-    var name = Composed.displayName || Composed.name || 'UnknownComponent';
-    Translatable.displayName = "Translatable(".concat(name, ")");
-    Translatable.propTypes = {
-      translations: withKeysPropType(Object.keys(defaultTranslations))
-    };
-    return Translatable;
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/utils.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/utils.js ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "addAbsolutePositions": () => (/* binding */ addAbsolutePositions),
-/* harmony export */   "addQueryID": () => (/* binding */ addQueryID),
-/* harmony export */   "defer": () => (/* binding */ defer),
-/* harmony export */   "find": () => (/* binding */ find),
-/* harmony export */   "getDisplayName": () => (/* binding */ getDisplayName),
-/* harmony export */   "getObjectType": () => (/* binding */ getObjectType),
-/* harmony export */   "getPropertyByPath": () => (/* binding */ getPropertyByPath),
-/* harmony export */   "objectHasKeys": () => (/* binding */ objectHasKeys),
-/* harmony export */   "omit": () => (/* binding */ omit),
-/* harmony export */   "removeEmptyArraysFromObject": () => (/* binding */ removeEmptyArraysFromObject),
-/* harmony export */   "removeEmptyKey": () => (/* binding */ removeEmptyKey),
-/* harmony export */   "shallowEqual": () => (/* binding */ shallowEqual),
-/* harmony export */   "unescapeFacetValue": () => (/* binding */ unescapeFacetValue)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/typeof */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
-
-
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-// From https://github.com/reactjs/react-redux/blob/master/src/utils/shallowEqual.js
-var shallowEqual = function shallowEqual(objA, objB) {
-  if (objA === objB) {
-    return true;
-  }
-
-  var keysA = Object.keys(objA);
-  var keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  } // Test for A's keys different from B.
-
-
-  var hasOwn = Object.prototype.hasOwnProperty;
-
-  for (var i = 0; i < keysA.length; i++) {
-    if (!hasOwn.call(objB, keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-      return false;
-    }
-  }
-
-  return true;
-};
-var getDisplayName = function getDisplayName(Component) {
-  return Component.displayName || Component.name || 'UnknownComponent';
-};
-var resolved = Promise.resolve();
-var defer = function defer(f) {
-  resolved.then(f);
-};
-
-var isPlainObject = function isPlainObject(value) {
-  return (0,_babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_1__["default"])(value) === 'object' && value !== null && !Array.isArray(value);
-};
-
-var removeEmptyKey = function removeEmptyKey(obj) {
-  Object.keys(obj).forEach(function (key) {
-    var value = obj[key];
-
-    if (!isPlainObject(value)) {
-      return;
-    }
-
-    if (!objectHasKeys(value)) {
-      delete obj[key];
-    } else {
-      removeEmptyKey(value);
-    }
-  });
-  return obj;
-};
-var removeEmptyArraysFromObject = function removeEmptyArraysFromObject(obj) {
-  Object.keys(obj).forEach(function (key) {
-    var value = obj[key];
-
-    if (Array.isArray(value) && value.length === 0) {
-      delete obj[key];
-    }
-  });
-  return obj;
-};
-function addAbsolutePositions(hits, hitsPerPage, page) {
-  return hits.map(function (hit, index) {
-    return _objectSpread(_objectSpread({}, hit), {}, {
-      __position: hitsPerPage * page + index + 1
-    });
-  });
-}
-function addQueryID(hits, queryID) {
-  if (!queryID) {
-    return hits;
-  }
-
-  return hits.map(function (hit) {
-    return _objectSpread(_objectSpread({}, hit), {}, {
-      __queryID: queryID
-    });
-  });
-}
-function find(array, comparator) {
-  if (!Array.isArray(array)) {
-    return undefined;
-  }
-
-  for (var i = 0; i < array.length; i++) {
-    if (comparator(array[i])) {
-      return array[i];
-    }
-  }
-
-  return undefined;
-}
-function objectHasKeys(object) {
-  return object && Object.keys(object).length > 0;
-} // https://github.com/babel/babel/blob/3aaafae053fa75febb3aa45d45b6f00646e30ba4/packages/babel-helpers/src/helpers.js#L604-L620
-
-function omit(source, excluded) {
-  if (source === null || source === undefined) {
-    return {};
-  }
-
-  var target = {};
-  var sourceKeys = Object.keys(source);
-
-  for (var i = 0; i < sourceKeys.length; i++) {
-    var _key = sourceKeys[i];
-
-    if (excluded.indexOf(_key) >= 0) {
-      // eslint-disable-next-line no-continue
-      continue;
-    }
-
-    target[_key] = source[_key];
-  }
-
-  return target;
-}
-/**
- * Retrieve the value at a path of the object:
- *
- * @example
- * getPropertyByPath(
- *   { test: { this: { function: [{ now: { everyone: true } }] } } },
- *   'test.this.function[0].now.everyone'
- * ); // true
- *
- * getPropertyByPath(
- *   { test: { this: { function: [{ now: { everyone: true } }] } } },
- *   ['test', 'this', 'function', 0, 'now', 'everyone']
- * ); // true
- *
- * @param object Source object to query
- * @param path either an array of properties, or a string form of the properties, separated by .
- */
-
-var getPropertyByPath = function getPropertyByPath(object, path) {
-  return (Array.isArray(path) ? path : path.replace(/\[(\d+)]/g, '.$1').split('.')).reduce(function (current, key) {
-    return current ? current[key] : undefined;
-  }, object);
-};
-function getObjectType(object) {
-  return Object.prototype.toString.call(object).slice(8, -1);
-}
-function unescapeFacetValue(value) {
-  return value.replace(/^\\-/, '-');
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/core/version.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/core/version.js ***!
-  \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ('6.35.0');
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-core/dist/es/widgets/InstantSearch.js":
-/*!********************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-core/dist/es/widgets/InstantSearch.js ***!
-  \********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
-/* harmony import */ var _babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/esm/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/esm/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react-fast-compare */ "./node_modules/react-fast-compare/index.js");
-/* harmony import */ var react_fast_compare__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(react_fast_compare__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var _core_createInstantSearchManager_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../core/createInstantSearchManager.js */ "./node_modules/react-instantsearch-core/dist/es/core/createInstantSearchManager.js");
-/* harmony import */ var _core_context_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../core/context.js */ "./node_modules/react-instantsearch-core/dist/es/core/context.js");
-/* harmony import */ var _core_metadata_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../core/metadata.js */ "./node_modules/react-instantsearch-core/dist/es/core/metadata.js");
-
-
-
-
-
-
-
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_6__["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_5__["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_5__["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0,_babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_4__["default"])(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-
-
-
-
-
-
-
-function isControlled(props) {
-  return Boolean(props.searchState);
-}
-/**
- * @description
- * `<InstantSearch>` is the root component of all React InstantSearch implementations.
- * It provides all the connected components (aka widgets) a means to interact
- * with the searchState.
- * @kind widget
- * @name <InstantSearch>
- * @requirements You will need to have an Algolia account to be able to use this widget.
- * [Create one now](https://www.algolia.com/users/sign_up).
- * @propType {string} indexName - Main index in which to search.
- * @propType {boolean} [refresh=false] - Flag to activate when the cache needs to be cleared so that the front-end is updated when a change occurs in the index.
- * @propType {object} [searchClient] - Provide a custom search client.
- * @propType {func} [onSearchStateChange] - Function to be called everytime a new search is done. Useful for [URL Routing](guide/Routing.html).
- * @propType {object} [searchState] - Object to inject some search state. Switches the InstantSearch component in controlled mode. Useful for [URL Routing](guide/Routing.html).
- * @propType {func} [createURL] - Function to call when creating links, useful for [URL Routing](guide/Routing.html).
- * @propType {SearchResults|SearchResults[]} [resultsState] - Use this to inject the results that will be used at first rendering. Those results are found by using the `findResultsState` function. Useful for [Server Side Rendering](guide/Server-side_rendering.html).
- * @propType {number} [stalledSearchDelay=200] - The amount of time before considering that the search takes too much time. The time is expressed in milliseconds.
- * @propType {{ Root: string|function, props: object }} [root] - Use this to customize the root element. Default value: `{ Root: 'div' }`
- * @example
- * import React from 'react';
- * import algoliasearch from 'algoliasearch/lite';
- * import { InstantSearch, SearchBox, Hits } from 'react-instantsearch-dom';
- *
- * const searchClient = algoliasearch(
- *   'latency',
- *   '6be0576ff61c053d5f9a3225e2a90f76'
- * );
- *
- * const App = () => (
- *   <InstantSearch
- *     searchClient={searchClient}
- *     indexName="instant_search"
- *   >
- *     <SearchBox />
- *     <Hits />
- *   </InstantSearch>
- * );
- */
-
-
-var InstantSearch = /*#__PURE__*/function (_Component) {
-  (0,_babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_3__["default"])(InstantSearch, _Component);
-
-  var _super = _createSuper(InstantSearch);
-
-  function InstantSearch(props) {
-    var _this;
-
-    (0,_babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, InstantSearch);
-
-    _this = _super.call(this, props);
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_6__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this), "isUnmounting", false);
-
-    var instantSearchManager = (0,_core_createInstantSearchManager_js__WEBPACK_IMPORTED_MODULE_9__["default"])({
-      indexName: _this.props.indexName,
-      searchClient: _this.props.searchClient,
-      initialState: _this.props.searchState || {},
-      resultsState: _this.props.resultsState,
-      stalledSearchDelay: _this.props.stalledSearchDelay
-    });
-    var contextValue = {
-      store: instantSearchManager.store,
-      widgetsManager: instantSearchManager.widgetsManager,
-      mainTargetedIndex: _this.props.indexName,
-      onInternalStateUpdate: _this.onWidgetsInternalStateUpdate.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this)),
-      createHrefForState: _this.createHrefForState.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this)),
-      onSearchForFacetValues: _this.onSearchForFacetValues.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this)),
-      onSearchStateChange: _this.onSearchStateChange.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this)),
-      onSearchParameters: _this.onSearchParameters.bind((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this))
-    };
-    _this.state = {
-      isControlled: isControlled(_this.props),
-      instantSearchManager: instantSearchManager,
-      contextValue: contextValue
-    };
-    return _this;
-  }
-
-  (0,_babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(InstantSearch, [{
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      var prevIsControlled = isControlled(prevProps);
-
-      if (prevIsControlled && !this.state.isControlled) {
-        throw new Error("You can't switch <InstantSearch> from being controlled to uncontrolled");
-      }
-
-      if (!prevIsControlled && this.state.isControlled) {
-        throw new Error("You can't switch <InstantSearch> from being uncontrolled to controlled");
-      }
-
-      if (this.props.refresh !== prevProps.refresh && this.props.refresh) {
-        this.state.instantSearchManager.clearCache();
-      }
-
-      if (prevProps.indexName !== this.props.indexName) {
-        this.state.instantSearchManager.updateIndex(this.props.indexName);
-      }
-
-      if (prevProps.searchClient !== this.props.searchClient) {
-        this.state.instantSearchManager.updateClient(this.props.searchClient);
-      }
-    }
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      if ((0,_core_metadata_js__WEBPACK_IMPORTED_MODULE_10__.isMetadataEnabled)()) {
-        (0,_core_metadata_js__WEBPACK_IMPORTED_MODULE_10__.injectMetadata)(this.state.instantSearchManager.widgetsManager.getWidgets(), this.props.searchClient);
-      }
-    }
-  }, {
-    key: "componentWillUnmount",
-    value: function componentWillUnmount() {
-      this.isUnmounting = true;
-      this.state.instantSearchManager.skipSearch();
-    }
-  }, {
-    key: "createHrefForState",
-    value: function createHrefForState(searchState) {
-      searchState = this.state.instantSearchManager.transitionState(searchState);
-      return this.state.isControlled && this.props.createURL ? this.props.createURL(searchState, this.getKnownKeys()) : '#';
-    }
-  }, {
-    key: "onWidgetsInternalStateUpdate",
-    value: function onWidgetsInternalStateUpdate(searchState) {
-      searchState = this.state.instantSearchManager.transitionState(searchState);
-      this.onSearchStateChange(searchState);
-
-      if (!this.state.isControlled) {
-        this.state.instantSearchManager.onExternalStateUpdate(searchState);
-      }
-    }
-  }, {
-    key: "onSearchStateChange",
-    value: function onSearchStateChange(searchState) {
-      if (this.props.onSearchStateChange && !this.isUnmounting) {
-        this.props.onSearchStateChange(searchState);
-      }
-    }
-  }, {
-    key: "onSearchParameters",
-    value: function onSearchParameters(getSearchParameters, context, props, getMetadata, displayName) {
-      if (this.props.onSearchParameters) {
-        var _searchState = this.props.searchState ? this.props.searchState : {};
-
-        this.props.onSearchParameters(getSearchParameters, context, props, _searchState);
-      }
-
-      if (this.props.widgetsCollector) {
-        var _searchState2 = this.props.searchState ? this.props.searchState : {};
-
-        this.props.widgetsCollector({
-          getSearchParameters: getSearchParameters,
-          getMetadata: getMetadata,
-          context: context,
-          props: props,
-          searchState: _searchState2,
-          displayName: displayName
-        });
-      }
-    }
-  }, {
-    key: "onSearchForFacetValues",
-    value: function onSearchForFacetValues(searchState) {
-      this.state.instantSearchManager.onSearchForFacetValues(searchState);
-    }
-  }, {
-    key: "getKnownKeys",
-    value: function getKnownKeys() {
-      return this.state.instantSearchManager.getWidgetsIds();
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      if (react__WEBPACK_IMPORTED_MODULE_7__.Children.count(this.props.children) === 0) {
-        return null;
-      }
-
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default().createElement(_core_context_js__WEBPACK_IMPORTED_MODULE_11__.InstantSearchProvider, {
-        value: this.state.contextValue
-      }, this.props.children);
-    }
-  }], [{
-    key: "getDerivedStateFromProps",
-    value: function getDerivedStateFromProps(nextProps, prevState) {
-      var nextIsControlled = isControlled(nextProps);
-      var previousSearchState = prevState.instantSearchManager.store.getState().widgets;
-      var nextSearchState = nextProps.searchState;
-
-      if (nextIsControlled && !react_fast_compare__WEBPACK_IMPORTED_MODULE_8___default()(previousSearchState, nextSearchState)) {
-        prevState.instantSearchManager.onExternalStateUpdate(nextProps.searchState);
-      }
-
-      return {
-        isControlled: nextIsControlled,
-        contextValue: _objectSpread(_objectSpread({}, prevState.contextValue), {}, {
-          mainTargetedIndex: nextProps.indexName
-        })
-      };
-    }
-  }]);
-
-  return InstantSearch;
-}(react__WEBPACK_IMPORTED_MODULE_7__.Component);
-
-(0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_6__["default"])(InstantSearch, "defaultProps", {
-  stalledSearchDelay: 200,
-  refresh: false
-});
-
-(0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_6__["default"])(InstantSearch, "propTypes", {
-  // @TODO: These props are currently constant.
-  indexName: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().string.isRequired),
-  searchClient: prop_types__WEBPACK_IMPORTED_MODULE_12___default().shape({
-    search: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func.isRequired),
-    searchForFacetValues: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func),
-    addAlgoliaAgent: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func),
-    clearCache: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func)
-  }).isRequired,
-  createURL: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func),
-  refresh: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().bool),
-  searchState: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().object),
-  onSearchStateChange: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func),
-  onSearchParameters: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func),
-  widgetsCollector: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().func),
-  resultsState: prop_types__WEBPACK_IMPORTED_MODULE_12___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_12___default().object), (prop_types__WEBPACK_IMPORTED_MODULE_12___default().array)]),
-  children: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().node),
-  stalledSearchDelay: (prop_types__WEBPACK_IMPORTED_MODULE_12___default().number)
-});
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (InstantSearch);
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-dom/dist/es/components/Hits.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-dom/dist/es/components/Hits.js ***!
-  \*************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _core_utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/utils.js */ "./node_modules/react-instantsearch-dom/dist/es/core/utils.js");
-
-
-
-
-var cx = (0,_core_utils_js__WEBPACK_IMPORTED_MODULE_2__.createClassNames)('Hits');
-
-var DefaultHitComponent = function DefaultHitComponent(props) {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    style: {
-      borderBottom: '1px solid #bbb',
-      paddingBottom: '5px',
-      marginBottom: '5px',
-      wordBreak: 'break-all'
-    }
-  }, JSON.stringify(props).slice(0, 100), "...");
-};
-
-var Hits = function Hits(_ref) {
-  var hits = _ref.hits,
-      _ref$className = _ref.className,
-      className = _ref$className === void 0 ? '' : _ref$className,
-      _ref$hitComponent = _ref.hitComponent,
-      HitComponent = _ref$hitComponent === void 0 ? DefaultHitComponent : _ref$hitComponent;
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(cx(''), className)
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
-    className: cx('list')
-  }, hits.map(function (hit) {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
-      className: cx('item'),
-      key: hit.objectID
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(HitComponent, {
-      hit: hit
-    }));
-  })));
-};
-
-var HitPropTypes = prop_types__WEBPACK_IMPORTED_MODULE_3___default().shape({
-  objectID: prop_types__WEBPACK_IMPORTED_MODULE_3___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_3___default().string), (prop_types__WEBPACK_IMPORTED_MODULE_3___default().number)]).isRequired
-});
-Hits.propTypes = {
-  hits: prop_types__WEBPACK_IMPORTED_MODULE_3___default().arrayOf(HitPropTypes.isRequired).isRequired,
-  className: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string),
-  // this is actually PropTypes.elementType, but our prop-types version is outdated
-  hitComponent: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().any)
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Hits);
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-dom/dist/es/components/SearchBox.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-dom/dist/es/components/SearchBox.js ***!
-  \******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var _babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/esm/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
-/* harmony import */ var _babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/esm/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/helpers/esm/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var react_instantsearch_core__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! react-instantsearch-core */ "./node_modules/react-instantsearch-core/dist/es/core/translatable.js");
-/* harmony import */ var _core_utils_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../core/utils.js */ "./node_modules/react-instantsearch-dom/dist/es/core/utils.js");
-
-
-
-
-
-
-
-
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_6__["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0,_babel_runtime_helpers_esm_getPrototypeOf__WEBPACK_IMPORTED_MODULE_6__["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0,_babel_runtime_helpers_esm_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_5__["default"])(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-
-
-
-
-
-var cx = (0,_core_utils_js__WEBPACK_IMPORTED_MODULE_10__.createClassNames)('SearchBox');
-var defaultLoadingIndicator = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("svg", {
-  width: "18",
-  height: "18",
-  viewBox: "0 0 38 38",
-  xmlns: "http://www.w3.org/2000/svg",
-  stroke: "#444",
-  className: cx('loadingIcon')
-}, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("g", {
-  fill: "none",
-  fillRule: "evenodd"
-}, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("g", {
-  transform: "translate(1 1)",
-  strokeWidth: "2"
-}, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("circle", {
-  strokeOpacity: ".5",
-  cx: "18",
-  cy: "18",
-  r: "18"
-}), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("path", {
-  d: "M36 18c0-9.94-8.06-18-18-18"
-}, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("animateTransform", {
-  attributeName: "transform",
-  type: "rotate",
-  from: "0 18 18",
-  to: "360 18 18",
-  dur: "1s",
-  repeatCount: "indefinite"
-})))));
-var defaultReset = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("svg", {
-  className: cx('resetIcon'),
-  xmlns: "http://www.w3.org/2000/svg",
-  viewBox: "0 0 20 20",
-  width: "10",
-  height: "10"
-}, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("path", {
-  d: "M8.114 10L.944 2.83 0 1.885 1.886 0l.943.943L10 8.113l7.17-7.17.944-.943L20 1.886l-.943.943-7.17 7.17 7.17 7.17.943.944L18.114 20l-.943-.943-7.17-7.17-7.17 7.17-.944.943L0 18.114l.943-.943L8.113 10z"
-}));
-var defaultSubmit = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("svg", {
-  className: cx('submitIcon'),
-  xmlns: "http://www.w3.org/2000/svg",
-  width: "10",
-  height: "10",
-  viewBox: "0 0 40 40"
-}, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("path", {
-  d: "M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z"
-}));
-
-var SearchBox = /*#__PURE__*/function (_Component) {
-  (0,_babel_runtime_helpers_esm_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(SearchBox, _Component);
-
-  var _super = _createSuper(SearchBox);
-
-  function SearchBox(props) {
-    var _this;
-
-    (0,_babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, SearchBox);
-
-    _this = _super.call(this);
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__["default"])(_this), "getQuery", function () {
-      return _this.props.searchAsYouType ? _this.props.currentRefinement : _this.state.query;
-    });
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__["default"])(_this), "onInputMount", function (input) {
-      _this.input = input;
-      if (!_this.props.inputRef) return;
-
-      if (typeof _this.props.inputRef === 'function') {
-        _this.props.inputRef(input);
-      } else {
-        _this.props.inputRef.current = input;
-      }
-    });
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__["default"])(_this), "onKeyDown", function (e) {
-      if (!_this.props.focusShortcuts) {
-        return;
-      }
-
-      var shortcuts = _this.props.focusShortcuts.map(function (key) {
-        return typeof key === 'string' ? key.toUpperCase().charCodeAt(0) : key;
-      });
-
-      var elt = e.target || e.srcElement;
-      var tagName = elt.tagName;
-
-      if (elt.isContentEditable || tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA') {
-        // already in an input
-        return;
-      }
-
-      var which = e.which || e.keyCode;
-
-      if (shortcuts.indexOf(which) === -1) {
-        // not the right shortcut
-        return;
-      }
-
-      _this.input.focus();
-
-      e.stopPropagation();
-      e.preventDefault();
-    });
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__["default"])(_this), "onSubmit", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      _this.input.blur();
-
-      var _this$props = _this.props,
-          refine = _this$props.refine,
-          searchAsYouType = _this$props.searchAsYouType;
-
-      if (!searchAsYouType) {
-        refine(_this.getQuery());
-      }
-
-      return false;
-    });
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__["default"])(_this), "onChange", function (event) {
-      var _this$props2 = _this.props,
-          searchAsYouType = _this$props2.searchAsYouType,
-          refine = _this$props2.refine,
-          onChange = _this$props2.onChange;
-      var value = event.target.value;
-
-      if (searchAsYouType) {
-        refine(value);
-      } else {
-        _this.setState({
-          query: value
-        });
-      }
-
-      if (onChange) {
-        onChange(event);
-      }
-    });
-
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__["default"])(_this), "onReset", function (event) {
-      var _this$props3 = _this.props,
-          searchAsYouType = _this$props3.searchAsYouType,
-          refine = _this$props3.refine,
-          onReset = _this$props3.onReset;
-      refine('');
-
-      _this.input.focus();
-
-      if (!searchAsYouType) {
-        _this.setState({
-          query: ''
-        });
-      }
-
-      if (onReset) {
-        onReset(event);
-      }
-    });
-
-    _this.state = {
-      query: props.searchAsYouType ? null : props.currentRefinement
-    };
-    return _this;
-  }
-
-  (0,_babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(SearchBox, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      document.addEventListener('keydown', this.onKeyDown);
-    }
-  }, {
-    key: "componentWillUnmount",
-    value: function componentWillUnmount() {
-      document.removeEventListener('keydown', this.onKeyDown);
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      if (!this.props.searchAsYouType && prevProps.currentRefinement !== this.props.currentRefinement) {
-        this.setState({
-          query: this.props.currentRefinement
-        });
-      }
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      var _this2 = this;
-
-      var _this$props4 = this.props,
-          className = _this$props4.className,
-          inputId = _this$props4.inputId,
-          translate = _this$props4.translate,
-          autoFocus = _this$props4.autoFocus,
-          loadingIndicator = _this$props4.loadingIndicator,
-          submit = _this$props4.submit,
-          reset = _this$props4.reset;
-      var query = this.getQuery();
-      var searchInputEvents = Object.keys(this.props).reduce(function (props, prop) {
-        if (['onsubmit', 'onreset', 'onchange'].indexOf(prop.toLowerCase()) === -1 && prop.indexOf('on') === 0) {
-          return _objectSpread(_objectSpread({}, props), {}, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])({}, prop, _this2.props[prop]));
-        }
-
-        return props;
-      }, {});
-      var isSearchStalled = this.props.showLoadingIndicator && this.props.isSearchStalled;
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("div", {
-        className: classnames__WEBPACK_IMPORTED_MODULE_9___default()(cx(''), className)
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("form", {
-        ref: this.props.formRef,
-        noValidate: true,
-        onSubmit: this.props.onSubmit ? this.props.onSubmit : this.onSubmit,
-        onReset: this.onReset,
-        className: cx('form', isSearchStalled && 'form--stalledSearch'),
-        action: "",
-        role: "search"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("input", (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
-        ref: this.onInputMount,
-        id: inputId,
-        type: "search",
-        placeholder: translate('placeholder'),
-        autoFocus: autoFocus,
-        autoComplete: "off",
-        autoCorrect: "off",
-        autoCapitalize: "off",
-        spellCheck: "false",
-        required: true,
-        maxLength: "512",
-        value: query,
-        onChange: this.onChange
-      }, searchInputEvents, {
-        className: cx('input')
-      })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("button", {
-        type: "submit",
-        title: translate('submitTitle'),
-        className: cx('submit')
-      }, submit), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("button", {
-        type: "reset",
-        title: translate('resetTitle'),
-        className: cx('reset'),
-        hidden: !query || isSearchStalled
-      }, reset), this.props.showLoadingIndicator && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_8___default().createElement("span", {
-        hidden: !isSearchStalled,
-        className: cx('loadingIndicator')
-      }, loadingIndicator)));
-    }
-  }]);
-
-  return SearchBox;
-}(react__WEBPACK_IMPORTED_MODULE_8__.Component);
-
-(0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])(SearchBox, "propTypes", {
-  currentRefinement: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().string),
-  className: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().string),
-  refine: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().func.isRequired),
-  translate: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().func.isRequired),
-  loadingIndicator: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().node),
-  reset: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().node),
-  submit: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().node),
-  focusShortcuts: prop_types__WEBPACK_IMPORTED_MODULE_11___default().arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_11___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_11___default().string), (prop_types__WEBPACK_IMPORTED_MODULE_11___default().number)])),
-  autoFocus: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().bool),
-  searchAsYouType: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().bool),
-  onSubmit: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().func),
-  onReset: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().func),
-  onChange: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().func),
-  isSearchStalled: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().bool),
-  showLoadingIndicator: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().bool),
-  formRef: prop_types__WEBPACK_IMPORTED_MODULE_11___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_11___default().func), prop_types__WEBPACK_IMPORTED_MODULE_11___default().exact({
-    current: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().object)
-  })]),
-  inputRef: prop_types__WEBPACK_IMPORTED_MODULE_11___default().oneOfType([(prop_types__WEBPACK_IMPORTED_MODULE_11___default().func), prop_types__WEBPACK_IMPORTED_MODULE_11___default().exact({
-    current: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().object)
-  })]),
-  inputId: (prop_types__WEBPACK_IMPORTED_MODULE_11___default().string)
-});
-
-(0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_7__["default"])(SearchBox, "defaultProps", {
-  currentRefinement: '',
-  className: '',
-  focusShortcuts: ['s', '/'],
-  autoFocus: false,
-  searchAsYouType: true,
-  showLoadingIndicator: false,
-  isSearchStalled: false,
-  loadingIndicator: defaultLoadingIndicator,
-  reset: defaultReset,
-  submit: defaultSubmit
-});
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_instantsearch_core__WEBPACK_IMPORTED_MODULE_12__["default"])({
-  resetTitle: 'Clear the search query.',
-  submitTitle: 'Submit your search query.',
-  placeholder: 'Search here…'
-})(SearchBox));
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-dom/dist/es/core/utils.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/react-instantsearch-dom/dist/es/core/utils.js ***!
-  \********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "capitalize": () => (/* binding */ capitalize),
-/* harmony export */   "createClassNames": () => (/* binding */ createClassNames),
-/* harmony export */   "find": () => (/* binding */ find),
-/* harmony export */   "isSpecialClick": () => (/* binding */ isSpecialClick),
-/* harmony export */   "range": () => (/* binding */ range)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-
-
-var createClassNames = function createClassNames(block) {
-  var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'ais';
-  return function () {
-    for (var _len = arguments.length, elements = new Array(_len), _key = 0; _key < _len; _key++) {
-      elements[_key] = arguments[_key];
-    }
-
-    var suitElements = elements.filter(function (element) {
-      return element || element === '';
-    }).map(function (element) {
-      var baseClassName = "".concat(prefix, "-").concat(block);
-      return element ? "".concat(baseClassName, "-").concat(element) : baseClassName;
-    });
-    return classnames__WEBPACK_IMPORTED_MODULE_1___default()(suitElements);
-  };
-};
-var isSpecialClick = function isSpecialClick(event) {
-  var isMiddleClick = event.button === 1;
-  return Boolean(isMiddleClick || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
-};
-var capitalize = function capitalize(key) {
-  return key.length === 0 ? '' : "".concat(key[0].toUpperCase()).concat(key.slice(1));
-};
-// taken from InstantSearch.js/utils
-function range(_ref) {
-  var _ref$start = _ref.start,
-      start = _ref$start === void 0 ? 0 : _ref$start,
-      end = _ref.end,
-      _ref$step = _ref.step,
-      step = _ref$step === void 0 ? 1 : _ref$step;
-  // We can't divide by 0 so we re-assign the step to 1 if it happens.
-  var limitStep = step === 0 ? 1 : step; // In some cases the array to create has a decimal length.
-  // We therefore need to round the value.
-  // Example:
-  //   { start: 1, end: 5000, step: 500 }
-  //   => Array length = (5000 - 1) / 500 = 9.998
-
-  var arrayLength = Math.round((end - start) / limitStep);
-  return (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(Array(arrayLength)).map(function (_, current) {
-    return (start + current) * limitStep;
-  });
-}
-function find(array, comparator) {
-  if (!Array.isArray(array)) {
-    return undefined;
-  }
-
-  for (var i = 0; i < array.length; i++) {
-    if (comparator(array[i])) {
-      return array[i];
-    }
-  }
-
-  return undefined;
-}
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-dom/dist/es/widgets/Hits.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/react-instantsearch-dom/dist/es/widgets/Hits.js ***!
-  \**********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react_instantsearch_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react-instantsearch-core */ "./node_modules/react-instantsearch-core/dist/es/connectors/connectHits.js");
-/* harmony import */ var _components_Hits_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/Hits.js */ "./node_modules/react-instantsearch-dom/dist/es/components/Hits.js");
-
-
-/**
- * Displays a list of hits.
- *
- * To configure the number of hits being shown, use the [HitsPerPage widget](widgets/HitsPerPage.html),
- * [connectHitsPerPage connector](connectors/connectHitsPerPage.html) or the [Configure widget](widgets/Configure.html).
- *
- * @name Hits
- * @kind widget
- * @propType {Component} [hitComponent] - Component used for rendering each hit from
- *   the results. If it is not provided the rendering defaults to displaying the
- *   hit in its JSON form. The component will be called with a `hit` prop.
- * @themeKey ais-Hits - the root div of the widget
- * @themeKey ais-Hits-list - the list of results
- * @themeKey ais-Hits-item - the hit list item
- * @example
- * import React from 'react';
- * import algoliasearch from 'algoliasearch/lite';
- * import { InstantSearch, Hits } from 'react-instantsearch-dom';
- *
- * const searchClient = algoliasearch(
- *   'latency',
- *   '6be0576ff61c053d5f9a3225e2a90f76'
- * );
- * const App = () => (
- *   <InstantSearch
- *     searchClient={searchClient}
- *     indexName="instant_search"
- *   >
- *     <Hits />
- *   </InstantSearch>
- * );
- */
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_instantsearch_core__WEBPACK_IMPORTED_MODULE_0__["default"])(_components_Hits_js__WEBPACK_IMPORTED_MODULE_1__["default"], {
-  $$widgetType: 'ais.hits'
-}));
-
-/***/ }),
-
-/***/ "./node_modules/react-instantsearch-dom/dist/es/widgets/SearchBox.js":
-/*!***************************************************************************!*\
-  !*** ./node_modules/react-instantsearch-dom/dist/es/widgets/SearchBox.js ***!
-  \***************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react_instantsearch_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react-instantsearch-core */ "./node_modules/react-instantsearch-core/dist/es/connectors/connectSearchBox.js");
-/* harmony import */ var _components_SearchBox_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/SearchBox.js */ "./node_modules/react-instantsearch-dom/dist/es/components/SearchBox.js");
-
-
-/**
- * The SearchBox component displays a search box that lets the user search for a specific query.
- * @name SearchBox
- * @kind widget
- * @propType {string[]} [focusShortcuts=['s','/']] - List of keyboard shortcuts that focus the search box. Accepts key names and key codes.
- * @propType {boolean} [autoFocus=false] - Should the search box be focused on render?
- * @propType {boolean} [searchAsYouType=true] - Should we search on every change to the query? If you disable this option, new searches will only be triggered by clicking the search button or by pressing the enter key while the search box is focused.
- * @propType {function} [onSubmit] - Intercept submit event sent from the SearchBox form container.
- * @propType {function} [onReset] - Listen to `reset` event sent from the SearchBox form container.
- * @propType {function} [on*] - Listen to any events sent from the search input itself.
- * @propType {node} [submit] - Change the apparence of the default submit button (magnifying glass).
- * @propType {node} [reset] - Change the apparence of the default reset button (cross).
- * @propType {node} [loadingIndicator] - Change the apparence of the default loading indicator (spinning circle).
- * @propType {string} [defaultRefinement] - Provide default refinement value when component is mounted.
- * @propType {string} [inputId] - The id of the search input
- * @propType {boolean} [showLoadingIndicator=false] - Display that the search is loading. This only happens after a certain amount of time to avoid a blinking effect. This timer can be configured with `stalledSearchDelay` props on <InstantSearch>. By default, the value is 200ms.
- * @themeKey ais-SearchBox - the root div of the widget
- * @themeKey ais-SearchBox-form - the wrapping form
- * @themeKey ais-SearchBox-input - the search input
- * @themeKey ais-SearchBox-submit - the submit button
- * @themeKey ais-SearchBox-submitIcon - the default magnifier icon used with the search input
- * @themeKey ais-SearchBox-reset - the reset button used to clear the content of the input
- * @themeKey ais-SearchBox-resetIcon - the default reset icon used inside the reset button
- * @themeKey ais-SearchBox-loadingIndicator - the loading indicator container
- * @themeKey ais-SearchBox-loadingIcon - the default loading icon
- * @translationkey submitTitle - The submit button title
- * @translationkey resetTitle - The reset button title
- * @translationkey placeholder - The label of the input placeholder
- * @example
- * import React from 'react';
- * import algoliasearch from 'algoliasearch/lite';
- * import { InstantSearch, SearchBox } from 'react-instantsearch-dom';
- *
- * const searchClient = algoliasearch(
- *   'latency',
- *   '6be0576ff61c053d5f9a3225e2a90f76'
- * );
- *
- * const App = () => (
- *   <InstantSearch
- *     searchClient={searchClient}
- *     indexName="instant_search"
- *   >
- *     <SearchBox />
- *   </InstantSearch>
- * );
- */
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_instantsearch_core__WEBPACK_IMPORTED_MODULE_0__["default"])(_components_SearchBox_js__WEBPACK_IMPORTED_MODULE_1__["default"], {
-  $$widgetType: 'ais.searchBox'
-}));
-
-/***/ }),
-
-/***/ "./node_modules/react-is/cjs/react-is.development.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/react-is/cjs/react-is.development.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-/** @license React v16.13.1
- * react-is.development.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-
-
-if (true) {
-  (function() {
-'use strict';
-
-// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
-// nor polyfill, then a plain number is used for performance.
-var hasSymbol = typeof Symbol === 'function' && Symbol.for;
-var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
-var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
-var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
-var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
-var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
-var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
-var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
-// (unstable) APIs that have been removed. Can we remove the symbols?
-
-var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for('react.async_mode') : 0xeacf;
-var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
-var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
-var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
-var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
-var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
-var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
-var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
-var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
-var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
-var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
-
-function isValidElementType(type) {
-  return typeof type === 'string' || typeof type === 'function' || // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
-  type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE || type.$$typeof === REACT_BLOCK_TYPE);
-}
-
-function typeOf(object) {
-  if (typeof object === 'object' && object !== null) {
-    var $$typeof = object.$$typeof;
-
-    switch ($$typeof) {
-      case REACT_ELEMENT_TYPE:
-        var type = object.type;
-
-        switch (type) {
-          case REACT_ASYNC_MODE_TYPE:
-          case REACT_CONCURRENT_MODE_TYPE:
-          case REACT_FRAGMENT_TYPE:
-          case REACT_PROFILER_TYPE:
-          case REACT_STRICT_MODE_TYPE:
-          case REACT_SUSPENSE_TYPE:
-            return type;
-
-          default:
-            var $$typeofType = type && type.$$typeof;
-
-            switch ($$typeofType) {
-              case REACT_CONTEXT_TYPE:
-              case REACT_FORWARD_REF_TYPE:
-              case REACT_LAZY_TYPE:
-              case REACT_MEMO_TYPE:
-              case REACT_PROVIDER_TYPE:
-                return $$typeofType;
-
-              default:
-                return $$typeof;
-            }
-
-        }
-
-      case REACT_PORTAL_TYPE:
-        return $$typeof;
-    }
-  }
-
-  return undefined;
-} // AsyncMode is deprecated along with isAsyncMode
-
-var AsyncMode = REACT_ASYNC_MODE_TYPE;
-var ConcurrentMode = REACT_CONCURRENT_MODE_TYPE;
-var ContextConsumer = REACT_CONTEXT_TYPE;
-var ContextProvider = REACT_PROVIDER_TYPE;
-var Element = REACT_ELEMENT_TYPE;
-var ForwardRef = REACT_FORWARD_REF_TYPE;
-var Fragment = REACT_FRAGMENT_TYPE;
-var Lazy = REACT_LAZY_TYPE;
-var Memo = REACT_MEMO_TYPE;
-var Portal = REACT_PORTAL_TYPE;
-var Profiler = REACT_PROFILER_TYPE;
-var StrictMode = REACT_STRICT_MODE_TYPE;
-var Suspense = REACT_SUSPENSE_TYPE;
-var hasWarnedAboutDeprecatedIsAsyncMode = false; // AsyncMode should be deprecated
-
-function isAsyncMode(object) {
-  {
-    if (!hasWarnedAboutDeprecatedIsAsyncMode) {
-      hasWarnedAboutDeprecatedIsAsyncMode = true; // Using console['warn'] to evade Babel and ESLint
-
-      console['warn']('The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
-    }
-  }
-
-  return isConcurrentMode(object) || typeOf(object) === REACT_ASYNC_MODE_TYPE;
-}
-function isConcurrentMode(object) {
-  return typeOf(object) === REACT_CONCURRENT_MODE_TYPE;
-}
-function isContextConsumer(object) {
-  return typeOf(object) === REACT_CONTEXT_TYPE;
-}
-function isContextProvider(object) {
-  return typeOf(object) === REACT_PROVIDER_TYPE;
-}
-function isElement(object) {
-  return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
-}
-function isForwardRef(object) {
-  return typeOf(object) === REACT_FORWARD_REF_TYPE;
-}
-function isFragment(object) {
-  return typeOf(object) === REACT_FRAGMENT_TYPE;
-}
-function isLazy(object) {
-  return typeOf(object) === REACT_LAZY_TYPE;
-}
-function isMemo(object) {
-  return typeOf(object) === REACT_MEMO_TYPE;
-}
-function isPortal(object) {
-  return typeOf(object) === REACT_PORTAL_TYPE;
-}
-function isProfiler(object) {
-  return typeOf(object) === REACT_PROFILER_TYPE;
-}
-function isStrictMode(object) {
-  return typeOf(object) === REACT_STRICT_MODE_TYPE;
-}
-function isSuspense(object) {
-  return typeOf(object) === REACT_SUSPENSE_TYPE;
-}
-
-exports.AsyncMode = AsyncMode;
-exports.ConcurrentMode = ConcurrentMode;
-exports.ContextConsumer = ContextConsumer;
-exports.ContextProvider = ContextProvider;
-exports.Element = Element;
-exports.ForwardRef = ForwardRef;
-exports.Fragment = Fragment;
-exports.Lazy = Lazy;
-exports.Memo = Memo;
-exports.Portal = Portal;
-exports.Profiler = Profiler;
-exports.StrictMode = StrictMode;
-exports.Suspense = Suspense;
-exports.isAsyncMode = isAsyncMode;
-exports.isConcurrentMode = isConcurrentMode;
-exports.isContextConsumer = isContextConsumer;
-exports.isContextProvider = isContextProvider;
-exports.isElement = isElement;
-exports.isForwardRef = isForwardRef;
-exports.isFragment = isFragment;
-exports.isLazy = isLazy;
-exports.isMemo = isMemo;
-exports.isPortal = isPortal;
-exports.isProfiler = isProfiler;
-exports.isStrictMode = isStrictMode;
-exports.isSuspense = isSuspense;
-exports.isValidElementType = isValidElementType;
-exports.typeOf = typeOf;
-  })();
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/react-is/index.js":
-/*!****************************************!*\
-  !*** ./node_modules/react-is/index.js ***!
-  \****************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-
-
-if (false) {} else {
-  module.exports = __webpack_require__(/*! ./cjs/react-is.development.js */ "./node_modules/react-is/cjs/react-is.development.js");
-}
-
-
-/***/ }),
-
 /***/ "./node_modules/react/cjs/react.development.js":
 /*!*****************************************************!*\
   !*** ./node_modules/react/cjs/react.development.js ***!
@@ -43494,479 +38736,6 @@ if (false) {} else {
 }
 
 
-/***/ }),
-
-/***/ "./resources/js/components sync recursive \\.(\\/index)?jsx$":
-/*!********************************************************!*\
-  !*** ./resources/js/components/ sync \.(\/index)?jsx$ ***!
-  \********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var map = {
-	"./Search/index.jsx": "./resources/js/components/Search/index.jsx"
-};
-
-
-function webpackContext(req) {
-	var id = webpackContextResolve(req);
-	return __webpack_require__(id);
-}
-function webpackContextResolve(req) {
-	if(!__webpack_require__.o(map, req)) {
-		var e = new Error("Cannot find module '" + req + "'");
-		e.code = 'MODULE_NOT_FOUND';
-		throw e;
-	}
-	return map[req];
-}
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = "./resources/js/components sync recursive \\.(\\/index)?jsx$";
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _arrayLikeToArray)
-/* harmony export */ });
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-
-  return arr2;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js ***!
-  \**********************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _arrayWithoutHoles)
-/* harmony export */ });
-/* harmony import */ var _arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js");
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(arr);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js ***!
-  \**************************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _assertThisInitialized)
-/* harmony export */ });
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _classCallCheck)
-/* harmony export */ });
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/createClass.js":
-/*!****************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/createClass.js ***!
-  \****************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _createClass)
-/* harmony export */ });
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _defineProperty)
-/* harmony export */ });
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/extends.js":
-/*!************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/extends.js ***!
-  \************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _extends)
-/* harmony export */ });
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-  return _extends.apply(this, arguments);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _getPrototypeOf)
-/* harmony export */ });
-function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/inherits.js":
-/*!*************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/inherits.js ***!
-  \*************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _inherits)
-/* harmony export */ });
-/* harmony import */ var _setPrototypeOf_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./setPrototypeOf.js */ "./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js");
-
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  Object.defineProperty(subClass, "prototype", {
-    writable: false
-  });
-  if (superClass) (0,_setPrototypeOf_js__WEBPACK_IMPORTED_MODULE_0__["default"])(subClass, superClass);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js ***!
-  \********************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _iterableToArray)
-/* harmony export */ });
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js ***!
-  \**********************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _nonIterableSpread)
-/* harmony export */ });
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js ***!
-  \****************************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _objectWithoutProperties)
-/* harmony export */ });
-/* harmony import */ var _objectWithoutPropertiesLoose_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./objectWithoutPropertiesLoose.js */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
-
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = (0,_objectWithoutPropertiesLoose_js__WEBPACK_IMPORTED_MODULE_0__["default"])(source, excluded);
-  var key, i;
-
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
-  }
-
-  return target;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js":
-/*!*********************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
-  \*********************************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _objectWithoutPropertiesLoose)
-/* harmony export */ });
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-
-  return target;
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js ***!
-  \******************************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _possibleConstructorReturn)
-/* harmony export */ });
-/* harmony import */ var _typeof_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./typeof.js */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
-/* harmony import */ var _assertThisInitialized_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./assertThisInitialized.js */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
-
-
-function _possibleConstructorReturn(self, call) {
-  if (call && ((0,_typeof_js__WEBPACK_IMPORTED_MODULE_0__["default"])(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-
-  return (0,_assertThisInitialized_js__WEBPACK_IMPORTED_MODULE_1__["default"])(self);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _setPrototypeOf)
-/* harmony export */ });
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-  return _setPrototypeOf(o, p);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js ***!
-  \**********************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _toConsumableArray)
-/* harmony export */ });
-/* harmony import */ var _arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayWithoutHoles.js */ "./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js");
-/* harmony import */ var _iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/iterableToArray.js");
-/* harmony import */ var _unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js");
-/* harmony import */ var _nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./nonIterableSpread.js */ "./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js");
-
-
-
-
-function _toConsumableArray(arr) {
-  return (0,_arrayWithoutHoles_js__WEBPACK_IMPORTED_MODULE_0__["default"])(arr) || (0,_iterableToArray_js__WEBPACK_IMPORTED_MODULE_1__["default"])(arr) || (0,_unsupportedIterableToArray_js__WEBPACK_IMPORTED_MODULE_2__["default"])(arr) || (0,_nonIterableSpread_js__WEBPACK_IMPORTED_MODULE_3__["default"])();
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/typeof.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/typeof.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _typeof)
-/* harmony export */ });
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
-}
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js":
-/*!*******************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js ***!
-  \*******************************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _unsupportedIterableToArray)
-/* harmony export */ });
-/* harmony import */ var _arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js");
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return (0,_arrayLikeToArray_js__WEBPACK_IMPORTED_MODULE_0__["default"])(o, minLen);
-}
-
 /***/ })
 
 /******/ 	});
@@ -43989,7 +38758,7 @@ function _unsupportedIterableToArray(o, minLen) {
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -44023,6 +38792,18 @@ function _unsupportedIterableToArray(o, minLen) {
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -44053,14 +38834,14 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
-/*!******************************!*\
-  !*** ./resources/js/app.jsx ***!
-  \******************************/
+/*!**********************************************!*\
+  !*** ./modules/discordbot/resources/app.jsx ***!
+  \**********************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var _sprinkles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sprinkles */ "./resources/js/sprinkles.jsx");
+/* harmony import */ var _sprinkles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sprinkles */ "./modules/discordbot/resources/sprinkles.jsx");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }

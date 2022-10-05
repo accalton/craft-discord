@@ -32,30 +32,6 @@ fieldLayouts:
             width: 100
           -
             elementCondition: null
-            fieldUid: 580e6028-825b-4152-a173-4b15d2464cfa # Guild
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 21af603a-e262-4483-92e0-54bce816c2f5
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
-            fieldUid: d0304d62-acc7-4a67-a47a-2cc2ef18f3a5 # Channel
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 69766495-3235-478d-b62a-dfbe77bc4f22
-            userCondition: null
-            warning: null
-            width: 50
-          -
-            elementCondition: null
             fieldUid: 834c084a-22a4-4349-bb98-09b79287b031 # Color
             instructions: null
             label: null
@@ -80,13 +56,13 @@ fieldLayouts:
             width: 75
           -
             elementCondition: null
-            fieldUid: 360a65e4-aa70-44a6-a829-4233645609cd # Roles / Emojis
+            fieldUid: a944b172-1299-4510-86cc-5179b31a16c3 # Dummy
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 4842a0c7-6d14-409e-83c6-b8b4241735ba
+            uid: b5716cb8-eae0-4b1c-bbc7-3a087f330fc7
             userCondition: null
             warning: null
             width: 100

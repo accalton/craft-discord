@@ -16,7 +16,7 @@ class DiscordBotBundle extends AssetBundle
         ];
 
         $this->js = [
-            'main.js'
+            'app.js'
         ];
 
         $this->css = [];

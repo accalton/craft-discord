@@ -6,9 +6,12 @@ use Craft;
 use craft\elements\Entry;
 use craft\events\ModelEvent;
 use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterCpNavItemsEvent;
+use craft\events\RegisterTemplateRootsEvent;
 use craft\events\TemplateEvent;
 use craft\helpers\ElementHelper;
 use craft\services\Fields;
+use craft\web\twig\variables\Cp;
 use craft\web\View;
 use yii\base\Event;
 use yii\base\Module;
@@ -36,6 +39,25 @@ class DiscordBot extends Module
             'roles'     => \discordbot\services\RoleService::class,
             'webhooks'  => \discordbot\services\WebhookService::class,
         ]);
+
+        Event::on(
+            View::class,
+            View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
+            function (RegisterTemplateRootsEvent $event) {
+                $event->roots[$this->id] = __DIR__ . '/templates';
+            }
+        );
+
+        Event::on(
+            Cp::class,
+            Cp::EVENT_REGISTER_CP_NAV_ITEMS,
+            function (RegisterCpNavItemsEvent $event) {
+                $event->navItems[] = [
+                    'url' => 'discordbot',
+                    'label' => 'Discord'
+                ];
+            }
+        );
 
         Event::on(
             View::class,

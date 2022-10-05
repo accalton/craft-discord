@@ -7,61 +7,48 @@ use discordbot\DiscordBot;
 
 class GuildService
 {
-    private $guildId = '990803597547679745';
-    private $url;
-
-    public function __construct()
+    public function channels($guildId)
     {
-        $this->url = 'guilds/' . $this->guildId;
-    }
-
-    public function channels()
-    {
-        $url = $this->url . '/channels';
+        $url = 'guilds/' . $guildId . '/channels';
 
         $channels = DiscordBot::getInstance()->request->send($url);
 
-        $return = [];
-        foreach ($channels as $channel) {
-            if ($channel->type === 0) {
-                $return[$channel->id] = $channel->name;
+        foreach ($channels as $id => $channel) {
+            if ($channel->type !== 0) {
+                unset($channels[$id]);
             }
         }
+        
+        usort($channels, function ($a, $b) {
+            return strcmp($a->name, $b->name);
+        });
 
-        asort($return);
-
-        return $return;
+        return array_values($channels);
     }
 
-    public function emojis()
+    public function emojis($guildId)
     {
-        $url = $this->url . '/emojis';
-
+        $url = 'guilds/' . $guildId . '/emojis';
+        
         $emojis = DiscordBot::getInstance()->request->send($url);
 
-        $return = [];
-        foreach ($emojis as $emoji) {
-            $return[$emoji->id] = $emoji->name;
-        }
+        usort($emojis, function ($a, $b) {
+            return strcmp($a->name, $b->name);
+        });
 
-        asort($return);
-
-        return $return;
+        return $emojis;
     }
 
-    public function roles()
+    public function roles($guildId)
     {
-        $url = $this->url . '/roles';
+        $url = 'guilds/' . $guildId . '/roles';
 
         $roles = DiscordBot::getInstance()->request->send($url);
 
-        $return = [];
-        foreach ($roles as $role) {
-            $return[$role->id] = $role->name;
-        }
+        usort($roles, function ($a, $b) {
+            return strcmp($a->name, $b->name);
+        });
 
-        asort($return);
-
-        return $return;
+        return $roles;
     }
 }

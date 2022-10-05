@@ -9,6 +9,13 @@ class MemberService
     public function guilds()
     {
         $url = 'users/@me/guilds';
-        return DiscordBot::getInstance()->request->send($url);
+
+        $guilds = DiscordBot::getInstance()->request->send($url);
+
+        usort($guilds, function ($a, $b) {
+            return strcmp($a->name, $b->name);
+        });
+
+        return array_values($guilds);
     }
 }

@@ -1,4 +1,4 @@
 {
     "/web/assets/app.js": "/web/assets/app.js",
-    "/modules/discordbot/resources/dist/main.js": "/modules/discordbot/resources/dist/main.js"
+    "/modules/discordbot/resources/dist/app.js": "/modules/discordbot/resources/dist/app.js"
 }
