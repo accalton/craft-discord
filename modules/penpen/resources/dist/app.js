@@ -101,6 +101,8 @@ var PenPen = function PenPen() {
       state = _useState10[0],
       setState = _useState10[1];
 
+  var discordToken = "OTkwODE4OTE2OTkxMzgxNTI0.GsyRK1.ZwaVMqiBEx7Erg77gcGJCC4_BSW9Vf958nxypc";
+
   var getChannels = function getChannels() {
     setChannels([]);
 
@@ -136,7 +138,7 @@ var PenPen = function PenPen() {
     var newState = _objectSpread({}, state);
 
     newState = {
-      token: 'OTkwODE4OTE2OTkxMzgxNTI0.GFUL4u.pJoTH-1QhktCHWxvdAhy6BunZXdH9rsbrruYcU'
+      token: discordToken
     };
     setState(newState);
   }, []);

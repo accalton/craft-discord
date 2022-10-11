@@ -8,6 +8,7 @@ const PenPen = () => {
     const [guilds, setGuilds] = useState([]);
     const [roles, setRoles] = useState([]);
     const [state, setState] = useState({});
+    const discordToken = process.env.DISCORD_TOKEN;
 
     const getChannels = () => {
         setChannels([]);
@@ -40,7 +41,7 @@ const PenPen = () => {
     useEffect(() => {
         let newState = {...state};
         newState = {
-            token: 'OTkwODE4OTE2OTkxMzgxNTI0.GFUL4u.pJoTH-1QhktCHWxvdAhy6BunZXdH9rsbrruYcU'
+            token: discordToken
         }
         setState(newState);
     }, []);
