@@ -24,7 +24,7 @@ return [
     'modules' => [
         'my-module' => \modules\Module::class,
         'imageoptimization' => \imageoptimization\ImageOptimization::class,
-        'discordbot' => \discordbot\DiscordBot::class,
+        'penpen' => \penpen\PenPen::class
     ],
-    'bootstrap' => ['imageoptimization', 'discordbot'],
+    'bootstrap' => ['imageoptimization', 'penpen'],
 ];

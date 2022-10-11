@@ -14,7 +14,7 @@
     "psr-4": {
       "modules\\": "modules/",
       "imageoptimization\\": "modules/imageoptimization/",
-      "discordbot\\": "modules/discordbot"
+      "penpen\\": "modules/penpen"
     }
   },
   "config": {

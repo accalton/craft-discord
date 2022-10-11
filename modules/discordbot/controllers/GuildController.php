@@ -8,14 +8,6 @@ use discordbot\DiscordBot;
 
 class GuildController extends Controller
 {
-    public $enableCsrfValidation = false;
-    public function actionPost()
-    {
-        var_dump($_POST);
-
-        exit;
-    }
-
     public function actionChannels($guildId)
     {
         $this->requireCpRequest();

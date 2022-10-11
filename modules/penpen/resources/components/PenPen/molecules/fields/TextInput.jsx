@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 const TextInput = props => {
-    const { name, label, width, onChange } = props;
+    const { label, name, onChange, width } = props;
 
     return (
         <div className={`field width-${width}`}>
@@ -15,6 +15,6 @@ const TextInput = props => {
             </div>
         </div>
     );
-}
+};
 
 export default TextInput;

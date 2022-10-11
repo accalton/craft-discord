@@ -44,7 +44,7 @@ class DiscordBot extends Module
             View::class,
             View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
             function (RegisterTemplateRootsEvent $event) {
-                $event->roots[$this->id] = __DIR__ . '/templates';
+                // $event->roots[$this->id] = __DIR__ . '/templates';
             }
         );
 
@@ -52,10 +52,10 @@ class DiscordBot extends Module
             Cp::class,
             Cp::EVENT_REGISTER_CP_NAV_ITEMS,
             function (RegisterCpNavItemsEvent $event) {
-                $event->navItems[] = [
-                    'url' => 'discordbot',
-                    'label' => 'Discord'
-                ];
+                // $event->navItems[] = [
+                //     'url' => 'discordbot',
+                //     'label' => 'Discord'
+                // ];
             }
         );
 

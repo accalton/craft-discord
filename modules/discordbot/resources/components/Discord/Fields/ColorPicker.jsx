@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 const ColorPicker = props => {
-    const { name, label, width } = props;
+    const { name, label, width, onChange } = props;
     const [color, setColor] = useState('');
     const [background, setBackground] = useState({});
 
-
-    const onChange = (event) => {
+    const updateColor = (event) => {
         let hex = event.target.value;
         setColor(hex.replace('#', ''));
-        const red = parseInt(hex.slice(1, 3), 16);
-        const green = parseInt(hex.slice(3, 5), 16);
-        const blue = parseInt(hex.slice(5, 7), 16);
+        const red = parseInt(color.slice(0, 2), 16);
+        const green = parseInt(color.slice(2, 4), 16);
+        const blue = parseInt(color.slice(4, 6), 16);
 
         setBackground({
             backgroundColor: `rgb(${red}, ${green}, ${blue})`
         });
+
+        let customEvent = {
+            target: {
+                name: name,
+                value: color
+            }
+        }
+
+        onChange(customEvent);
     }
 
     return (
@@ -29,12 +37,18 @@ const ColorPicker = props => {
                 <div id="fields-color-container" className="flex color-container">
                     <div className="color">
                         <div className="color-preview" style={background}>
-                            <input type="color" className="color-preview-input" onChange={onChange} />
+                            <input type="color" className="color-preview-input" onChange={updateColor} />
                         </div>
                     </div>
                     <div className="color-input-container">
                         <div className="color-hex-indicator light code">#</div>
-                        <input type="text" className="color-input text" name="color" size="10" defaultValue={color} />
+                        <input
+                            type="text"
+                            className="color-input text"
+                            name="color"
+                            size="10"
+                            defaultValue={color}
+                        />
                     </div>
                 </div>
             </div>

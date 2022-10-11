@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { DiscordContext } from '../config/discord-context';
-import Select from '../Fields/Select';
+import React from 'react';
+import Select from '../Select';
 
 const RoleEmoji = props => {
-    const { roles, emojis, id, removeRow } = props;
-    const state = useContext(DiscordContext);
+    const { emojis, id, onChange, removeRow, roles } = props;
 
     const handleClick = () => {
         removeRow(id);
@@ -13,15 +11,15 @@ const RoleEmoji = props => {
     return (
         <div className="matrixblock">
             <div className="titlebar">
-                <div className="blocktype">Row</div>
+                <div className="blocktype">Role React</div>
             </div>
             <div className="actions">
                 <a className="error" data-icon="remove" type="button" role="button" onClick={handleClick}>Delete</a>
             </div>
             <div className="fields">
                 <div className="flex-fields">
-                    <Select name={`role[${id}]`} label="Role" width="50" options={roles} />
-                    <Select name={`emoji[${id}]`} label="Emoji" width="50" options={emojis} />
+                    <Select name={`role[${id}]`} label="Role" width="50" options={roles} onChange={onChange} />
+                    <Select name={`emoji[${id}]`} label="Emoji" width="50" options={emojis} onChange={onChange} />
                 </div>
             </div>
         </div>

@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
-import axios from 'axios';
+import React from 'react';
 
 const Select = props => {
-    const { name, label, options, width, onChange } = props;
+    const { label, name, onChange, options, width } = props;
 
     return (
         <div className={`field width-${width}`}>
@@ -23,6 +22,6 @@ const Select = props => {
             </div>
         </div>
     );
-}
+};
 
 export default Select;

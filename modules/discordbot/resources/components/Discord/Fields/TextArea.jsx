@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 const TextArea = props => {
-    const { name, label, width } = props;
+    const { name, label, width, onChange } = props;
 
     return (
         <div className={`field width-${width}`}>
@@ -11,7 +11,7 @@ const TextArea = props => {
                 </label>
             </div>
             <div className="input ltr">
-                <textarea id={name} type="text" className="text fullwidth" name={name} />
+                <textarea id={name} type="text" className="text fullwidth" name={name} onChange={onChange} />
             </div>
         </div>
     );
