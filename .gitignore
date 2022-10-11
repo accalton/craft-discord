@@ -1,5 +1,6 @@
 /.env
 /.idea
+/modules/penpen/resources/dist/app.js
 /node_modules
 /vendor
 .DS_Store
