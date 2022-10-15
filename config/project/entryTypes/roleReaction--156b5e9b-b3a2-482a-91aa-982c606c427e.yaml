@@ -1,0 +1,130 @@
+fieldLayouts:
+  366aba3d-32fc-4177-a0c1-c76b34315498:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            autocapitalize: true
+            autocomplete: false
+            autocorrect: true
+            class: null
+            disabled: false
+            elementCondition: null
+            id: null
+            instructions: null
+            label: null
+            max: null
+            min: null
+            name: null
+            orientation: null
+            placeholder: null
+            readonly: false
+            requirable: false
+            size: null
+            step: null
+            tip: null
+            title: null
+            type: craft\fieldlayoutelements\entries\EntryTitleField
+            uid: a8810316-a14f-4b92-b21b-30a37837fe57
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: a8de57bc-969d-4abc-b67a-0a7111943914 # Guild
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 809f80d7-8b8c-42bc-b6eb-3082c8b8d386
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 146ac2e6-294d-4b03-9e17-a5ddb448f6ae # Channel
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: e6760044-4183-4d2a-9d04-d8f7eb9dec2e
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 6ede746b-3f1e-412f-8ca7-ae5aea7b7269 # Color
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: ef61db01-415b-4a3b-bc1a-790275b4574b
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: a819cbfe-ca29-4bd9-81f0-9dca60fa1f96 # Description
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 32e5b2ec-18d6-440c-9845-1c2dd133ad9c
+            userCondition: null
+            warning: null
+            width: 75
+          -
+            elementCondition:
+              class: craft\elements\conditions\entries\EntryCondition
+              conditionRules:
+                -
+                  class: magi\fields\conditions\GuildFieldConditionRule
+                  fieldUid: a8de57bc-969d-4abc-b67a-0a7111943914 # Guild
+                  operator: notempty
+                  uid: 079610c2-617d-4d6e-9d33-73a10170911e
+              elementType: craft\elements\Entry
+              fieldContext: global
+            fieldUid: a15f32e4-4a86-4115-a772-32d226c18bb3 # Role Reactions
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: cf9d0d64-162c-4c35-b111-43592399798f
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: b95ed3bd-74cf-4221-8328-055a4dabc1f7
+        userCondition: null
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 9634b7f6-688a-4ba0-bd9c-22aae8c35c1f # Message ID
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 8301245a-359f-4224-804c-6fc148bd6365
+            userCondition: null
+            warning: null
+            width: 100
+        name: Discord
+        uid: f17bfff5-0e1d-4416-ae27-0bb0208a2c29
+        userCondition: null
+handle: roleReaction
+hasTitleField: true
+name: RoleReaction
+section: 910bfc8c-0352-4ba0-8d56-d8eb1bad6642 # Messages
+sortOrder: 1
+titleFormat: null
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

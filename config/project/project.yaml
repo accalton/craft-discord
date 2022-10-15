@@ -1,30 +1,12 @@
-dateModified: 1665461222
-elementSources:
-  craft\elements\Entry:
-    -
-      key: '*'
-      type: native
-    -
-      heading: Channels
-      type: heading
-    -
-      key: 'section:a1ee1a25-4491-47e7-ae47-0873ce02b262'
-      type: native
-    -
-      disabled: false
-      key: 'section:24cd6242-b981-46a7-a383-94e20a10f825'
-      tableAttributes:
-        - postDate
-        - type
-      type: native
+dateModified: 1665815045
 email:
   fromEmail: accalton@gmail.com
-  fromName: 'Craft Discord'
+  fromName: Magi
   transportType: craft\mail\transportadapters\Sendmail
 fs:
-  awsS3:
+  aws:
     hasUrls: true
-    name: 'AWS S3'
+    name: AWS
     settings:
       addSubfolderToRootUrl: true
       autoFocalPoint: false
@@ -38,24 +20,41 @@ fs:
       region: us-east-1
       secret: $AWS_SECRET_KEY
       storageClass: ''
-      subfolder: public/
+      subfolder: public
     type: craft\awss3\Fs
     url: 'https://s3.us-east-1.amazonaws.com/flipcrazy-test-storage/'
+graphql:
+  publicToken:
+    enabled: false
+    expiryDate: null
 meta:
   __names__:
-    1b6ee14a-6a63-4adf-84b1-e2d5bb3cf971: Emoji # Emoji
-    3edba8b6-9fbd-4228-9547-8d2058bfd218: 'Public Schema' # Public Schema
-    5d73b046-cd9b-47a9-829d-51b0f5d339c6: 'Craft Discord' # Craft Discord
-    20c1e22c-93fe-4926-a0b6-e6fab6a95f8c: 'Drop 2' # Drop 2
-    23c74757-0d8a-46cb-b13e-539ecf587b11: Images # Images
-    56ff0b20-7013-4554-b5cf-f03f15461258: Option # Option
-    90e069e7-6337-44aa-a9f4-12d993f7c29c: 'Public Schema' # Public Schema
-    458e92dd-2abc-41f4-a4b2-7335b5857bb4: 'Craft Discord' # Craft Discord
-    2559ddae-dbae-4276-87df-8c0d8f2cb4f1: 'Public Schema' # Public Schema
-    ceceaef8-25a3-49a3-af8c-2c692930e623: 'Drop One' # Drop One
-    dcfa73be-67a8-492b-9a0b-733ecaaa5ab0: Role # Role
-    eed0a146-3d97-49c7-8d92-1b7f8f5aa612: Common # Common
-    fb1fe643-92b2-4ade-890a-cd30edbc5fad: Emoji # Emoji
+    1dea3224-66a8-45cf-8c5e-4267be0ee546: Magi # Magi
+    3cb635ce-8583-4131-a9be-aeaa6409f669: 'Public Schema' # Public Schema
+    4a5d35a7-478f-419d-8205-ced8b74e1724: 'Description (Optional)' # Description (Optional)
+    6ede746b-3f1e-412f-8ca7-ae5aea7b7269: Color # Color
+    8ed46d22-b609-4bea-82d8-b99f480dc2a7: Magi # Magi
+    27ae4fbe-2f7f-438f-b9e6-f2793d99f763: 'Public Schema' # Public Schema
+    50ef92be-6042-4e98-add5-f990828e96a5: 'Public Schema'
+    52f59d6e-a153-41e9-a10d-748035b2fa9d: 'Role Reaction' # Role Reaction
+    57a04087-8958-4ce1-a827-e121db3914e0: Images # Images
+    67c11f6a-251d-49db-bd06-f9cadf4fe71f: Emoji # Emoji
+    96e2c760-0503-49eb-9be4-d7284dfcfc9d: 'Public Schema' # Public Schema
+    99ecd36e-cb15-42fc-add1-00f88ca310e3: 'Public Schema' # Public Schema
+    146ac2e6-294d-4b03-9e17-a5ddb448f6ae: Channel # Channel
+    156b5e9b-b3a2-482a-91aa-982c606c427e: RoleReaction # RoleReaction
+    659cbc52-ae52-4589-bf73-f30c52bbe2f7: Common # Common
+    856dfb4d-fe6e-40ab-a661-335264a0e20d: Role # Role
+    910bfc8c-0352-4ba0-8d56-d8eb1bad6642: Messages # Messages
+    5464f9d0-9a18-49e6-a122-1b06ff5d7cee: 'Vote Option' # Vote Option
+    9634b7f6-688a-4ba0-bd9c-22aae8c35c1f: 'Message ID' # Message ID
+    408869e5-82ab-4787-bd06-39849ff8ffbd: 'Public Schema' # Public Schema
+    a8de57bc-969d-4abc-b67a-0a7111943914: Guild # Guild
+    a15f32e4-4a86-4115-a772-32d226c18bb3: 'Role Reactions' # Role Reactions
+    a819cbfe-ca29-4bd9-81f0-9dca60fa1f96: Description # Description
+    b317c769-cd07-4490-b482-4ddbf70daee1: Emoji # Emoji
+    d1943850-2bbf-47cb-bf58-85bceb2fee92: 'Public Schema' # Public Schema
+    fe8183d2-a647-4195-89e2-60c2d84dcbc8: 'Public Schema' # Public Schema
 plugins:
   aws-s3:
     edition: standard
@@ -65,14 +64,10 @@ plugins:
     edition: standard
     enabled: true
     schemaVersion: 2.3.0
-  scout:
-    edition: standard
-    enabled: true
-    schemaVersion: 0.1.0
 system:
   edition: solo
   live: true
-  name: 'Craft Discord'
+  name: Magi
   schemaVersion: 4.0.0.9
   timeZone: America/Los_Angeles
 users:

@@ -14,17 +14,13 @@ class TwigExtension extends AbstractExtension
         );
     }
 
-    public function optimize($value)
+    public function optimize($filename, $params = [])
     {
         $cloudflareUrl = getenv('AWS_CLOUDFLARE_URL');
         $imageRequest = json_encode([
             'bucket' => getenv('AWS_S3_BUCKET'),
-            'key' => 'public/' . $value,
-            'edits' => [
-                'resize' => [
-                    'height' => 400
-                ]
-            ]
+            'key' => 'public/' . $filename,
+            'edits' => $params
         ]);
 
         $url = $cloudflareUrl . '/' . base64_encode($imageRequest);

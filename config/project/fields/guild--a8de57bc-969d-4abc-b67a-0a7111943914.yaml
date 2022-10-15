@@ -1,0 +1,12 @@
+columnSuffix: xxmvfjvs
+contentColumnType: string
+fieldGroup: 659cbc52-ae52-4589-bf73-f30c52bbe2f7 # Common
+handle: guild
+instructions: null
+name: Guild
+searchable: false
+settings:
+  dropdownType: null
+translationKeyFormat: null
+translationMethod: none
+type: magi\fields\GuildField

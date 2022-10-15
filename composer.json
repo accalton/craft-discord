@@ -14,7 +14,7 @@
     "psr-4": {
       "modules\\": "modules/",
       "imageoptimization\\": "modules/imageoptimization/",
-      "penpen\\": "modules/penpen"
+      "magi\\": "modules/magi"
     }
   },
   "config": {

@@ -24,7 +24,7 @@ return [
     'modules' => [
         'my-module' => \modules\Module::class,
         'imageoptimization' => \imageoptimization\ImageOptimization::class,
-        'penpen' => \penpen\PenPen::class
+        'magi' => \magi\Magi::class
     ],
-    'bootstrap' => ['imageoptimization', 'penpen'],
+    'bootstrap' => ['imageoptimization', 'magi']
 ];

@@ -1,0 +1,12 @@
+columnSuffix: moqidjhj
+contentColumnType: string(7)
+fieldGroup: 659cbc52-ae52-4589-bf73-f30c52bbe2f7 # Common
+handle: color
+instructions: null
+name: Color
+searchable: false
+settings:
+  defaultColor: null
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\Color

@@ -1,0 +1,9 @@
+baseUrl: $PRIMARY_SITE_URL
+enabled: true
+handle: default
+hasUrls: true
+language: en-US
+name: Magi
+primary: true
+siteGroup: 1dea3224-66a8-45cf-8c5e-4267be0ee546 # Magi
+sortOrder: 1
