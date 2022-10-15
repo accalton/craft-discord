@@ -73,6 +73,10 @@ class Magi extends Module
                 }
 
                 $this->messages->beforeEntrySave($entry);
+
+                if ($entry->type->handle === 'riotNight' && !$entry->riotNightRoleId) {
+                    $this->role->createRiotNight($entry);
+                }
             }
         );
 
@@ -84,6 +88,10 @@ class Magi extends Module
 
                 if ($entry->messageId) {
                     $this->messages->beforeEntryDelete($entry);
+                }
+
+                if ($entry->riotNightRoleId) {
+                    $this->role->deleteRiotNight($entry);
                 }
             }
         );

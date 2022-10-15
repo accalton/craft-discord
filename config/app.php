@@ -26,5 +26,16 @@ return [
         'imageoptimization' => \imageoptimization\ImageOptimization::class,
         'magi' => \magi\Magi::class
     ],
-    'bootstrap' => ['imageoptimization', 'magi']
+    'bootstrap' => ['imageoptimization', 'magi'],
+
+    /*
+    'components' => [
+        // ...
+        'projectConfig' => function() {
+            $config = craft\helpers\App::projectConfigConfig();
+            $config['writeYamlAutomatically'] = false;
+            return Craft::createObject($config);
+        },
+    ]
+    */
 ];

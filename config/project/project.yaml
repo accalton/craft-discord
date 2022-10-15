@@ -1,4 +1,4 @@
-dateModified: 1665815045
+dateModified: 1665861265
 email:
   fromEmail: accalton@gmail.com
   fromName: Magi
@@ -23,32 +23,36 @@ fs:
       subfolder: public
     type: craft\awss3\Fs
     url: 'https://s3.us-east-1.amazonaws.com/flipcrazy-test-storage/'
-graphql:
-  publicToken:
-    enabled: false
-    expiryDate: null
 meta:
   __names__:
     1dea3224-66a8-45cf-8c5e-4267be0ee546: Magi # Magi
+    1f44f8dd-63da-4905-a8de-11f9e2493d21: 'Public Schema' # Public Schema
+    3a2936de-287e-4f48-9583-5301ba20812f: Vote # Vote
     3cb635ce-8583-4131-a9be-aeaa6409f669: 'Public Schema' # Public Schema
     4a5d35a7-478f-419d-8205-ced8b74e1724: 'Description (Optional)' # Description (Optional)
+    6c9cda2c-3738-4a1c-9feb-a7ecb90aedc7: 'Riot Night' # Riot Night
     6ede746b-3f1e-412f-8ca7-ae5aea7b7269: Color # Color
+    7a0feb03-e9fb-4dc4-a537-7c671dcd98b9: Date # Date
+    07c7f525-3bce-4eef-a8ee-9529e67a4a7c: Choice # Choice
     8ed46d22-b609-4bea-82d8-b99f480dc2a7: Magi # Magi
+    9dd83a89-0aae-40bd-80b3-94d02ceabbd1: Description # Description
     27ae4fbe-2f7f-438f-b9e6-f2793d99f763: 'Public Schema' # Public Schema
-    50ef92be-6042-4e98-add5-f990828e96a5: 'Public Schema'
+    50ef92be-6042-4e98-add5-f990828e96a5: 'Public Schema' # Public Schema
     52f59d6e-a153-41e9-a10d-748035b2fa9d: 'Role Reaction' # Role Reaction
     57a04087-8958-4ce1-a827-e121db3914e0: Images # Images
     67c11f6a-251d-49db-bd06-f9cadf4fe71f: Emoji # Emoji
     96e2c760-0503-49eb-9be4-d7284dfcfc9d: 'Public Schema' # Public Schema
     99ecd36e-cb15-42fc-add1-00f88ca310e3: 'Public Schema' # Public Schema
     146ac2e6-294d-4b03-9e17-a5ddb448f6ae: Channel # Channel
-    156b5e9b-b3a2-482a-91aa-982c606c427e: RoleReaction # RoleReaction
+    156b5e9b-b3a2-482a-91aa-982c606c427e: 'Role Reaction' # Role Reaction
     659cbc52-ae52-4589-bf73-f30c52bbe2f7: Common # Common
     856dfb4d-fe6e-40ab-a661-335264a0e20d: Role # Role
     910bfc8c-0352-4ba0-8d56-d8eb1bad6642: Messages # Messages
     5464f9d0-9a18-49e6-a122-1b06ff5d7cee: 'Vote Option' # Vote Option
     9634b7f6-688a-4ba0-bd9c-22aae8c35c1f: 'Message ID' # Message ID
+    9670e914-637b-4f76-9d06-50007f40e438: Emoji # Emoji
     408869e5-82ab-4787-bd06-39849ff8ffbd: 'Public Schema' # Public Schema
+    8818550e-e2a2-4518-a241-413c1343817e: 'Riot Night Role ID' # Riot Night Role ID
     a8de57bc-969d-4abc-b67a-0a7111943914: Guild # Guild
     a15f32e4-4a86-4115-a772-32d226c18bb3: 'Role Reactions' # Role Reactions
     a819cbfe-ca29-4bd9-81f0-9dca60fa1f96: Description # Description

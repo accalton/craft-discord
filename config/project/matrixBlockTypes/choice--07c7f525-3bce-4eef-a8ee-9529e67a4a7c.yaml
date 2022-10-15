@@ -1,0 +1,71 @@
+field: 3a2936de-287e-4f48-9583-5301ba20812f # Vote
+fieldLayouts:
+  74d177ea-4a45-4bf6-a36f-97e2035986ed:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 9670e914-637b-4f76-9d06-50007f40e438 # Emoji
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 34ee4842-55b9-48bb-9a95-708d205b195c
+            userCondition: null
+            warning: null
+            width: 25
+          -
+            elementCondition: null
+            fieldUid: 9dd83a89-0aae-40bd-80b3-94d02ceabbd1 # Description
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: f9ace02e-4455-4ade-8dd0-fdc2131a9d38
+            userCondition: null
+            warning: null
+            width: 75
+        name: Content
+        uid: 34a0d094-9d54-4978-a322-0a46a5b45e32
+        userCondition: null
+fields:
+  9dd83a89-0aae-40bd-80b3-94d02ceabbd1: # Description
+    columnSuffix: zlzqrsal
+    contentColumnType: text
+    fieldGroup: null
+    handle: description
+    instructions: null
+    name: Description
+    searchable: false
+    settings:
+      byteLimit: null
+      charLimit: null
+      code: false
+      columnType: null
+      initialRows: 4
+      multiline: false
+      placeholder: null
+      uiMode: normal
+    translationKeyFormat: null
+    translationMethod: none
+    type: craft\fields\PlainText
+  9670e914-637b-4f76-9d06-50007f40e438: # Emoji
+    columnSuffix: wkffvwxi
+    contentColumnType: string
+    fieldGroup: null
+    handle: emoji
+    instructions: null
+    name: Emoji
+    searchable: false
+    settings:
+      dropdownType: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: magi\fields\EmojiField
+handle: choice
+name: Choice
+sortOrder: 1

@@ -7,15 +7,6 @@ use magi\Magi;
 
 class MessageService
 {
-    public function afterEntrySave(Entry $entry)
-    {
-        switch ($entry->type->handle) {
-            case 'roleReaction':
-                Magi::getInstance()->reaction->set($entry);
-                break;
-        }
-    }
-
     public function beforeEntrySave(Entry $entry)
     {
         $color = $entry->color ? hexdec($entry->color->hex) : hexdec('#ffffff');
@@ -57,27 +48,53 @@ class MessageService
 
     private function description(Entry $entry)
     {
+        switch ($entry->type) {
+            case 'riotNight':
+                $description = $this->riotNight($entry);
+                break;
+            case 'roleReaction':
+                $description = $this->roleReaction($entry);
+                break;
+        }
+
+        return $description;
+    }
+
+    private function riotNight(Entry $entry)
+    {
         $description = strip_tags($entry->description);
 
-        switch ($entry->type) {
-            case 'roleReaction':
-                if ($entry->roleReactions->count()) {
-                    $description .= PHP_EOL . PHP_EOL;
-                    $guildRoles = Magi::getInstance()->guild->roles($entry->guild);
-                    
-                    $roles = [];
-                    foreach ($guildRoles as $role) {
-                        $roles[$role->id] = $role->name;
-                    }
+        if ($entry->vote->count()) {
+            $description .= PHP_EOL . PHP_EOL;
 
-                    foreach ($entry->roleReactions->all() as $roleReaction) {
-                        $description .= '<:' . $roleReaction->emoji . '>';
-                        $description .= ' **' . $roles[$roleReaction->role] . '**';
-                        $description .= $roleReaction->description ? ' (' . $roleReaction->description . ')' : '';
-                        $description .= PHP_EOL;
-                    }
-                }
-                break;
+            foreach ($entry->vote->all() as $vote) {
+                $description .= '<:' . $vote->emoji . '>';
+                $description .= ' **' . $vote->description . '**' . PHP_EOL;
+            }
+        }
+
+        return $description;
+    }
+
+    private function roleReaction(Entry $entry)
+    {
+        $description = strip_tags($entry->description);
+
+        if ($entry->roleReactions->count()) {
+            $description .= PHP_EOL . PHP_EOL;
+            $guildRoles = Magi::getInstance()->guild->roles($entry->guild);
+            
+            $roles = [];
+            foreach ($guildRoles as $role) {
+                $roles[$role->id] = $role->name;
+            }
+
+            foreach ($entry->roleReactions->all() as $roleReaction) {
+                $description .= '<:' . $roleReaction->emoji . '>';
+                $description .= ' **' . $roles[$roleReaction->role] . '**';
+                $description .= $roleReaction->description ? ' (' . $roleReaction->description . ')' : '';
+                $description .= PHP_EOL;
+            }
         }
 
         return $description;

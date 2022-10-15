@@ -33,8 +33,17 @@ class ReactionService
             $guildEmojis = Magi::getInstance()->guild->emojis($entry->guild);
             
             $emojis = [];
-            foreach ($entry->roleReactions->all() as $roleReaction) {
-                $emojis[] = $roleReaction->emoji;
+            switch ($entry->type->handle) {
+                case 'roleReaction':
+                    foreach ($entry->roleReactions->all() as $roleReaction) {
+                        $emojis[] = $roleReaction->emoji;
+                    }
+                    break;
+                case 'riotNight':
+                    foreach ($entry->vote->all() as $vote) {
+                        $emojis[] = $vote->emoji;
+                    }
+                    break;
             }
 
             foreach ($guildEmojis as $guildEmoji) {
@@ -59,10 +68,21 @@ class ReactionService
 
         if ($entry) {
             $valid = false;
-            foreach ($entry->roleReactions->all() as $roleReaction) {
-                if ($reaction->emoji->id && strpos($roleReaction->emoji, $reaction->emoji->id) !== false) {
-                    $valid = true;
-                }
+            switch ($entry->type->handle) {
+                case 'riotNight':
+                    foreach ($entry->vote->all() as $vote) {
+                        if ($reaction->emoji->id && strpos($vote->emoji, $reaction->emoji->id) !== false) {
+                            $valid = true;
+                        }
+                    }
+                    break;
+                case 'roleReaction':
+                    foreach ($entry->roleReactions->all() as $roleReaction) {
+                        if ($reaction->emoji->id && strpos($roleReaction->emoji, $reaction->emoji->id) !== false) {
+                            $valid = true;
+                        }
+                    }
+                    break;
             }
 
             if (!$valid) {

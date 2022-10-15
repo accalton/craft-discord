@@ -1,5 +1,5 @@
 fieldLayouts:
-  366aba3d-32fc-4177-a0c1-c76b34315498:
+  fda19f35-8773-45b3-a04a-ed68fbf8c269:
     tabs:
       -
         elementCondition: null
@@ -26,10 +26,22 @@ fieldLayouts:
             tip: null
             title: null
             type: craft\fieldlayoutelements\entries\EntryTitleField
-            uid: a8810316-a14f-4b92-b21b-30a37837fe57
+            uid: 77ba6ba7-bdce-42ad-9a9a-f6c1c753276d
             userCondition: null
             warning: null
-            width: 100
+            width: 75
+          -
+            elementCondition: null
+            fieldUid: 7a0feb03-e9fb-4dc4-a537-7c671dcd98b9 # Date
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 4aef0966-7fe2-4ae5-90a5-aed40f54df74
+            userCondition: null
+            warning: null
+            width: 25
           -
             elementCondition: null
             fieldUid: a8de57bc-969d-4abc-b67a-0a7111943914 # Guild
@@ -38,7 +50,7 @@ fieldLayouts:
             required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 809f80d7-8b8c-42bc-b6eb-3082c8b8d386
+            uid: d55027ff-d302-406c-b631-6016329e6f4d
             userCondition: null
             warning: null
             width: 50
@@ -50,7 +62,7 @@ fieldLayouts:
             required: true
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: e6760044-4183-4d2a-9d04-d8f7eb9dec2e
+            uid: dd567490-5a65-4813-ae7f-7b45cd200651
             userCondition: null
             warning: null
             width: 50
@@ -62,7 +74,7 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: ef61db01-415b-4a3b-bc1a-790275b4574b
+            uid: e8e759b9-9533-4813-96ee-b76553f8714e
             userCondition: null
             warning: null
             width: 25
@@ -74,7 +86,7 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 32e5b2ec-18d6-440c-9845-1c2dd133ad9c
+            uid: ba144464-3403-4074-b964-3c3893f5b29c
             userCondition: null
             warning: null
             width: 75
@@ -86,21 +98,21 @@ fieldLayouts:
                   class: magi\fields\conditions\GuildFieldConditionRule
                   fieldUid: a8de57bc-969d-4abc-b67a-0a7111943914 # Guild
                   operator: notempty
-                  uid: 079610c2-617d-4d6e-9d33-73a10170911e
+                  uid: 43df6b53-be99-4034-9474-3411b633fce2
               elementType: craft\elements\Entry
               fieldContext: global
-            fieldUid: a15f32e4-4a86-4115-a772-32d226c18bb3 # Role Reactions
+            fieldUid: 3a2936de-287e-4f48-9583-5301ba20812f # Vote
             instructions: null
             label: null
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: cf9d0d64-162c-4c35-b111-43592399798f
+            uid: 8ba95ab8-9c7d-4e94-a950-9a018a40c09a
             userCondition: null
             warning: null
             width: 100
         name: Content
-        uid: b95ed3bd-74cf-4221-8328-055a4dabc1f7
+        uid: 45da819f-ffd1-43d9-8d94-0d8f8fb369b8
         userCondition: null
       -
         elementCondition: null
@@ -113,18 +125,30 @@ fieldLayouts:
             required: false
             tip: null
             type: craft\fieldlayoutelements\CustomField
-            uid: 8301245a-359f-4224-804c-6fc148bd6365
+            uid: 49d6ab85-495c-473b-bb87-99a031efba69
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: 8818550e-e2a2-4518-a241-413c1343817e # Riot Night Role ID
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 86d8f35e-26e6-41e3-8d4e-e742f5713ddd
             userCondition: null
             warning: null
             width: 100
         name: Discord
-        uid: f17bfff5-0e1d-4416-ae27-0bb0208a2c29
+        uid: d39b0b0d-9427-47b4-bc69-bfbbcf6e73a6
         userCondition: null
-handle: roleReaction
+handle: riotNight
 hasTitleField: true
-name: 'Role Reaction'
+name: 'Riot Night'
 section: 910bfc8c-0352-4ba0-8d56-d8eb1bad6642 # Messages
-sortOrder: 1
+sortOrder: 2
 titleFormat: null
 titleTranslationKeyFormat: null
 titleTranslationMethod: site
