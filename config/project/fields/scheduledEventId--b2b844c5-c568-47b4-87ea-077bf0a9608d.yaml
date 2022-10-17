@@ -1,0 +1,19 @@
+columnSuffix: ilrqeodw
+contentColumnType: text
+fieldGroup: 659cbc52-ae52-4589-bf73-f30c52bbe2f7 # Common
+handle: scheduledEventId
+instructions: null
+name: 'Scheduled Event ID'
+searchable: false
+settings:
+  byteLimit: null
+  charLimit: null
+  code: false
+  columnType: null
+  initialRows: 4
+  multiline: false
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: none
+type: craft\fields\PlainText

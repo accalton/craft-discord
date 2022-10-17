@@ -49,4 +49,19 @@ class GuildService
 
         return $channels;
     }
+
+    public function voiceChannels($guildId)
+    {
+        $channels = $this->channels($guildId);
+
+        $channels = array_filter($channels, function ($channel) {
+            return $channel->type === 2;
+        });
+
+        usort($channels, function ($a, $b) {
+            return strcmp($a->name, $b->name);
+        });
+
+        return $channels;
+    }
 }

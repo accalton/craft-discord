@@ -29,19 +29,7 @@ fieldLayouts:
             uid: 77ba6ba7-bdce-42ad-9a9a-f6c1c753276d
             userCondition: null
             warning: null
-            width: 75
-          -
-            elementCondition: null
-            fieldUid: 7a0feb03-e9fb-4dc4-a537-7c671dcd98b9 # Date
-            instructions: null
-            label: null
-            required: true
-            tip: null
-            type: craft\fieldlayoutelements\CustomField
-            uid: 4aef0966-7fe2-4ae5-90a5-aed40f54df74
-            userCondition: null
-            warning: null
-            width: 25
+            width: 100
           -
             elementCondition: null
             fieldUid: a8de57bc-969d-4abc-b67a-0a7111943914 # Guild
@@ -63,6 +51,30 @@ fieldLayouts:
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: dd567490-5a65-4813-ae7f-7b45cd200651
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: 7a0feb03-e9fb-4dc4-a537-7c671dcd98b9 # Date
+            instructions: null
+            label: null
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 4aef0966-7fe2-4ae5-90a5-aed40f54df74
+            userCondition: null
+            warning: null
+            width: 50
+          -
+            elementCondition: null
+            fieldUid: bfb05882-3b8f-48f8-b6d2-031246a6af95 # Voice Channel
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: aa3ecce1-dbc6-4a1d-9af2-9ef5a1ddc6cf
             userCondition: null
             warning: null
             width: 50
@@ -138,6 +150,18 @@ fieldLayouts:
             tip: null
             type: craft\fieldlayoutelements\CustomField
             uid: 86d8f35e-26e6-41e3-8d4e-e742f5713ddd
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            elementCondition: null
+            fieldUid: b2b844c5-c568-47b4-87ea-077bf0a9608d # Scheduled Event ID
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 1a88fbe2-7bd5-47de-a9c8-0ee3ddc1b301
             userCondition: null
             warning: null
             width: 100

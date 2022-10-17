@@ -1,4 +1,4 @@
-dateModified: 1665861265
+dateModified: 1666039065
 email:
   fromEmail: accalton@gmail.com
   fromName: Magi
@@ -56,7 +56,9 @@ meta:
     a8de57bc-969d-4abc-b67a-0a7111943914: Guild # Guild
     a15f32e4-4a86-4115-a772-32d226c18bb3: 'Role Reactions' # Role Reactions
     a819cbfe-ca29-4bd9-81f0-9dca60fa1f96: Description # Description
+    b2b844c5-c568-47b4-87ea-077bf0a9608d: 'Scheduled Event ID' # Scheduled Event ID
     b317c769-cd07-4490-b482-4ddbf70daee1: Emoji # Emoji
+    bfb05882-3b8f-48f8-b6d2-031246a6af95: 'Voice Channel' # Voice Channel
     d1943850-2bbf-47cb-bf58-85bceb2fee92: 'Public Schema' # Public Schema
     fe8183d2-a647-4195-89e2-60c2d84dcbc8: 'Public Schema' # Public Schema
 plugins:

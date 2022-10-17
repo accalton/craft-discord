@@ -28,6 +28,7 @@ class Magi extends Module
         parent::init();
 
         $this->setComponents([
+            'event'    => \magi\services\EventService::class,
             'guild'    => \magi\services\GuildService::class,
             'member'   => \magi\services\MemberService::class,
             'messages' => \magi\services\MessageService::class,
@@ -74,8 +75,12 @@ class Magi extends Module
 
                 $this->messages->beforeEntrySave($entry);
 
-                if ($entry->type->handle === 'riotNight' && !$entry->riotNightRoleId) {
-                    $this->role->createRiotNight($entry);
+                if ($entry->type->handle === 'riotNight') {
+                    $this->event->beforeEntrySave($entry);
+
+                    if (!$entry->riotNightRoleId) {
+                        $this->role->createRiotNight($entry);
+                    }
                 }
             }
         );
@@ -92,6 +97,10 @@ class Magi extends Module
 
                 if ($entry->riotNightRoleId) {
                     $this->role->deleteRiotNight($entry);
+                }
+
+                if ($entry->scheduledEventId) {
+                    $this->event->beforeEntryDelete($entry);
                 }
             }
         );

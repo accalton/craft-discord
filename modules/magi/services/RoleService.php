@@ -3,6 +3,7 @@
 namespace magi\services;
 
 use craft\elements\Entry;
+use Discord\Parts\User\Member;
 use Discord\Parts\WebSockets\MessageReaction;
 use magi\Magi;
 
@@ -16,11 +17,6 @@ class RoleService
 
         if ($entry) {
             switch ($entry->type->handle) {
-                case 'riotNight':
-                    if ($entry->riotNightRoleId) {
-                        $reaction->member->addRole($entry->riotNightRoleId);
-                    }
-                    break;
                 case 'roleReaction':
                     foreach ($entry->roleReactions->all() as $roleReaction) {
                         if ($reaction->emoji->id && strpos($roleReaction->emoji, $reaction->emoji->id) !== false) {
@@ -29,6 +25,17 @@ class RoleService
                     }
                     break;
             }
+        }
+    }
+
+    public function assignRiotNight(Member $member, int $scheduledEventId)
+    {
+        $entry = Entry::find()
+            ->scheduledEventId($scheduledEventId)
+            ->one();
+
+        if ($entry) {
+            $member->addRole($entry->riotNightRoleId);
         }
     }
 
@@ -70,6 +77,17 @@ class RoleService
                     }
                     break;
             }
+        }
+    }
+
+    public function removeRiotNight(Member $member, int $scheduledEventId)
+    {
+        $entry = Entry::find()
+            ->scheduledEventId($scheduledEventId)
+            ->one();
+
+        if ($entry) {
+            $member->removeRole($entry->riotNightRoleId);
         }
     }
 }

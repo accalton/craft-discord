@@ -11,10 +11,29 @@ use magi\Magi;
 class ChannelField extends Field
 {
     public $dropdownType;
+    public $channelType;
 
     public static function displayName(): string
     {
         return Craft::t('app', 'Discord Channel');
+    }
+
+    public function getSettingsHtml(): ?string
+    {
+        $options = [
+            '' => '---',
+            'text' => 'Text',
+            'voice' => 'Voice'
+        ];
+
+        return Cp::selectFieldHtml([
+            'fieldClass' => null,
+            'label' => Craft::t('app', 'Select an option'),
+            'id' => 'channel-type',
+            'name' => 'channelType',
+            'options' => $options,
+            'value' => $this->channelType
+        ]);
     }
 
     protected function inputHtml(mixed $value, ?ElementInterface $element = null): string
@@ -22,7 +41,14 @@ class ChannelField extends Field
         $options = ['' => '---'];
 
         if ($guildId = $element->guild ?? null) {
-            $channels = Magi::getInstance()->guild->textChannels($guildId);
+            switch ($this->channelType) {
+                case 'text':
+                    $channels = Magi::getInstance()->guild->textChannels($guildId);
+                    break;
+                case 'voice':
+                    $channels = Magi::getInstance()->guild->voiceChannels($guildId);
+                    break;
+            }
 
             foreach ($channels as $channel) {
                 $options[$channel->id] = $channel->name;

@@ -1,12 +1,12 @@
-columnSuffix: pbrrqsfe
+columnSuffix: gaxjrhmz
 contentColumnType: string
 fieldGroup: 659cbc52-ae52-4589-bf73-f30c52bbe2f7 # Common
-handle: channel
+handle: voiceChannel
 instructions: null
-name: Channel
+name: 'Voice Channel'
 searchable: false
 settings:
-  channelType: text
+  channelType: voice
   dropdownType: null
 translationKeyFormat: null
 translationMethod: none
