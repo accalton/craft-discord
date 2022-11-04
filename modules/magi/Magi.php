@@ -91,6 +91,10 @@ class Magi extends Module
             function (ModelEvent $event) {
                 $entry = $event->sender;
 
+                if (ElementHelper::isDraftOrRevision($entry)) {
+                    return;
+                }
+
                 if ($entry->messageId) {
                     $this->messages->beforeEntryDelete($entry);
                 }

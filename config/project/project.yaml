@@ -1,4 +1,4 @@
-dateModified: 1666039065
+dateModified: 1667593535
 email:
   fromEmail: accalton@gmail.com
   fromName: Magi
@@ -25,6 +25,7 @@ fs:
     url: 'https://s3.us-east-1.amazonaws.com/flipcrazy-test-storage/'
 meta:
   __names__:
+    0f5b53b2-067a-4e5c-868d-ff5de25f11d4: Role # Role
     1dea3224-66a8-45cf-8c5e-4267be0ee546: Magi # Magi
     1f44f8dd-63da-4905-a8de-11f9e2493d21: 'Public Schema' # Public Schema
     3a2936de-287e-4f48-9583-5301ba20812f: Vote # Vote
@@ -45,6 +46,7 @@ meta:
     99ecd36e-cb15-42fc-add1-00f88ca310e3: 'Public Schema' # Public Schema
     146ac2e6-294d-4b03-9e17-a5ddb448f6ae: Channel # Channel
     156b5e9b-b3a2-482a-91aa-982c606c427e: 'Role Reaction' # Role Reaction
+    439a1946-87bf-45f4-8f97-7542139ad998: 'Role Mentions' # Role Mentions
     659cbc52-ae52-4589-bf73-f30c52bbe2f7: Common # Common
     856dfb4d-fe6e-40ab-a661-335264a0e20d: Role # Role
     910bfc8c-0352-4ba0-8d56-d8eb1bad6642: Messages # Messages
@@ -59,6 +61,7 @@ meta:
     b2b844c5-c568-47b4-87ea-077bf0a9608d: 'Scheduled Event ID' # Scheduled Event ID
     b317c769-cd07-4490-b482-4ddbf70daee1: Emoji # Emoji
     bfb05882-3b8f-48f8-b6d2-031246a6af95: 'Voice Channel' # Voice Channel
+    d13c6a3e-8220-46aa-aac4-cf09ef8bbcf7: 'Role Mention' # Role Mention
     d1943850-2bbf-47cb-bf58-85bceb2fee92: 'Public Schema' # Public Schema
     fe8183d2-a647-4195-89e2-60c2d84dcbc8: 'Public Schema' # Public Schema
 plugins:

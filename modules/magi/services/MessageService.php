@@ -12,17 +12,23 @@ class MessageService
         $color = $entry->color ? hexdec($entry->color->hex) : hexdec('#ffffff');
         $description = $this->description($entry);
 
-        $contents = [
-            'body' => json_encode([
-                'nonce' => $entry->id,
-                'embeds' => [
-                    [
-                        'title' => $entry->title,
-                        'description' => $description,
-                        'color' => $color
-                    ]
+        $body = [
+            'nonce' => $entry->id,
+            'embeds' => [
+                [
+                    'title' => $entry->title,
+                    'description' => $description,
+                    'color' => $color
                 ]
-            ])
+            ]
+        ];
+
+        if ($entry->type->handle === 'riotNight') {
+            $body['content'] = $this->addMentions($entry);
+        }
+
+        $contents = [
+            'body' => json_encode($body)
         ];
 
         if ($entry->messageId) {
@@ -39,6 +45,23 @@ class MessageService
         if ($entry->messageId) {
             Magi::getInstance()->request->send('DELETE', 'channels/' . $entry->channel . '/messages/' . $entry->messageId);
         }
+    }
+
+    private function addMentions(Entry $entry)
+    {
+        $roleMentions = [];
+        foreach ($entry->roleMentions->all() as $roleMention) {
+            if ($roleMention->enabled) {
+                $roleMentions[] = '<@&' . $roleMention->role . '>';
+            }
+        }
+
+        $content = '';
+        if ($roleMentions) {
+            $content .= implode(', ', $roleMentions);
+        }
+
+        return $content;
     }
 
     private function createMessage(int $channelId, array $contents)

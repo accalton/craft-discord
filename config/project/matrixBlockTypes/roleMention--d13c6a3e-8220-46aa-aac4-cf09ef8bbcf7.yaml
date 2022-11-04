@@ -1,0 +1,39 @@
+field: 439a1946-87bf-45f4-8f97-7542139ad998 # Role Mentions
+fieldLayouts:
+  c2ab3fd6-8cb7-4011-bbb0-7da04879e835:
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            elementCondition: null
+            fieldUid: 0f5b53b2-067a-4e5c-868d-ff5de25f11d4 # Role
+            instructions: null
+            label: null
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 3d96f61d-3c5d-412b-b5cd-3be4d6465a7e
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: 22bc6148-c064-49d2-9a64-ce3daa36fadb
+        userCondition: null
+fields:
+  0f5b53b2-067a-4e5c-868d-ff5de25f11d4: # Role
+    columnSuffix: bbdsmhrt
+    contentColumnType: string
+    fieldGroup: null
+    handle: role
+    instructions: null
+    name: Role
+    searchable: false
+    settings:
+      dropdownType: null
+    translationKeyFormat: null
+    translationMethod: none
+    type: magi\fields\RoleField
+handle: roleMention
+name: 'Role Mention'
+sortOrder: 1

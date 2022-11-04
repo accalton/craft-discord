@@ -4875,7 +4875,8 @@ var setDropdowns = function setDropdowns(guildId, type) {
 document.addEventListener('change', function (e) {
   if (e.target.name === 'fields[guild]') {
     var guildId = e.target.value;
-    setDropdowns(guildId, 'channels');
+    setDropdowns(guildId, 'channels-text');
+    setDropdowns(guildId, 'channels-voice');
     setDropdowns(guildId, 'emojis');
     setDropdowns(guildId, 'roles');
   }

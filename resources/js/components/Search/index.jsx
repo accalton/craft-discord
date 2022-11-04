@@ -1,16 +1,72 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import algoliasearch from 'algoliasearch/lite';
-import { InstantSearch, SearchBox, Hits } from 'react-instantsearch-dom';
+import { Configure, Index, InstantSearch, SearchBox, InfiniteHits } from 'react-instantsearch-dom';
+import RefinementList from './components/RefinementList';
+import { createURL, searchStateToUrl, urlToSearchState } from './helpers/search-url';
 
-const searchClient = algoliasearch('Y0X8ZCRBXG', '52c42c01e372d7bd64136651c56ffe94');
+const DEBOUNCE_TIME = 400;
+const algoliaClient = algoliasearch('3ZGIZLA6OP', '2dbae4da27e330483c61465219b08032');
+
+const searchClient = {
+    search(requests) {
+        const newRequests = requests.map((request) => {
+            if (!request.params.query || request.params.query.length === 0) {
+                request.params.analytics = false;
+            }
+
+            return request;
+        });
+
+        return algoliaClient.search(newRequests);
+    }
+}
 
 const Search = () => {
+    const [searchState, setSearchState] = useState(urlToSearchState(window.location));
+    const [indexState, setIndexState] = useState('dev_all');
+    const debouncedSetStateRef = useRef(null);
+
+    const onSearchStateChange = (updatedSearchState) => {
+        clearTimeout(debouncedSetStateRef.current);
+
+        debouncedSetStateRef.current = setTimeout(() => {
+            window.history.pushState('', '', searchStateToUrl(updatedSearchState), updatedSearchState);
+        }, DEBOUNCE_TIME);
+
+        setSearchState(updatedSearchState);
+    };
+
+    const setIndex = (indexName) => {
+        setIndexState(indexName);
+    }
+
+    useEffect(() => {
+        setSearchState(urlToSearchState(window.location));
+    }, [window.location]);
+
     return (
-        <InstantSearch searchClient={searchClient} indexName="Messages">
+        <InstantSearch
+            searchClient={searchClient}
+            searchState={searchState}
+            onSearchStateChange={onSearchStateChange}
+            createURL={createURL}
+            indexName={indexState}
+        >
+            <a onClick={(event) => {
+                event.preventDefault();
+                setIndex('dev_all');
+            }}>All</a>
+            |
+            <a onClick={(event) => {
+                event.preventDefault();
+                setIndex('dev_insights');
+            }}>Insights</a>
+
+            <Configure hitsPerPage="9" />
             <SearchBox />
-            <Hits />
-            </InstantSearch>
-        );
+            <InfiniteHits />
+        </InstantSearch>
+    );
 }
 
 export default Search;

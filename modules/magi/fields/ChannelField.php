@@ -62,7 +62,7 @@ class ChannelField extends Field
             'value' => $value,
             'options' => $options,
             'inputAttributes' => [
-                'data-field-type' => 'discord-channels'
+                'data-field-type' => 'discord-channels-' . $this->channelType
             ]
         ]);
     }

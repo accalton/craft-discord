@@ -7,7 +7,7 @@ use magi\Magi;
 
 class DiscordController extends Controller
 {
-    public function actionChannels($guildId = null)
+    public function actionChannelsText($guildId = null)
     {
         $this->requireCpRequest();
 
@@ -16,6 +16,19 @@ class DiscordController extends Controller
         }
 
         $channels = Magi::getInstance()->guild->textChannels($guildId);
+
+        return $this->asJson($channels);
+    }
+
+    public function actionChannelsVoice($guildId = null)
+    {
+        $this->requireCpRequest();
+
+        if (!$guildId) {
+            return $this->asJson([]);
+        }
+
+        $channels = Magi::getInstance()->guild->voiceChannels($guildId);
 
         return $this->asJson($channels);
     }

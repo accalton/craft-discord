@@ -1,0 +1,16 @@
+columnSuffix: null
+contentColumnType: string
+fieldGroup: 659cbc52-ae52-4589-bf73-f30c52bbe2f7 # Common
+handle: roleMentions
+instructions: null
+name: 'Role Mentions'
+searchable: false
+settings:
+  contentTable: '{{%matrixcontent_rolementions}}'
+  maxBlocks: null
+  minBlocks: null
+  propagationKeyFormat: null
+  propagationMethod: all
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix
