@@ -5,7 +5,10 @@ import RefinementList from './components/RefinementList';
 import { createURL, searchStateToUrl, urlToSearchState } from './helpers/search-url';
 
 const DEBOUNCE_TIME = 400;
-const algoliaClient = algoliasearch('3ZGIZLA6OP', '2dbae4da27e330483c61465219b08032');
+const algoliaClient = algoliasearch(
+    process.env.ALGOLIA_APPLICATION_ID,
+    process.env.ALGOLIA_SEARCH_API_KEY
+);
 
 const searchClient = {
     search(requests) {

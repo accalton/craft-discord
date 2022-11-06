@@ -1,4 +1,4 @@
-dateModified: 1667593535
+dateModified: 1667696788
 email:
   fromEmail: accalton@gmail.com
   fromName: Magi
@@ -77,8 +77,9 @@ system:
   edition: solo
   live: true
   name: Magi
+  retryDuration: null
   schemaVersion: 4.0.0.9
-  timeZone: America/Los_Angeles
+  timeZone: America/New_York
 users:
   allowPublicRegistration: false
   defaultGroup: null

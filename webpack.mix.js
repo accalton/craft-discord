@@ -8,8 +8,9 @@ mix.js(['modules/magi/resources/main.js'], 'modules/magi/resources/dist');
 
 mix.webpackConfig({
     plugins: [
-    new Dotenv({
-        path: `${__dirname}/.env`,
-        allowEmptyValues: true,
-    })],
+        new Dotenv({
+            path: `${__dirname}/.env`,
+            allowEmptyValues: true,
+        })
+    ]
 });

@@ -5980,7 +5980,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 var DEBOUNCE_TIME = 400;
-var algoliaClient = algoliasearch_lite__WEBPACK_IMPORTED_MODULE_3___default()('3ZGIZLA6OP', '2dbae4da27e330483c61465219b08032');
+var algoliaClient = algoliasearch_lite__WEBPACK_IMPORTED_MODULE_3___default()("3ZGIZLA6OP", "2dbae4da27e330483c61465219b08032");
 var searchClient = {
   search: function search(requests) {
     var newRequests = requests.map(function (request) {
